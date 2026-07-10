@@ -84,6 +84,14 @@ class GatedFusion(nn.Module):
             nn.Dropout(0.15), nn.Linear(d_hidden, d_emb),
         )
 
+    def family_weights(self, tower_stack: torch.Tensor) -> torch.Tensor:
+        """Per-row family mix: softmax(attn) × sigmoid(gate), L1-normalized."""
+        scores = self.attn(tower_stack).squeeze(-1)
+        weights = torch.softmax(scores, dim=-1)
+        gates = torch.sigmoid(self.gate(tower_stack).squeeze(-1))
+        raw = weights * gates
+        return raw / (raw.sum(dim=-1, keepdim=True) + 1e-9)
+
     def forward(self, tower_stack: torch.Tensor, season_ids: torch.Tensor) -> torch.Tensor:
         scores = self.attn(tower_stack).squeeze(-1)
         weights = torch.softmax(scores, dim=-1)
@@ -109,10 +117,18 @@ class MTNN(nn.Module):
         self.position_head = nn.Linear(d_emb, len(SKILL))
         self.pedigree_head = nn.Linear(d_emb, 1)
 
-    def encode(self, xs, ms, season_ids):
-        parts = torch.stack(
+    def tower_stack(self, xs, ms):
+        return torch.stack(
             [self.towers[fam](xs[fam], ms[fam]) for fam in self.families], dim=1)
-        return self.fusion(parts, season_ids)
+
+    def encode(self, xs, ms, season_ids):
+        return self.fusion(self.tower_stack(xs, ms), season_ids)
+
+    def encode_with_contrib(self, xs, ms, season_ids):
+        parts = self.tower_stack(xs, ms)
+        w = self.fusion.family_weights(parts)
+        emb = self.fusion(parts, season_ids)
+        return emb, w
 
     def forward(self, xs, ms, season_ids):
         emb = self.encode(xs, ms, season_ids)
@@ -313,6 +329,10 @@ def main():
     ap.add_argument("--d-emb", type=int, default=32)
     ap.add_argument("--zero-families", default="",
                     help="comma-separated families to permanently zero (prune bet)")
+    ap.add_argument("--soft-families", default="",
+                    help="comma-separated families to soft-scale masks (not hard zero)")
+    ap.add_argument("--soft-scale", type=float, default=0.25,
+                    help="mask multiplier for --soft-families (default 0.25)")
     args = ap.parse_args()
     t0 = time.time()
     torch.manual_seed(SEED)
@@ -347,6 +367,21 @@ def main():
                     up["masks"][:, i] = 0.0
                     up["rows"][:, i] = 0.0
         print(f"  pruned families {zero_fams} ({n_z} cols zeroed)")
+    soft_fams = [f.strip() for f in args.soft_families.split(",") if f.strip()]
+    soft_scale = float(args.soft_scale)
+    if soft_fams:
+        n_s = 0
+        up = D["upcoming"]
+        for fam in soft_fams:
+            cols = families.get(fam, [])
+            for col in cols:
+                if col not in feats:
+                    continue
+                i = feats.index(col)
+                M[:, i] = M[:, i] * soft_scale
+                up["masks"][:, i] = up["masks"][:, i] * soft_scale
+                n_s += 1
+        print(f"  soft-weighted families {soft_fams} ×{soft_scale} ({n_s} cols)")
     print(f"  X={X.shape}, families={list(families)}, targets={targets}")
 
     seasons = np.array([m["season"] for m in META])
@@ -475,12 +510,20 @@ def main():
         # clamp season ids into range
         sid = sid.clamp(0, n_seasons - 1)
         with torch.no_grad():
-            emb, out = model(xs, ms, sid)
-            pred = out["targets"].cpu().numpy() * ysd + ymu
-            return pred, emb.cpu().numpy()
+            emb, w = model.encode_with_contrib(xs, ms, sid)
+            targets = torch.cat([h(emb) for h in model.target_heads], dim=1)
+            pred = targets.cpu().numpy() * ysd + ymu
+            return pred, emb.cpu().numpy(), w.cpu().numpy()
+
+    def top_contrib(w_row, k=5):
+        order = np.argsort(-w_row)[:k]
+        return [
+            {"family": model.families[j], "w": round(float(w_row[j]), 3)}
+            for j in order if w_row[j] > 0.01
+        ]
 
     # test report
-    pte, _ = predict_rows(X[te], M[te], seasons[te])
+    pte, _, _ = predict_rows(X[te], M[te], seasons[te])
     yte = Y[te]
     mae = lambda a, b: float(np.mean(np.abs(a - b)))
     r2 = lambda y, p: float(1 - np.sum((y - p) ** 2) / max(1e-9, np.sum((y - y.mean()) ** 2)))
@@ -516,7 +559,7 @@ def main():
         "v1_mae_reference": V1_MAE,
         "family_drop": args.family_drop,
         "d_emb": args.d_emb,
-        "hill_climb": "rz+conformal80_abs_resid",
+        "hill_climb": "rz+conformal80+tower_contrib",
         "promote_metric": "mae",
         "metrics_note": "MAE is the promote gate; MAPE/RMSE/MedAE/bias are diagnostic.",
     }
@@ -557,7 +600,7 @@ def main():
         print("WARNING: no upcoming rows")
         return 1
     seas_up = np.array([m["season"] for m in upmeta])
-    pred_next, Zup = predict_rows(Xup, Mup, seas_up)
+    pred_next, Zup, w_next = predict_rows(Xup, Mup, seas_up)
 
     # neutral season projection
     Xneutral = Xup.copy()
@@ -571,7 +614,7 @@ def main():
     for name, val in NEUTRAL.items():
         if name in feats:
             Xneutral[:, feats.index(name)] = val
-    pred_season, _ = predict_rows(Xneutral, Mup, seas_up)
+    pred_season, _, w_season = predict_rows(Xneutral, Mup, seas_up)
 
     C = Zup - Zup.mean(0)
     U, S, _ = np.linalg.svd(C, full_matrices=False)
@@ -617,6 +660,7 @@ def main():
                 "rec": round(float(p[ti["receptions"]]), 1),
                 "td": round(float(p[ti["total_td"]]), 2),
             },
+            "tower_contrib": top_contrib(w_next[i]),
             "conditions": m["conditions"],
         })
     ng_players.sort(key=lambda r: r["proj"], reverse=True)
@@ -628,6 +672,7 @@ def main():
             "residual_std_by_pos": {k: round(v, 2) for k, v in resid_by_pos.items()},
             "floor_ceil": f"conformal_abs_q{int(CONF_LEVEL * 100)}",
             "conformal_q_by_pos": {k: round(v, 2) for k, v in conf_by_pos.items()},
+            "tower_contrib": "gated_attn_x_gate_top5",
         },
         "count": len(ng_players), "players": ng_players,
     }, separators=(",", ":")), encoding="utf-8")
@@ -653,6 +698,7 @@ def main():
                 "rec": round(float(p[ti["receptions"]]), 1),
                 "td": round(float(p[ti["total_td"]]), 2),
             },
+            "tower_contrib": top_contrib(w_season[i]),
             "comps": [
                 {"name": upmeta[j]["name"], "pos": upmeta[j]["pos"],
                  "team": upmeta[j]["team"], "sim": round(float(sim[i, j]), 3)}

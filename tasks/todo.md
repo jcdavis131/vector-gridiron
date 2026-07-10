@@ -4,8 +4,12 @@
 - [x] **Metrics battery** — MAE gate + MAPE/RMSE/MedAE/bias/per-pos in report (MAE 4.258)
 - [x] **Owner-first Lookback** — focus picker, you card, pin ★, standings modes
 - [x] **Start/sit ranking** — documented as needing weekly history (no fake metric)
-- [ ] Hill-climb next: soft-weight flat families / EWMA span-5 (loop)
-- Loop still armed every 20m until stopped
+- [x] **Soft-weight flat families ×0.25** — MAE 4.322, **not** promoted
+- [x] **EWMA span-5 only** — MAE 4.287, **not** promoted (`EWMA_SPAN5=False`)
+- [x] **Soft ngs+defense ×0.25** — MAE 4.310, **not** promoted
+- [x] **tower_contrib UI** — MAE **4.258** tied — **promoted**
+- [ ] Hill-climb next: weekly start/sit history ingest (product)
+- Loop armed every **1m** until stopped (PID 19624)
 
 ## Promoted
 

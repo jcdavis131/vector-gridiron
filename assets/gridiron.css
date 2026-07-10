@@ -227,7 +227,12 @@ canvas#map{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
 .vg-you__hd{font-size:18px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .vg-you__champ{font-family:var(--mono);font-size:12px;color:var(--warm)}
 .vg-you__picks{font-size:12.5px;margin-top:4px}
-.vg-roast--mine{border-color:var(--accent);background:rgba(240,135,60,.06)}
+.vg-tcontribs{display:flex;flex-direction:column;gap:5px;margin:6px 0 4px;max-width:360px}
+.vg-tcontrib{display:grid;grid-template-columns:90px 1fr 36px;gap:8px;align-items:center;font-size:12px}
+.vg-tcontrib__l{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-muted)}
+.vg-tcontrib__track{height:8px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:4px;overflow:hidden}
+.vg-tcontrib__fill{display:block;height:100%;background:var(--accent-2)}
+.vg-tcontrib__v{font-family:var(--mono);font-size:11px;text-align:right}
 .vg-posfilter{display:flex;gap:6px;flex-wrap:wrap}
 .vg-posfilter button{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;
   letter-spacing:.04em;padding:7px 12px;border:2px solid var(--hairline);border-radius:7px;

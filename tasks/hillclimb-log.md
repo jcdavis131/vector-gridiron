@@ -28,11 +28,15 @@
 | zero `conditions` only | 4.320 | not promoted |
 | +EWMA spans only on RZ (88 feats) | 4.299 | not promoted |
 | **conformal q80 floor/ceil** | **4.258** | **PROMOTED** (product; MAE tied; coverage 0.80) |
+| soft-weight flat fams ×0.25 | 4.322 | not promoted |
+| +EWMA span-5 only on RZ (86 feats) | 4.287 | not promoted |
+| soft-weight ngs+defense ×0.25 | 4.310 | not promoted |
+| **tower_contrib export + UI** | **4.258** | **PROMOTED** (product; MAE tied) |
 
 ## Next bets
-1. Soft-weight flat families (mask scale <1) instead of hard zero
-2. Single EWMA span (e.g. span-5 only) — lighter than 3-span bundle
-3. Tower contribution / family weights in UI
+1. Pause feature expand — weekly start/sit history ingest
+2. Revisit expand only with stronger prior (new data season)
+3. Soft-weight scale sweep only if new evidence
 
 ## Shipped
 - README Methods · `family_ablation.py` · per-pos uncertainty
@@ -40,3 +44,4 @@
 - Conformal floor/ceil (abs residual q80 by position)
 - Metrics battery (MAPE/RMSE/MedAE/bias/per-pos) — MAE remains promote gate
 - Owner-first Lookback (focus picker · you card · standings modes)
+- Tower contrib (gated attn×gate top-5) on nextgame/proj + profile UI

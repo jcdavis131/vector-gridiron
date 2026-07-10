@@ -2095,6 +2095,22 @@ function statLine(line) {
   parts.push(`${line.td.toFixed(1)} TD`);
   return parts.join(' · ');
 }
+function towerContribHtml(src) {
+  const rows = src?.tower_contrib;
+  if (!rows?.length) return '';
+  const max = Math.max(...rows.map(r => r.w), 0.01);
+  const bars = rows.map(r => {
+    const pct = Math.round(100 * r.w / max);
+    return `<div class="vg-tcontrib"><span class="vg-tcontrib__l">${escapeHtml(r.family)}</span>
+      <span class="vg-tcontrib__track"><span class="vg-tcontrib__fill" style="width:${pct}%"></span></span>
+      <span class="vg-tcontrib__v">${(r.w * 100).toFixed(0)}%</span></div>`;
+  }).join('');
+  return `<div class="vg-card__title" style="margin-top:12px">What the model weighed
+      <span class="vg-slot">tower mix</span></div>
+    <div class="vg-tcontribs">${bars}</div>
+    <p class="vg-note">Gated fusion attention × gate, renormalized — top families for this projection.</p>`;
+}
+
 function nextGameBlock(name, pos) {
   const n = nextFor(name, pos);
   if (!n) return '';
@@ -2112,7 +2128,8 @@ function nextGameBlock(name, pos) {
       <div class="vg-metric"><div class="vg-metric__n">${n.floor.toFixed(0)}–${n.ceil.toFixed(0)}</div><div class="vg-metric__l">floor–ceiling</div></div>
     </div>
     <p class="vg-note">${cond.join(' · ')}</p>
-    <p class="vg-note"><b>Projected line:</b> ${statLine(n.line)}</p>`;
+    <p class="vg-note"><b>Projected line:</b> ${statLine(n.line)}</p>
+    ${towerContribHtml(n)}`;
 }
 
 function showProfile(name, pos) {
@@ -2134,7 +2151,8 @@ function showProfile(name, pos) {
          <div class="vg-metric"><div class="vg-metric__n">${lastPpg(name, pos)?.toFixed(1) ?? '—'}</div><div class="vg-metric__l">${STATE.scoring} /g '${String(STATE.latestSeason).slice(2)}</div></div>
        </div>
        ${p.line ? `<p class="vg-note"><b>Projected ${STATE.proj.proj_season} line/g:</b> ${statLine(p.line)}${p.tier ? ` · tier ${p.tier} ${p.pos}${p.rank_pos}` : ''}</p>` : ''}
-       ${adpFor(name, pos) ? `<p class="vg-note"><b>ADP:</b> ${adpFor(name, pos).adp.toFixed(1)} overall (${adpFor(name, pos).pos}${adpFor(name, pos).pos_rank}, ${adpFor(name, pos).n}-source consensus) · ${valueBadge(p)}</p>` : ''}` : '';
+       ${adpFor(name, pos) ? `<p class="vg-note"><b>ADP:</b> ${adpFor(name, pos).adp.toFixed(1)} overall (${adpFor(name, pos).pos}${adpFor(name, pos).pos_rank}, ${adpFor(name, pos).n}-source consensus) · ${valueBadge(p)}</p>` : ''}
+       ${towerContribHtml(p)}` : '';
 
   // σ-profile + career arc only when we have a season vector
   const feats = STATE.vectors.features, labels = STATE.vectors.featureLabels;

@@ -36,6 +36,9 @@ MIN_PRIOR = 1
 HILL_CLIMB_FEATURES = False
 # True pbp red-zone shares (nflverse) — separate bet from the failed expand bundle.
 RZ_FEATURES = True
+# EWMA form spans only (no DvP/snapΔ/WR1) — trial on top of RZ.
+# Held-out 2025 MAE 4.299 vs promoted 4.258 — keep OFF.
+EWMA_FEATURES = False
 
 # ---------------------------------------------------------------------------
 # Family feature specs (order = column order within family)
@@ -79,7 +82,8 @@ CTX_KEYS = ["qb_ep_fpts", "team_pass_rate", "committee_hhi"] + (
 PED_KEYS = ["draft_pick_log", "draft_round", "combine_forty", "combine_vertical"]
 
 _FORM_EXTRA = (
-    ["ewma_ppr_3", "ewma_ppr_5", "ewma_ppr_8"] if HILL_CLIMB_FEATURES else []
+    ["ewma_ppr_3", "ewma_ppr_5", "ewma_ppr_8"]
+    if (HILL_CLIMB_FEATURES or EWMA_FEATURES) else []
 )
 FAMILIES: dict[str, list[str]] = {
     "form": ["f_" + k for k in FORM_KEYS] + ["std_ppr", "games_played", "prior_ppg"] + _FORM_EXTRA,
@@ -504,7 +508,7 @@ def assemble_row(
     vals["games_played"] = float(len(hist))
     vals["prior_ppg"] = float(prior_ppg)
     mask["std_ppr"] = mask["games_played"] = mask["prior_ppg"] = 1.0
-    if HILL_CLIMB_FEATURES:
+    if HILL_CLIMB_FEATURES or EWMA_FEATURES:
         ppg_hist = [x["fpts_ppr"] for x in hist]
         vals["ewma_ppr_3"] = ewma_series(ppg_hist, 3)
         vals["ewma_ppr_5"] = ewma_series(ppg_hist, 5)

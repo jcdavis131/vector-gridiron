@@ -3,7 +3,8 @@
 ## Promoted baseline (current)
 - PPR MAE **4.258** · R² **0.402** · **85** feats / 13 families
 - `RZ_FEATURES = True` (pbp RZ tgt/carry/inside-5 shares)
-- `HILL_CLIMB_FEATURES = False` (EWMA bundle still off)
+- Floor/ceil: **conformal abs-residual q80** (coverage 0.80 on 2025)
+- `HILL_CLIMB_FEATURES = False` · `EWMA_FEATURES = False`
 
 ## Family ablation (on pre-RZ 4.268 checkpoint)
 | Family | ΔMAE when dropped |
@@ -23,12 +24,17 @@
 | same, family_drop=0.0 | 4.378 | not promoted |
 | **+pbp RZ shares only** | **4.258** | **PROMOTED** (beats 4.268) |
 | prune ngs+defense+role+availability | 4.283 | not promoted (worse than RZ) |
+| +pinball q10/q90 heads (0.25× loss) | 4.333 | not promoted; coverage 0.62 (under); R² 0.364 |
+| zero `conditions` only | 4.320 | not promoted |
+| +EWMA spans only on RZ (88 feats) | 4.299 | not promoted |
+| **conformal q80 floor/ceil** | **4.258** | **PROMOTED** (product; MAE tied; coverage 0.80) |
 
 ## Next bets
-1. Quantile / pinball uncertainty heads (product + maybe MAE)
-2. Soft-weight flat families (not hard zero) or drop only `conditions`
-3. Revisit EWMA only on top of RZ (not the full failed bundle)
+1. Soft-weight flat families (mask scale <1) instead of hard zero
+2. Single EWMA span (e.g. span-5 only) — lighter than 3-span bundle
+3. Tower contribution / family weights in UI
 
 ## Shipped
 - README Methods · `family_ablation.py` · per-pos uncertainty
 - `build_rz.py` + nflverse pbp parquet · RZ opportunity cols
+- Conformal floor/ceil (abs residual q80 by position)

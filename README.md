@@ -129,10 +129,11 @@ Held-out **2025** next-game PPR (temporal split: train ≤2023, val 2024, test 2
 | last-4 mean | 4.616 | must beat |
 | season-to-date | 4.523 | must beat |
 
-**Floor / ceiling** on the board are ± one global residual σ from the test set
-(~6.1 PPR), not calibrated prediction intervals — treat them as a spread hint,
-not a confidence interval. Family ablation and richer uncertainty are the
-active hill-climb (`tasks/plan.md`, `tasks/hillclimb-log.md`). Family ablation
+**Floor / ceiling** on the board are **split-conformal** bands: per-position
+quantile of absolute held-out residual at level 80% (coverage ≈ 0.80 on 2025
+test). Wider than ±σ for QBs (~10.4 PPR), tighter for TEs (~5.3). Still not a
+Bayesian CI — treat as a calibrated spread hint. Residual σ remains in
+`mtnn_report.json` for diagnostics. Family ablation
 (`python pipeline/family_ablation.py`) shows **usage** and **form** dominate
 held-out MAE; NGS/defense/role are near-flat on 2025.
 

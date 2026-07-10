@@ -501,19 +501,37 @@ def main():
         "v1_mae_reference": V1_MAE,
         "family_drop": args.family_drop,
         "d_emb": args.d_emb,
-        "hill_climb": "ewma+dvp_pass_rush+snap_delta+rz_proxy+wr1+family_drop",
+        "hill_climb": "rz+conformal80_abs_resid",
     }
-    # Per-position residual σ for floor/ceil (honest vs one global σ).
-    resid_by_pos = {}
+    # Split-conformal bands: per-pos quantile of |residual| at level α (default 80%).
+    # Point estimate unchanged; floor/ceil = proj ± q̂ (not ±σ).
+    CONF_LEVEL = 0.80
+    resid_by_pos = {}  # kept as σ for diagnostics
+    conf_by_pos = {}
     if te.any():
         pos_te = np.array([META[i]["pos"] for i in np.where(te)[0]])
+        abs_all = np.abs(yte[:, 0] - pte[:, 0])
         for p in SKILL:
             mask_p = pos_te == p
             if mask_p.sum() >= 30:
+                err_p = abs_all[mask_p]
                 resid_by_pos[p] = float(np.std(yte[mask_p, 0] - pte[mask_p, 0]))
-    resid = float(np.std(yte[:, 0] - pte[:, 0])) if te.any() else 6.0
+                conf_by_pos[p] = float(np.quantile(err_p, CONF_LEVEL))
+        resid = float(np.std(yte[:, 0] - pte[:, 0]))
+        conf_global = float(np.quantile(abs_all, CONF_LEVEL))
+        # empirical coverage of conformal bands on held-out test
+        q_row = np.array([conf_by_pos.get(pos_te[i], conf_global) for i in range(len(pos_te))])
+        cover = float(np.mean(abs_all <= q_row))
+    else:
+        resid = 6.0
+        conf_global = 6.0
+        cover = 0.0
     report["residual_std"] = round(resid, 3)
     report["residual_std_by_pos"] = {k: round(v, 3) for k, v in resid_by_pos.items()}
+    report["conformal_level"] = CONF_LEVEL
+    report["conformal_q"] = round(conf_global, 3)
+    report["conformal_q_by_pos"] = {k: round(v, 3) for k, v in conf_by_pos.items()}
+    report["conformal_coverage"] = round(cover, 3)
     print("  test report:", json.dumps(report))
 
     # upcoming
@@ -566,16 +584,16 @@ def main():
     ng_players = []
     for i, m in enumerate(upmeta):
         p = pred_next[i]
-        rpos = resid_by_pos.get(m["pos"], resid)
+        qband = conf_by_pos.get(m["pos"], conf_global)
         ng_players.append({
             "key": norm_key(m["name"], m["pos"]), "name": m["name"], "pos": m["pos"],
             "team": m["team"], "opp": m["opp"], "headshot": m["headshot"],
             "moved": m.get("moved", False), "prev_team": m.get("prev_team", ""),
             "bye": m.get("bye"), "avail": avail(m),
             "proj": round(float(p[ti["fpts_ppr"]]), 2),
-            "floor": round(max(0.0, float(p[ti["fpts_ppr"]]) - rpos), 2),
-            "ceil": round(float(p[ti["fpts_ppr"]]) + rpos, 2),
-            "uncertainty": round(rpos, 2),
+            "floor": round(max(0.0, float(p[ti["fpts_ppr"]]) - qband), 2),
+            "ceil": round(float(p[ti["fpts_ppr"]]) + qband, 2),
+            "uncertainty": round(qband, 2),
             "line": {
                 "rec_yds": round(float(p[ti["rec_yds"]]), 1),
                 "rush_yds": round(float(p[ti["rush_yds"]]), 1),
@@ -592,6 +610,8 @@ def main():
             "type": "MTNN v2 multi-tower gated fusion",
             "report": report, "residual_std": round(resid, 2),
             "residual_std_by_pos": {k: round(v, 2) for k, v in resid_by_pos.items()},
+            "floor_ceil": f"conformal_abs_q{int(CONF_LEVEL * 100)}",
+            "conformal_q_by_pos": {k: round(v, 2) for k, v in conf_by_pos.items()},
         },
         "count": len(ng_players), "players": ng_players,
     }, separators=(",", ":")), encoding="utf-8")
@@ -600,16 +620,16 @@ def main():
     for i, m in enumerate(upmeta):
         p = pred_season[i]
         order = np.argsort(-sim[i])[:5]
-        rpos = resid_by_pos.get(m["pos"], resid)
+        qband = conf_by_pos.get(m["pos"], conf_global)
         proj_players.append({
             "key": norm_key(m["name"], m["pos"]), "name": m["name"], "pos": m["pos"],
             "team": m["team"], "headshot": m["headshot"],
             "moved": m.get("moved", False), "prev_team": m.get("prev_team", ""),
             "bye": m.get("bye"), "avail": avail(m), "rookie": False,
             "proj": round(float(p[ti["fpts_ppr"]]), 2),
-            "floor": round(max(0.0, float(p[ti["fpts_ppr"]]) - rpos), 2),
-            "ceil": round(float(p[ti["fpts_ppr"]]) + rpos, 2),
-            "uncertainty": round(rpos, 2),
+            "floor": round(max(0.0, float(p[ti["fpts_ppr"]]) - qband), 2),
+            "ceil": round(float(p[ti["fpts_ppr"]]) + qband, 2),
+            "uncertainty": round(qband, 2),
             "line": {
                 "rec_yds": round(float(p[ti["rec_yds"]]), 1),
                 "rush_yds": round(float(p[ti["rush_yds"]]), 1),

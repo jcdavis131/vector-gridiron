@@ -312,3 +312,8 @@ main#app, #app{
 @media (min-width: 1280px){
   :root{ --layout-wide: 1200px; }
 }
+
+/* shadow bleed guard — cards have 4px offset shadow, prevent subtle horiz scroll */
+html, body{ overflow-x: clip; }
+.vg-tabs{ -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.vg-tablewrap{ -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }

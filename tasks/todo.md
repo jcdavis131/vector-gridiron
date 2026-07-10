@@ -6,7 +6,7 @@
 - [x] **3. P0 features** — EWMA/DvP/RZ-proxy implemented behind `HILL_CLIMB_FEATURES`
 - [x] **4. Reg/HP smoke** — family_drop + expand **did not beat 4.268** → not promoted (`tasks/hillclimb-log.md`)
 - [x] **5. Product** — per-pos residual/`uncertainty` in train export; Next Game copy honesty
-- [ ] **6. Verify + ship** — gates + commit + prod deploy
+- [x] **6. Verify + ship** — gates + commit `32bc58c` + prod deploy
 
 ## Promoted baseline (do not regress)
 

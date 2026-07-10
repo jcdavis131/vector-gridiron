@@ -344,6 +344,8 @@ async function loadSleeper(leagueId) {
       id: String(r.roster_id),
       name: u?.metadata?.team_name || u?.display_name || `Team ${r.roster_id}`,
       avatar: u?.avatar ? `https://sleepercdn.com/avatars/thumbs/${u.avatar}` : '',
+      ownerId: r.owner_id != null ? String(r.owner_id) : null,
+      ownerName: u?.display_name || null,
       manager: u?.display_name || '',
       roster, starters,
     };
@@ -389,6 +391,8 @@ async function loadSleeperSeasonHistory(leagueId) {
           teamsByRoster[r.roster_id] = {
             id: String(r.roster_id),
             name: u?.metadata?.team_name || u?.display_name || `Team ${r.roster_id}`,
+            ownerId: r.owner_id != null ? String(r.owner_id) : null,
+            ownerName: u?.display_name || null,
             wins: r.settings?.wins || 0,
             losses: r.settings?.losses || 0,
             ties: r.settings?.ties || 0,
@@ -480,6 +484,7 @@ async function loadEspn(leagueId, year, s2, swid) {
   const settings = data.settings || {};
   const scoring = detectEspnScoring(settings);
   const slots = espnSlots(settings);
+  const membersById = espnMembersById(data);
   const teams = (data.teams || []).map(t => {
     const entries = t.roster?.entries || [];
     const roster = [], starters = [];
@@ -491,7 +496,12 @@ async function loadEspn(leagueId, year, s2, swid) {
       roster.push(rec);
       if (e.lineupSlotId !== 20 && e.lineupSlotId !== 21) starters.push(rec); // 20 bench,21 IR
     }
-    return { id: String(t.id), name: espnTeamName(t), avatar: t.logo || '', roster, starters };
+    const own = espnOwnerFields(t, membersById);
+    return {
+      id: String(t.id), name: espnTeamName(t), avatar: t.logo || '',
+      ownerId: own.ownerId, ownerName: own.ownerName, manager: own.ownerName || '',
+      roster, starters,
+    };
   });
   return { platform: 'espn', name: settings.name || `ESPN ${leagueId}`, scoring, slots, teams, myId: null, leagueId, year };
 }
@@ -566,12 +576,16 @@ async function loadEspnSeasonHistory(leagueId, year, s2, swid) {
   // Prefer drafted=true, but accept any season that still has pick rows (offseason quirks).
   if (!picks.length) return null;
   const resolved = await espnResolvePlayers(year, picks.map(p => p.playerId), s2, swid);
+  const membersById = espnMembersById(data);
   const teamsById = {};
   for (const t of (data.teams || [])) {
     const rec = t.record?.overall || {};
+    const own = espnOwnerFields(t, membersById);
     teamsById[t.id] = {
       id: String(t.id),
       name: espnTeamName(t),
+      ownerId: own.ownerId,
+      ownerName: own.ownerName,
       wins: rec.wins || 0,
       losses: rec.losses || 0,
       ties: rec.ties || 0,
@@ -607,6 +621,25 @@ async function loadEspnSeasonHistory(leagueId, year, s2, swid) {
 function espnTeamName(t) {
   return t.name || [t.location, t.nickname].filter(Boolean).join(' ').trim() || `Team ${t.id}`;
 }
+/** Map ESPN member SWID → display name (stable across team renames). */
+function espnMembersById(data) {
+  const m = new Map();
+  for (const mem of (data.members || [])) {
+    if (!mem?.id) continue;
+    const full = [mem.firstName, mem.lastName].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+    const name = full || mem.displayName || String(mem.id);
+    m.set(mem.id, { id: mem.id, name, displayName: mem.displayName || name });
+  }
+  return m;
+}
+function espnOwnerFields(t, membersById) {
+  const ownerId = t.primaryOwner || (Array.isArray(t.owners) && t.owners[0]) || null;
+  const mem = ownerId != null ? membersById.get(ownerId) : null;
+  return {
+    ownerId: ownerId != null ? String(ownerId) : null,
+    ownerName: mem?.name || null,
+  };
+}
 function detectEspnScoring(settings) {
   const items = settings.scoringSettings?.scoringItems || [];
   const rec = items.find(i => i.statId === 53);   // 53 = receptions
@@ -628,7 +661,15 @@ function loadDemo() {
   const byPos = p => board.filter(x => x.pos === p);
   const pools = { QB: byPos('QB'), RB: byPos('RB'), WR: byPos('WR'), TE: byPos('TE'), K: byPos('K'), DST: byPos('DST') };
   const T = 10, need = { QB: 2, RB: 5, WR: 6, TE: 2, K: 1, DST: 1 };  // full roster incl K/DST
-  const teams = Array.from({ length: T }, (_, i) => ({ id: String(i + 1), name: DEMO_NAMES[i], roster: [], starters: [] }));
+  const teams = Array.from({ length: T }, (_, i) => ({
+    id: String(i + 1),
+    name: DEMO_NAMES[i],
+    ownerId: `demo-owner-${i + 1}`,
+    ownerName: DEMO_NAMES[i],
+    manager: DEMO_NAMES[i],
+    roster: [],
+    starters: [],
+  }));
   // snake draft for realism: each round, teams pick the best remaining at each
   // position, alternating draft order round-to-round.
   const cursor = { QB: 0, RB: 0, WR: 0, TE: 0, K: 0, DST: 0 };
@@ -962,9 +1003,10 @@ function renderTrades() {
     + histNote
     + `</p>`;
   const partnerLabel = t => {
-    const c = careers.get(ownerNorm(t.name));
+    const c = careers.get(ownerCareerKey(t));
     if (!c) return escapeHtml(t.name);
-    return `${escapeHtml(t.name)} <span class="vg-owner-chip">${c.avgGrade} · ${c.titles}🏆 · ${c.seasons}y</span>`;
+    const who = t.ownerName ? `${escapeHtml(t.ownerName)} <span style="opacity:.65">(${escapeHtml(t.name)})</span>` : escapeHtml(t.name);
+    return `${who} <span class="vg-owner-chip">${c.avgGrade} · ${c.titles}🏆 · ${c.seasons}y</span>`;
   };
   const rows = uniq.map(x =>
     `<tr><td>${partnerLabel(x.partner)}</td>`
@@ -1037,13 +1079,25 @@ function gradeFromOrd(mean) {
 function ownerNorm(name) {
   return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 }
+/** Stable career key: manager id first (survives team renames), then owner name, then team name. */
+function ownerCareerKey(t) {
+  if (!t) return null;
+  if (t.ownerId) return 'oid:' + String(t.ownerId);
+  if (t.ownerName) return 'oname:' + ownerNorm(t.ownerName);
+  if (t.name) return 'tname:' + ownerNorm(t.name);
+  return null;
+}
 function isMyLookbackTeam(t) {
   const lg = STATE.league;
   if (!lg || !lg.myId) return false;
   const me = lg.teams.find(x => x.id === lg.myId);
   if (!me) return false;
+  if (me.ownerId && t.ownerId && String(me.ownerId) === String(t.ownerId)) return true;
+  if (t.key && me.ownerId && t.key === 'oid:' + String(me.ownerId)) return true;
   if (t.id != null && String(t.id) === String(me.id)) return true;
-  return ownerNorm(t.name) === ownerNorm(me.name);
+  const myLabel = ownerNorm(me.ownerName || me.name);
+  const theirLabel = ownerNorm(t.ownerName || t.name);
+  return !!(myLabel && theirLabel && myLabel === theirLabel);
 }
 
 /** Multi-season owner rollup from live lookback (falls back to seed if no live). */
@@ -1061,12 +1115,17 @@ function ownerCareerMap() {
   const by = new Map();
   for (const rec of seasons) {
     for (const t of rec.teams || []) {
-      const k = ownerNorm(t.name);
+      const k = ownerCareerKey(t);
       if (!k) continue;
       let row = by.get(k);
       if (!row) {
         row = {
-          key: k, name: t.name, id: t.id || null,
+          key: k,
+          name: t.ownerName || t.name,
+          ownerId: t.ownerId || null,
+          ownerName: t.ownerName || null,
+          id: t.id || null,
+          teamNames: [],
           seasons: 0, titles: 0, pf: 0, gradeOrds: [],
           bestGrade: null, worstGrade: null, years: [],
         };
@@ -1083,6 +1142,12 @@ function ownerCareerMap() {
         if (!row.worstGrade || ord < (GRADE_ORD[row.worstGrade] || 99)) row.worstGrade = t.grade;
       }
       if (t.id != null) row.id = t.id;
+      if (t.ownerId) row.ownerId = t.ownerId;
+      if (t.ownerName) {
+        row.ownerName = t.ownerName;
+        row.name = t.ownerName;
+      }
+      if (t.name && !row.teamNames.includes(t.name)) row.teamNames.push(t.name);
     }
   }
   for (const row of by.values()) {
@@ -1091,12 +1156,17 @@ function ownerCareerMap() {
       : NaN;
     row.avgGrade = gradeFromOrd(mean);
     row.avgPf = row.seasons ? row.pf / row.seasons : 0;
+    row.currentTeam = row.teamNames[row.teamNames.length - 1] || null;
   }
-  // Attach current-league id when names match.
+  // Prefer current connected-league labels when owner ids match.
   if (STATE.league) {
     for (const t of STATE.league.teams) {
-      const row = by.get(ownerNorm(t.name));
-      if (row) row.id = t.id;
+      const row = by.get(ownerCareerKey(t));
+      if (!row) continue;
+      row.id = t.id;
+      if (t.ownerName) { row.ownerName = t.ownerName; row.name = t.ownerName; }
+      row.currentTeam = t.name;
+      if (t.name && !row.teamNames.includes(t.name)) row.teamNames.push(t.name);
     }
   }
   return by;
@@ -1130,7 +1200,13 @@ function renderOwnerCareers() {
   }
   const rows = careers.map(c => {
     const mine = isMyLookbackTeam(c);
-    return `<tr class="${mine ? 'vg-row--mine' : ''}"><td>${mine ? '★ ' : ''}${escapeHtml(c.name)}</td>`
+    const aka = (c.teamNames || []).filter(n => n && n !== c.currentTeam);
+    const teamLine = c.currentTeam
+      ? `<div style="font-size:11px;opacity:.7;margin-top:2px">${escapeHtml(c.currentTeam)}`
+        + (aka.length ? ` · aka ${escapeHtml(aka.slice(0, 3).join(', '))}${aka.length > 3 ? '…' : ''}` : '')
+        + `</div>`
+      : '';
+    return `<tr class="${mine ? 'vg-row--mine' : ''}"><td>${mine ? '★ ' : ''}<b>${escapeHtml(c.name)}</b>${teamLine}</td>`
       + `<td><span class="vg-grade ${gradeClass(c.avgGrade)}">${c.avgGrade}</span></td>`
       + `<td class="vg-num">${c.seasons}</td>`
       + `<td class="vg-num">${c.titles}</td>`
@@ -1142,9 +1218,10 @@ function renderOwnerCareers() {
   el.innerHTML = table(
     ['Owner', 'Avg draft', 'Seasons', 'Titles', 'Avg PF', 'Best / worst', 'Years'],
     rows,
-  ) + `<p class="vg-note" style="margin-top:8px">Career rollup from ${careers[0] && STATE.lookbackLive?.leagueName
-    ? escapeHtml(STATE.lookbackLive.leagueName) + "'s"
-    : 'graded'} real drafts (VOR letter grades). ★ = your team.</p>`;
+  ) + `<p class="vg-note" style="margin-top:8px">Aligned by <b>manager identity</b> (not team name), so renames don't split careers.
+    Grades from ${careers[0] && STATE.lookbackLive?.leagueName
+      ? escapeHtml(STATE.lookbackLive.leagueName) + "'s"
+      : 'graded'} real drafts (VOR). ★ = you.</p>`;
 }
 
 function refreshLookbackSeasonPicker() {
@@ -1442,6 +1519,8 @@ function gradeLeagueSeason(hist) {
     return {
       id: tm.id || null,
       name: tm.name,
+      ownerId: tm.ownerId || null,
+      ownerName: tm.ownerName || null,
       wins: tm.wins,
       points_for: tm.points_for,
       seed: tm.seed,

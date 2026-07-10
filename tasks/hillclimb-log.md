@@ -32,11 +32,12 @@
 | +EWMA span-5 only on RZ (86 feats) | 4.287 | not promoted |
 | soft-weight ngs+defense ×0.25 | 4.310 | not promoted |
 | **tower_contrib export + UI** | **4.258** | **PROMOTED** (product; MAE tied) |
+| **weekly start/sit ingest** | n/a | **PROMOTED** (product; Sleeper+ESPN matchups) |
 
 ## Next bets
-1. Pause feature expand — weekly start/sit history ingest
-2. Revisit expand only with stronger prior (new data season)
-3. Soft-weight scale sweep only if new evidence
+1. Revisit feature expand only with stronger prior (new data season)
+2. Soft-weight scale sweep only if new evidence
+3. Playoff-week start/sit weighting / clutch metric
 
 ## Shipped
 - README Methods · `family_ablation.py` · per-pos uncertainty
@@ -45,3 +46,4 @@
 - Metrics battery (MAPE/RMSE/MedAE/bias/per-pos) — MAE remains promote gate
 - Owner-first Lookback (focus picker · you card · standings modes)
 - Tower contrib (gated attn×gate top-5) on nextgame/proj + profile UI
+- Weekly start/sit efficiency from Sleeper/ESPN matchups (latest 1–2 seasons)

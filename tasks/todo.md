@@ -8,7 +8,8 @@
 - [x] **EWMA span-5 only** — MAE 4.287, **not** promoted (`EWMA_SPAN5=False`)
 - [x] **Soft ngs+defense ×0.25** — MAE 4.310, **not** promoted
 - [x] **tower_contrib UI** — MAE **4.258** tied — **promoted**
-- [ ] Hill-climb next: weekly start/sit history ingest (product)
+- [x] **Weekly start/sit ingest** — matchup efficiency + Lookback ranking mode
+- [ ] Hill-climb next: pause expand · or playoff clutch metric
 - Loop armed every **1m** until stopped (PID 19624)
 
 ## Promoted

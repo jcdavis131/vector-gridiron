@@ -60,9 +60,12 @@ module.exports = async (req, res) => {
       ? String(views).split(",").map((v) => v.trim()).filter(Boolean)
       : ["mTeam", "mRoster", "mSettings"];
     const viewQs = viewList.map((v) => `view=${encodeURIComponent(v)}`).join("&");
+    const period = q.scoringPeriodId != null && String(q.scoringPeriodId) !== ""
+      ? `&scoringPeriodId=${encodeURIComponent(String(q.scoringPeriodId))}`
+      : "";
     url = Number(year) < 2018
-      ? `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/leagueHistory/${leagueId}?${viewQs}&seasonId=${year}`
-      : `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${year}/segments/0/leagues/${leagueId}?${viewQs}`;
+      ? `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/leagueHistory/${leagueId}?${viewQs}&seasonId=${year}${period}`
+      : `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${year}/segments/0/leagues/${leagueId}?${viewQs}${period}`;
   }
 
   try {

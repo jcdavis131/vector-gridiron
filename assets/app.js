@@ -420,6 +420,12 @@ async function loadSleeperSeasonHistory(leagueId) {
         if (teams.length) {
           const ranked = [...teams].sort((a, b) => a.seed - b.seed || b.wins - a.wins || b.points_for - a.points_for);
           if (ranked[0]) ranked[0].champion = true;
+          // Start/sit for the two most recent seasons only (rate-limit).
+          if (seasons.length < 2) {
+            try {
+              await attachSleeperStartSit(id, teams, lg.roster_positions);
+            } catch (e) { console.warn('sleeper start/sit', e); }
+          }
           seasons.push({ season: +(lg.season || draft.season), leagueName: lg.name, teams });
         }
       }
@@ -439,6 +445,134 @@ function countSlots(arr) {
     else if (s[p] !== undefined) s[p]++;
   }
   return s;
+}
+
+/** Optimal weekly points from a {pos, p} pool given lineup slots. */
+function optimalPtsFromPool(pool, slots) {
+  const withVal = (pool || [])
+    .filter(x => x && ALL_POS.includes(x.pos) && x.p > 0)
+    .map(x => ({ player: { pos: x.pos }, p: +x.p }));
+  if (!withVal.length) return 0;
+  return greedyFill(withVal, slots || { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 1, K: 1, DST: 1 }).total;
+}
+
+/**
+ * Sleeper weekly start/sit: actual starter pts vs optimal from that week's roster points.
+ * Attaches start_sit_eff (0–1) and start_sit_left (pts left on bench) per team.
+ */
+async function attachSleeperStartSit(leagueId, teams, rosterPositions) {
+  if (!teams?.length) return;
+  const players = await sleeperPlayers();
+  const slots = countSlots(rosterPositions || []);
+  const byRoster = Object.fromEntries(teams.map(t => [String(t.id), t]));
+  for (const t of teams) {
+    t._ss_weeks = 0; t._ss_actual = 0; t._ss_opt = 0;
+  }
+  let emptyStreak = 0;
+  for (let w = 1; w <= 18; w++) {
+    let rows = [];
+    try {
+      const r = await fetch(`https://api.sleeper.app/v1/league/${leagueId}/matchups/${w}`);
+      rows = r.ok ? await r.json() : [];
+    } catch (_) { rows = []; }
+    if (!rows?.length) {
+      if (++emptyStreak >= 2 && w > 1) break;
+      continue;
+    }
+    emptyStreak = 0;
+    for (const row of rows) {
+      const tm = byRoster[String(row.roster_id)];
+      if (!tm) continue;
+      const ptsMap = row.players_points || {};
+      const starters = row.starters || [];
+      const actual = starters.reduce((s, id) => s + (+ptsMap[id] || 0), 0);
+      const pool = Object.entries(ptsMap).map(([id, p]) => {
+        const pl = players[id];
+        const pos = pl?.pos === 'DEF' ? 'DST' : (pl?.pos || '');
+        return { pos, p: +p || 0 };
+      });
+      const opt = optimalPtsFromPool(pool, slots);
+      if (opt <= 0.5) continue;
+      tm._ss_weeks += 1;
+      tm._ss_actual += actual;
+      tm._ss_opt += opt;
+    }
+  }
+  for (const t of teams) {
+    if (t._ss_weeks >= 4 && t._ss_opt > 0) {
+      t.start_sit_eff = Math.min(1, +(t._ss_actual / t._ss_opt).toFixed(3));
+      t.start_sit_left = +Math.max(0, t._ss_opt - t._ss_actual).toFixed(1);
+      t.start_sit_weeks = t._ss_weeks;
+    }
+    delete t._ss_weeks; delete t._ss_actual; delete t._ss_opt;
+  }
+}
+
+/**
+ * ESPN weekly start/sit via mMatchup + scoringPeriodId.
+ * Uses appliedStatTotal on roster entries; lineupSlotId 20/21 = bench/IR.
+ */
+async function attachEspnStartSit(leagueId, year, teams, slots, s2, swid) {
+  if (!teams?.length) return;
+  const byId = Object.fromEntries(teams.map(t => [String(t.id), t]));
+  for (const t of teams) {
+    t._ss_weeks = 0; t._ss_actual = 0; t._ss_opt = 0;
+  }
+  let emptyStreak = 0;
+  for (let w = 1; w <= 18; w++) {
+    let data = null;
+    try {
+      data = await espnProxy({
+        leagueId, year: String(year),
+        views: 'mMatchup',
+        scoringPeriodId: String(w),
+        ...espnCredParams(s2, swid),
+      });
+    } catch (_) { data = null; }
+    const schedule = data?.schedule || [];
+    if (!schedule.length) {
+      if (++emptyStreak >= 2 && w > 1) break;
+      continue;
+    }
+    emptyStreak = 0;
+    const sides = [];
+    for (const g of schedule) {
+      if (g.away) sides.push(g.away);
+      if (g.home) sides.push(g.home);
+    }
+    for (const side of sides) {
+      const tm = byId[String(side.teamId)];
+      if (!tm) continue;
+      const entries = side.rosterForCurrentScoringPeriod?.entries
+        || side.rosterForMatchupPeriod?.entries
+        || [];
+      if (!entries.length) continue;
+      const pool = [];
+      let actual = 0;
+      for (const e of entries) {
+        const pos = ESPN_POS[e.playerPoolEntry?.player?.defaultPositionId]
+          || (e.playerId < 0 ? 'DST' : null);
+        const pts = +(e.playerPoolEntry?.appliedStatTotal ?? e.points ?? 0);
+        if (!pos || !ALL_POS.includes(pos)) continue;
+        pool.push({ pos, p: pts });
+        const slot = e.lineupSlotId;
+        if (slot !== 20 && slot !== 21 && slot != null) actual += pts;
+      }
+      const opt = optimalPtsFromPool(pool, slots);
+      if (opt <= 0.5) continue;
+      tm._ss_weeks += 1;
+      tm._ss_actual += actual;
+      tm._ss_opt += opt;
+    }
+  }
+  for (const t of teams) {
+    if (t._ss_weeks >= 4 && t._ss_opt > 0) {
+      t.start_sit_eff = Math.min(1, +(t._ss_actual / t._ss_opt).toFixed(3));
+      t.start_sit_left = +Math.max(0, t._ss_opt - t._ss_actual).toFixed(1);
+      t.start_sit_weeks = t._ss_weeks;
+    }
+    delete t._ss_weeks; delete t._ss_actual; delete t._ss_opt;
+  }
 }
 
 /* ---------- ESPN (via thin serverless proxy at /api/espn) ---------- */
@@ -566,7 +700,7 @@ async function espnResolvePlayers(year, playerIds, s2, swid) {
 }
 
 /** One completed ESPN season: draft picks + standings, names resolved. */
-async function loadEspnSeasonHistory(leagueId, year, s2, swid) {
+async function loadEspnSeasonHistory(leagueId, year, s2, swid, withStartSit = false) {
   const data = await espnProxy({
     leagueId, year,
     views: 'mDraftDetail,mTeam,mSettings',
@@ -615,6 +749,12 @@ async function loadEspnSeasonHistory(leagueId, year, s2, swid) {
   if (!teams.some(t => t.champion)) {
     const ranked = [...teams].sort((a, b) => a.seed - b.seed || b.wins - a.wins || b.points_for - a.points_for);
     if (ranked[0]) ranked[0].champion = true;
+  }
+  if (withStartSit) {
+    try {
+      const slots = espnSlots(data.settings) || { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 1, K: 1, DST: 1 };
+      await attachEspnStartSit(leagueId, year, teams, slots, s2, swid);
+    } catch (e) { console.warn('espn start/sit', e); }
   }
   return { season: +year, leagueName: data.settings?.name || '', teams };
 }
@@ -1161,6 +1301,7 @@ function ownerCareerMap() {
           id: t.id || null,
           teamNames: [],
           seasons: 0, titles: 0, pf: 0, gradeOrds: [],
+          ssEffs: [],
           bestGrade: null, worstGrade: null, years: [],
         };
         by.set(k, row);
@@ -1169,6 +1310,7 @@ function ownerCareerMap() {
       row.years.push(rec.season);
       if (t.champion) row.titles += 1;
       row.pf += t.points_for || 0;
+      if (t.start_sit_eff != null) row.ssEffs.push(t.start_sit_eff);
       const ord = GRADE_ORD[t.grade];
       if (ord != null) {
         row.gradeOrds.push(ord);
@@ -1190,6 +1332,9 @@ function ownerCareerMap() {
       : NaN;
     row.avgGrade = gradeFromOrd(mean);
     row.avgPf = row.seasons ? row.pf / row.seasons : 0;
+    row.avgStartSit = row.ssEffs?.length
+      ? row.ssEffs.reduce((a, b) => a + b, 0) / row.ssEffs.length
+      : null;
     row.currentTeam = row.teamNames[row.teamNames.length - 1] || null;
   }
   // Prefer current connected-league labels when owner ids match.
@@ -1234,6 +1379,8 @@ function renderOwnerCareers() {
   const cmp = {
     draft: (a, b) => (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0)
       || b.titles - a.titles || b.avgPf - a.avgPf,
+    startsit: (a, b) => (b.avgStartSit ?? -1) - (a.avgStartSit ?? -1)
+      || (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0),
     titles: (a, b) => b.titles - a.titles || (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0),
     pf: (a, b) => b.avgPf - a.avgPf || b.titles - a.titles,
     playoffs: (a, b) => b.titles - a.titles || b.avgPf - a.avgPf,
@@ -1247,9 +1394,11 @@ function renderOwnerCareers() {
         + (aka.length ? ` · aka ${escapeHtml(aka.slice(0, 3).join(', '))}${aka.length > 3 ? '…' : ''}` : '')
         + `</div>`
       : '';
+    const ss = c.avgStartSit != null ? `${(c.avgStartSit * 100).toFixed(0)}%` : '—';
     return `<tr class="${mine ? 'vg-row--mine' : ''}"><td class="vg-num">${i + 1}</td>`
       + `<td>${mine ? '★ ' : ''}<b>${escapeHtml(c.name)}</b>${teamLine}</td>`
       + `<td><span class="vg-grade ${gradeClass(c.avgGrade)}">${c.avgGrade}</span></td>`
+      + `<td class="vg-num">${ss}</td>`
       + `<td class="vg-num">${c.seasons}</td>`
       + `<td class="vg-num">${c.titles}</td>`
       + `<td class="vg-num">${c.avgPf.toFixed(0)}</td>`
@@ -1258,10 +1407,10 @@ function renderOwnerCareers() {
       + `<td class="vg-num" style="font-size:11px;text-align:left">${c.years.slice().sort((a, b) => b - a).join(', ')}</td></tr>`;
   }).join('');
   el.innerHTML = table(
-    ['#', 'Owner', 'Avg draft', 'Seasons', 'Titles', 'Avg PF', 'Best / worst', 'Years'],
+    ['#', 'Owner', 'Avg draft', 'Start/sit', 'Seasons', 'Titles', 'Avg PF', 'Best / worst', 'Years'],
     rows,
   ) + `<p class="vg-note" style="margin-top:8px">Aligned by <b>manager identity</b> (not team name).
-    ★ = focused owner (default: you). Start/sit &amp; bench skill need weekly lineup history — not graded yet.</p>`;
+    ★ = focused owner (default: you). Start/sit from weekly matchups (latest 1–2 seasons).</p>`;
 }
 
 function refreshLookbackOwnerPicker() {
@@ -1331,11 +1480,18 @@ function renderYouCard(season) {
     metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${escapeHtml(team.record || '—')}</div><div class="vg-metric__l">record</div></div>`);
     metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(team.points_for || 0).toFixed(0)}</div><div class="vg-metric__l">points for</div></div>`);
     metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(team.draft_value || 0).toFixed(1)}</div><div class="vg-metric__l">draft VOR</div></div>`);
+    if (team.start_sit_eff != null) {
+      metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(team.start_sit_eff * 100).toFixed(0)}%</div><div class="vg-metric__l">start/sit</div></div>`);
+      metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(team.start_sit_left || 0).toFixed(0)}</div><div class="vg-metric__l">pts left on bench</div></div>`);
+    }
   }
   if (career) {
     metrics.push(`<div class="vg-metric"><div class="vg-metric__n"><span class="vg-grade ${gradeClass(career.avgGrade)}">${career.avgGrade}</span></div><div class="vg-metric__l">career draft</div></div>`);
     metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${career.titles}</div><div class="vg-metric__l">titles</div></div>`);
     metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${career.seasons}</div><div class="vg-metric__l">seasons graded</div></div>`);
+    if (career.avgStartSit != null) {
+      metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(career.avgStartSit * 100).toFixed(0)}%</div><div class="vg-metric__l">career start/sit</div></div>`);
+    }
   }
   const bp = team?.best_pick, wp = team?.worst_pick;
   const picks = (bp || wp)
@@ -1360,6 +1516,7 @@ function renderLeagueRankings(season) {
   const mode = LB.rankMode || 'draft';
   const notes = {
     draft: 'Ranked by draft VOR captured that season · ★ = focused owner.',
+    startsit: 'Start/sit efficiency = actual starter pts ÷ optimal from that week\'s roster (platform points). Needs ≥4 weeks of matchups.',
     titles: 'Career titles (multi-season) · season view still shows that year\'s record.',
     pf: 'Season points for · higher scoring managers rise.',
     playoffs: 'Champions first, then playoff seed / wins · ★ = focused owner.',
@@ -1379,20 +1536,41 @@ function renderLeagueRankings(season) {
     const ranked = [...careers].sort(cmp);
     const rows = ranked.map((c, i) => {
       const mine = isFocusedLookbackTeam(c);
+      const ss = c.avgStartSit != null ? `${(c.avgStartSit * 100).toFixed(0)}%` : '—';
       return `<tr class="${mine ? 'vg-row--mine' : ''}"><td class="vg-num">${i + 1}</td>`
         + `<td>${mine ? '★ ' : ''}<b>${escapeHtml(c.name)}</b></td>`
         + `<td><span class="vg-grade ${gradeClass(c.avgGrade)}">${c.avgGrade}</span></td>`
+        + `<td class="vg-num">${ss}</td>`
         + `<td class="vg-num">${c.titles}</td>`
         + `<td class="vg-num">${c.seasons}</td>`
         + `<td class="vg-num">${c.avgPf.toFixed(0)}</td></tr>`;
     }).join('');
-    el.innerHTML = table(['#', 'Owner', 'Avg draft', 'Titles', 'Seasons', 'Avg PF'], rows);
+    el.innerHTML = table(['#', 'Owner', 'Avg draft', 'Start/sit', 'Titles', 'Seasons', 'Avg PF'], rows);
     return;
   }
 
   const rec = STATE.lookbackBySeason.get(season);
   if (!rec?.teams?.length) {
     el.innerHTML = '<div class="vg-empty">No league season loaded for rankings.</div>';
+    return;
+  }
+  if (mode === 'startsit') {
+    const withSs = rec.teams.filter(t => t.start_sit_eff != null);
+    if (!withSs.length) {
+      el.innerHTML = '<div class="vg-empty">No weekly matchup history for this season yet — reconnect after a completed season, or try a newer year.</div>';
+      return;
+    }
+    const ranked = [...withSs].sort((a, b) => b.start_sit_eff - a.start_sit_eff);
+    const rows = ranked.map((t, i) => {
+      const mine = isFocusedLookbackTeam(t);
+      return `<tr class="${mine ? 'vg-row--mine' : ''}"><td class="vg-num">${i + 1}</td>`
+        + `<td>${mine ? '★ ' : ''}${escapeHtml(t.ownerName || t.name)}</td>`
+        + `<td><span class="vg-grade ${gradeClass(t.start_sit_grade || 'C')}">${t.start_sit_grade || '—'}</span></td>`
+        + `<td class="vg-num">${(t.start_sit_eff * 100).toFixed(0)}%</td>`
+        + `<td class="vg-num">${(t.start_sit_left || 0).toFixed(0)}</td>`
+        + `<td class="vg-num">${t.start_sit_weeks || '—'}</td></tr>`;
+    }).join('');
+    el.innerHTML = table(['#', 'Owner', 'Grade', 'Efficiency', 'Pts left on bench', 'Weeks'], rows);
     return;
   }
   const cmp = {
@@ -1404,16 +1582,17 @@ function renderLeagueRankings(season) {
   const ranked = [...rec.teams].sort(cmp);
   const rows = ranked.map((t, i) => {
     const mine = isFocusedLookbackTeam(t);
+    const ss = t.start_sit_eff != null ? `${(t.start_sit_eff * 100).toFixed(0)}%` : '—';
     return `<tr class="${t.champion ? 'vg-row--champ' : ''}${mine ? ' vg-row--mine' : ''}">`
       + `<td class="vg-num">${i + 1}</td>`
       + `<td>${t.champion ? '👑 ' : ''}${mine ? '★ ' : ''}${escapeHtml(t.ownerName || t.name)}</td>`
       + `<td><span class="vg-grade ${gradeClass(t.grade)}">${t.grade}</span></td>`
       + `<td class="vg-num">${(t.draft_value || 0).toFixed(1)}</td>`
+      + `<td class="vg-num">${ss}</td>`
       + `<td class="vg-num">${escapeHtml(t.record || '—')}</td>`
       + `<td class="vg-num">${(t.points_for || 0).toFixed(0)}</td></tr>`;
   }).join('');
-  el.innerHTML = table(['#', 'Owner', 'Grade', 'Draft VOR', 'Rec', 'PF'], rows)
-    + `<p class="vg-note" style="margin-top:8px">Start/sit ranking needs weekly starter history — coming after matchup ingest.</p>`;
+  el.innerHTML = table(['#', 'Owner', 'Grade', 'Draft VOR', 'Start/sit', 'Rec', 'PF'], rows);
 }
 
 function refreshLookbackSeasonPicker() {
@@ -1741,11 +1920,21 @@ function gradeLeagueSeason(hist) {
       worst_pick: playerBrief(vorMap, worstBust),
       record: `${tm.wins}-${tm.losses}${tm.ties ? `-${tm.ties}` : ''}`,
       roster: tm.picks.slice(0, 8).map(pk => playerBrief(vorMap, pk)),
+      start_sit_eff: tm.start_sit_eff ?? null,
+      start_sit_left: tm.start_sit_left ?? null,
+      start_sit_weeks: tm.start_sit_weeks ?? null,
       _picks: tm.picks,
     };
   });
   const ranked = [...scored].sort((a, b) => b.draft_value - a.draft_value);
   ranked.forEach((t, i) => { t.grade = letterGrade(n > 1 ? 1 - i / (n - 1) : 1); });
+  // Start/sit letter from efficiency percentile among teams with data.
+  const ssRanked = scored.filter(t => t.start_sit_eff != null)
+    .sort((a, b) => b.start_sit_eff - a.start_sit_eff);
+  ssRanked.forEach((t, i) => {
+    const nn = ssRanked.length;
+    t.start_sit_grade = letterGrade(nn > 1 ? 1 - i / (nn - 1) : 1);
+  });
 
   const pickOf = new Map();
   const teamOfKey = new Map();
@@ -1919,7 +2108,7 @@ async function refreshLookbackFromLeague(lg) {
       for (const y of years) {
         if (token !== _lbRefreshToken) return;
         try {
-          const rec = await loadEspnSeasonHistory(lg.leagueId, String(y), creds.s2, creds.swid);
+          const rec = await loadEspnSeasonHistory(lg.leagueId, String(y), creds.s2, creds.swid, raw.length < 2);
           if (rec) { raw.push(rec); misses = 0; }
           else if (++misses >= 3 && raw.length) break;
         } catch (e) {

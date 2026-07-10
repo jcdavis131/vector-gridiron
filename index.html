@@ -4,85 +4,106 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Vector Gridiron — your fantasy football cockpit</title>
-<link rel="canonical" href="https://gridiron.dumbmodel.com/">
-<meta property="og:url" content="https://gridiron.dumbmodel.com/">
-<meta name="description" content="Your fantasy season, on rails. ESPN/Sleeper sync, model-backed start/sit, waiver & trade calls grounded in NFL embeddings. MTNN MAE 4.268. Free, no tracking.">
+<meta name="description" content="Sync your ESPN or Sleeper league and get model-backed start/sit, waiver, and trade calls grounded in an NFL player-embedding space. Context-honest, zero tracking.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8F%88%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/gridiron.css">
-<link rel="stylesheet" href="assets/shell.css">
-<link rel="stylesheet" href="assets/nux.css">
 <link rel="stylesheet" href="assets/responsive.css">
 </head>
 <body>
 <header class="vg-header">
   <span class="vg-logo">VECTOR<span class="vg-logo__accent">GRIDIRON</span></span>
-  <span id="league-badge" class="vg-badge">PPR</span>
-  <span id="scoring-badge" class="vg-badge">MTNN MAE 4.268 R²0.39</span>
+  <span class="vg-scoring"><b>MTNN</b> MAE 4.268 (R² 0.39) · 2025</span>
   <span class="vg-spacer"></span>
-  <button id="tour-btn" class="vg-btn vg-btn--ghost">Replay the tour</button>
+  <button id="tour-btn" class="vg-btn vg-btn--ghost" title="Replay the tour">?</button>
   <button id="connect-btn" class="vg-btn vg-btn--primary">CONNECT LEAGUE</button>
 </header>
-
-<nav class="vg-tabs" role="tablist" aria-label="Gridiron sections">
-  <button class="vg-tab is-active" data-tab="my-team" aria-selected="true">MY TEAM</button>
-  <button class="vg-tab" data-tab="draft-prep">DRAFT PREP</button>
-  <button class="vg-tab" data-tab="draft-room">DRAFT ROOM</button>
-  <button class="vg-tab" data-tab="next-game">NEXT GAME</button>
-  <button class="vg-tab" data-tab="start-sit">START / SIT</button>
-  <button class="vg-tab" data-tab="waivers">WAIVERS</button>
-  <button class="vg-tab" data-tab="trades">TRADES</button>
-  <button class="vg-tab" data-tab="lookback">LOOKBACK</button>
-  <button class="vg-tab" data-tab="vector-map">VECTOR MAP</button>
+<nav class="vg-tabs" id="tabs" role="tablist">
+  <button class="vg-tab" data-tab="team" aria-selected="true" role="tab">MY TEAM</button>
+  <button class="vg-tab" data-tab="draft" role="tab">DRAFT PREP</button>
+  <button class="vg-tab" data-tab="draftroom" role="tab">DRAFT ROOM</button>
+  <button class="vg-tab" data-tab="nextgame" role="tab">NEXT GAME</button>
+  <button class="vg-tab" data-tab="startsit" role="tab">START / SIT</button>
+  <button class="vg-tab" data-tab="waivers" role="tab">WAIVERS</button>
+  <button class="vg-tab" data-tab="trades" role="tab">TRADES</button>
+  <button class="vg-tab" data-tab="lookback" role="tab">LOOKBACK</button>
+  <button class="vg-tab" data-tab="explorer" role="tab">VECTOR MAP</button>
 </nav>
 
-<main id="app" class="vg-app">
-  <section id="view-my-team" class="vg-view">
+<main id="app">
+  <!-- MY TEAM -->
+  <section class="vg-view is-active" id="view-team" role="tabpanel">
     <div class="vg-hero">
       <h1>Your fantasy season, on rails.</h1>
       <p>Connect the ESPN or Sleeper league you're already in. Vector Gridiron maps every skill player into a 16-dim NFL embedding — rushing, targets, YAC, redzone, snaps, age, weather, Vegas, rest, def-vs-pos — MTNN next-game MAE 4.268. Free, no tracking, nflverse-powered.</p>
-      <button id="hero-connect" class="vg-btn vg-btn--primary vg-btn--lg">CONNECT YOUR LEAGUE</button>
-      <p class="vg-note">or just explore the <a href="#vector-map" class="vg-link">player Vector Map</a> — no login.</p>
+      <button class="vg-btn vg-btn--primary" id="hero-connect">CONNECT YOUR LEAGUE</button>
+      <p class="vg-note">or just explore the <a href="#explorer">player Vector Map</a> — no login.</p>
     </div>
-
-    <div class="vg-card">
-      <div class="vg-card__title">How mobile-first fixes land</div>
-      <p class="vg-note">Tabs now scroll horizontally with mask fade, canvas is fluid aspect-ratio 1 with max-height min(70vh,600px), tables momentum scroll, inputs 16px to avoid iOS zoom, dialogs safe-area aware. Matches hoops 35af415 + pitch 739e2ab + jcamd e8f5447. Ultimate target: everything responsive.</p>
-    </div>
-
-    <div class="vg-dr-grid">
-      <div class="vg-card">
-        <div class="vg-card__title">Draft board (sample)</div>
-        <div class="vg-tablewrap">
-          <table class="vg-tbl"><thead><tr><th>Rank</th><th>Player</th><th>POS</th><th>Tier</th><th>Proj</th><th>Edge</th></tr></thead><tbody><tr><td>1</td><td>Puka Nacua</td><td>WR1</td><td>T1</td><td>21.4</td><td>+2.1</td></tr></tbody></table>
-        </div>
-      </div>
-      <div class="vg-card">
-        <div class="vg-card__title">Vector Map (mobile fluid)</div>
-        <div class="vg-mapwrap">
-          <canvas id="dr-map" width="520" height="520" aria-label="Player embedding map"></canvas>
-        </div>
-        <div class="vg-maplegend">Touch drag to pan, pinch to zoom · 512 players mapped</div>
-      </div>
-    </div>
-
-    <div class="vg-card">
-      <div class="vg-card__title">Share flow (Wordle for your league)</div>
-      <p class="vg-note">URL scheme <code>?l=BOOZEBOIS</code> stored in <code>vectorGridiron.v1</code> localStorage. Copy/paste result card + Web Share API + OG SVG. Zero backend, device-only board — same pattern as hoops league boards.</p>
-    </div>
-
+    <div id="team-body"></div>
   </section>
+
+  <!-- DRAFT PREP -->
+  <section class="vg-view" id="view-draft" role="tabpanel">
+    <div class="vg-card">
+      <div class="vg-card__title">Draft board — 2026 projected PPR points/game + value vs market</div>
+      <div class="vg-dr-ctl" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <select class="vg-input" id="scoring-select" style="max-width:170px"><option>PPR</option><option>Half PPR</option></select>
+        <div class="vg-posfilter" id="posfilter"></div>
+      </div>
+      <div class="vg-tablewrap"><table class="vg-tbl" id="draft-tbl"><thead><tr><th>#</th><th>Player</th><th>Pos</th><th>Tier</th><th>Proj/g</th><th>ADP</th><th>Value</th><th>Bye</th><th>Projected line</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- DRAFT ROOM -->
+  <section class="vg-view" id="view-draftroom" role="tabpanel">
+    <div class="vg-card">
+      <div class="vg-card__title">Draft Room — live assistant & what-if replay</div>
+      <div class="vg-dr-ctl" id="dr-ctl">
+        <label class="vg-slot">Teams <select class="vg-input" id="dr-teams"></select></label>
+        <label class="vg-slot">Your slot <select class="vg-input" id="dr-slot"></select></label>
+        <button class="vg-btn vg-btn--primary" id="dr-start">Start</button>
+        <button class="vg-btn vg-btn--ghost" id="dr-auto">Sim to my pick</button>
+        <button class="vg-btn vg-btn--ghost" id="dr-sync">Sync my league</button>
+      </div>
+      <div class="vg-dr-status" id="dr-status"></div>
+    </div>
+    <div class="vg-dr-grid">
+      <div class="vg-card vg-dr-mapcard"><div class="vg-mapwrap"><canvas id="dr-map" width="520" height="520"></canvas></div></div>
+      <div class="vg-card"><div class="vg-tablewrap"><table class="vg-tbl" id="dr-board"></table></div></div>
+    </div>
+  </section>
+
+  <!-- NEXT GAME -->
+  <section class="vg-view" id="view-nextgame" role="tabpanel"><div class="vg-card"><div class="vg-card__title">Next game — MTNN Week 1 projections</div><div id="nextgame-body"><div class="vg-empty">Connect a league for next-game projections.</div></div></div></section>
+
+  <!-- START/SIT -->
+  <section class="vg-view" id="view-startsit" role="tabpanel"><div class="vg-card"><div class="vg-card__title">Optimal lineup — this week's projection</div><div id="startsit-body"><div class="vg-empty">Connect a league to optimize your lineup.</div></div></div></section>
+
+  <section class="vg-view" id="view-waivers" role="tabpanel"><div class="vg-card"><div class="vg-card__title">Waivers — model-backed claims</div><div id="waivers-body"><div class="vg-empty">Connect a league for waiver calls.</div></div></div></section>
+
+  <section class="vg-view" id="view-trades" role="tabpanel"><div class="vg-card"><div class="vg-card__title">Trades — value delta + ROS</div><div id="trades-body"><div class="vg-empty">Connect a league for trade evaluator.</div></div></div></section>
+
+  <!-- LOOKBACK -->
+  <section class="vg-view" id="view-lookback" role="tabpanel">
+    <div class="vg-card"><div class="vg-card__title">Lookback — 2025 draft grades + weekly story</div><div id="ll-cards"></div><div id="ll-story"></div><div id="ll-weeks"></div></div>
+  </section>
+
+  <!-- VECTOR MAP -->
+  <section class="vg-view" id="view-explorer" role="tabpanel">
+    <div class="vg-card"><div class="vg-card__title">Player Vector Map — 16-dim NFL embedding</div><div class="vg-mapwrap"><canvas id="map" width="520" height="520"></canvas></div><div class="vg-maplegend">Rushing · targets · YAC · redzone · snaps · age · weather · Vegas · rest · def-vs-pos — MTNN MAE 4.268. Touch drag, pinch zoom.</div></div>
+  </section>
+
 </main>
 
 <footer class="vg-footer">MTNN next-game MAE 4.268 (R² 0.39) · 2025 data · holistic features (usage · snaps · age · weather · Vegas · rest · def-vs-pos) · nflverse · no tracking · Solo personal project, no connection to employer, built with public/free-tier only</footer>
 
-<script>
-document.querySelectorAll('.vg-tab').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.vg-tab').forEach(b=>b.classList.remove('is-active'));
-    btn.classList.add('is-active');
-  });
-});
-</script>
+<div class="vg-nux" id="nux" hidden>
+  <div class="vg-nux__card">
+    <h2>Welcome to Vector Gridiron</h2>
+    <p>Your fantasy season, on rails. Sync ESPN or Sleeper and get model-backed start/sit, waiver & trade calls.</p>
+    <div class="vg-nux__actions"><button class="vg-btn vg-btn--ghost" id="nux-skip">SKIP TOUR</button><button class="vg-btn" id="nux-back" disabled>BACK</button><button class="vg-btn vg-btn--primary" id="nux-next">NEXT</button></div>
+  </div>
+</div>
 
+<script src="assets/app.js?v=owner-id-1" defer></script>
 </body>
 </html>

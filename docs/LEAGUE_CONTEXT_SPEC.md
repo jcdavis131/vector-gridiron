@@ -1,37 +1,26 @@
 # SPEC — League context on every page (Lookback + Trades + owners)
 
-> **Status:** Approved via `/auto-mode` feature ask · 2026-07-10  
-> **Repo:** vector-gridiron · baseline `e63a4bb` clean
+> **Status:** Shipped · 2026-07-10 (owners + trades) · **hotfix** players-array unwrap 2026-07-10  
+> **Repo:** vector-gridiron
 
 ## Objective
 
-When a league is connected (ESPN / Sleeper / demo), **every cockpit view** uses that league — especially **Lookback** (real draft history + owner evaluation) and **Trades** (roster + historical owner context). Managers can judge owners across seasons, not only the current roster snapshot.
+When a league is connected (ESPN / Sleeper / demo), **every cockpit view** uses that league — especially **Lookback** (real draft history + owner evaluation) and **Trades** (roster + historical owner context).
 
-## Current state (live evidence)
+## Hotfix (Lookback “No completed drafts” with connected badge)
 
-| Area | Status |
-|------|--------|
-| My Team / Start-Sit / Waivers / Draft board | Uses `STATE.league` |
-| Lookback live fetch + VOR grading | Implemented (`refreshLookbackFromLeague`) |
-| Lookback owner **career** rollup | Missing |
-| Trades | Current-roster heuristic only — no lookback grades |
-| Season picker live vs mock labeling | Weak |
-| Highlight “my” lookback team | Name-only (fragile) |
+**Root cause:** `espnProxy` always did `data = data[0]` on array responses. That is correct for `leagueHistory` (`[{league}]`) but **wrong** for `mode=players` / `playerPool` (`[player,…]`). Resolve returned one object → zero named picks → every season graded empty → misleading “No completed drafts found” while the roster badge still showed the live league.
+
+**Also hardened:** cookie headers (`X-Espn-S2` / `X-Espn-Swid`), `drafted` flag optional when picks exist, playerPool fallback, distinct `auth` status vs `empty`, Connect → Reconnect when connected.
 
 ## Acceptance
 
-1. After connect (or session restore), Lookback shows real graded seasons when drafts exist; status line is honest when empty/loading/err.
-2. Lookback includes an **Owners** board: multi-season draft grade, titles, PF, seasons graded — keyed to current league teams when names/ids match.
-3. Trades shows partner **historical draft grade / titles** when lookback live is ready; still works without history.
-4. Season picker marks `● live` vs mock seasons when a league is connected.
-5. `afterLeagueLoaded` + lookback completion both refresh Trades / Lookback.
-6. `node pipeline/verify_logic.mjs` still passes; add a small lookback-owner unit check in `lookback_live_verify.mjs` or a new `league_context_verify.mjs`.
-
-## Non-goals
-
-- Full week-by-week matchup narratives from ESPN (already noted as future).
-- Writing cookies to a server.
-- Changing MTNN / projection math.
+1. After connect (or session restore), Lookback shows real graded seasons when drafts exist; status line is honest when empty / loading / err / **auth**.
+2. Lookback **Owners** board: multi-season draft grade, titles, PF — keyed to current league teams.
+3. Trades shows partner career chips when lookback live is ready.
+4. Season picker marks live vs mock when lookback is ready.
+5. `afterLeagueLoaded` + lookback completion refresh Trades / Lookback; Connect button reflects connected state.
+6. `node pipeline/verify_logic.mjs` + `node pipeline/league_context_verify.mjs` pass.
 
 ## Commands
 

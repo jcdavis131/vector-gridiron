@@ -369,10 +369,16 @@ async function loadSleeperSeasonHistory(leagueId) {
         fetch('https://api.sleeper.app/v1/league/' + id + '/drafts').then(r => r.ok ? r.json() : []),
       ]);
       if (!lg) break;
-      const draft = (drafts || []).find(d => d.status === 'complete') || (drafts || [])[0];
+      const draft = (drafts || []).find(d => d.status === 'complete')
+        || (drafts || []).find(d => d.status === 'drafting' || d.status === 'paused')
+        || (drafts || [])[0];
       if (draft?.draft_id) {
         const picksRaw = await fetch('https://api.sleeper.app/v1/draft/' + draft.draft_id + '/picks')
           .then(r => r.ok ? r.json() : []);
+        if (!(picksRaw || []).length) {
+          id = lg.previous_league_id || null;
+          continue;
+        }
         const userById = Object.fromEntries((users || []).map(u => [u.user_id, u]));
         // Also need roster_id → owner for standings; fetch rosters
         const rosters = await fetch('https://api.sleeper.app/v1/league/' + id + '/rosters')
@@ -433,18 +439,35 @@ function countSlots(arr) {
 
 /* ---------- ESPN (via thin serverless proxy at /api/espn) ---------- */
 const ESPN_POS = { 1: 'QB', 2: 'RB', 3: 'WR', 4: 'TE', 5: 'K', 16: 'DST' };
+const ESPN_PLAYER_POOL = new Map(); // year → Map(playerId → {name,pos,team})
 
 async function espnProxy(params) {
-  const qs = new URLSearchParams(params);
-  const res = await fetch('/api/espn?' + qs.toString());
+  // Cookies go in headers (preferred) — espn_s2 is long; query strings double-encode.
+  const { espn_s2, swid, ...rest } = params;
+  const qs = new URLSearchParams(rest);
+  const headers = {};
+  if (espn_s2) headers['X-Espn-S2'] = espn_s2;
+  if (swid) headers['X-Espn-Swid'] = swid;
+  const res = await fetch('/api/espn?' + qs.toString(), { headers });
   if (!res.ok) {
     let msg = `ESPN returned ${res.status}`;
     try { msg = (JSON.parse(await res.text()).error) || msg; } catch (_) {}
     const err = new Error(msg); err.status = res.status; throw err;
   }
   let data = await res.json();
-  if (Array.isArray(data)) data = data[0];         // leagueHistory (≤2017) returns an array
+  // leagueHistory (≤2017) returns [{league}]; players / playerPool return [player,…].
+  // Only unwrap the leagueHistory shape — never collapse a player list to data[0].
+  if (Array.isArray(data) && rest.mode !== 'players' && rest.mode !== 'playerPool') {
+    data = data[0];
+  }
   return data;
+}
+
+function espnCredParams(s2, swid) {
+  return {
+    ...(s2 ? { espn_s2: s2 } : {}),
+    ...(swid ? { swid } : {}),
+  };
 }
 
 async function loadEspn(leagueId, year, s2, swid) {
@@ -452,8 +475,7 @@ async function loadEspn(leagueId, year, s2, swid) {
   const data = await espnProxy({
     leagueId, year,
     views: 'mTeam,mRoster,mSettings',
-    ...(s2 ? { espn_s2: s2 } : {}),
-    ...(swid ? { swid } : {}),
+    ...espnCredParams(s2, swid),
   });
   const settings = data.settings || {};
   const scoring = detectEspnScoring(settings);
@@ -483,7 +505,28 @@ function espnPlayerName(pl, pos) {
   return pl.fullName || '';
 }
 
-/** Resolve ESPN playerIds → {id, name, pos} via the players proxy mode. */
+function espnPlayerRec(p) {
+  const pos = ESPN_POS[p.defaultPositionId] || (p.id < 0 ? 'DST' : '?');
+  return { name: espnPlayerName(p, pos), pos, team: ESPN_TEAM[p.proTeamId] || '' };
+}
+
+/** Full-season player directory (cached) — fallback when filterIds resolve is thin. */
+async function espnPlayerPool(year, s2, swid) {
+  const y = String(year);
+  if (ESPN_PLAYER_POOL.has(y)) return ESPN_PLAYER_POOL.get(y);
+  const out = new Map();
+  try {
+    const rows = await espnProxy({ mode: 'playerPool', year: y, ...espnCredParams(s2, swid) });
+    for (const p of (Array.isArray(rows) ? rows : [])) {
+      if (p?.id == null) continue;
+      out.set(p.id, espnPlayerRec(p));
+    }
+  } catch (e) { console.warn('espn playerPool failed', y, e); }
+  ESPN_PLAYER_POOL.set(y, out);
+  return out;
+}
+
+/** Resolve ESPN playerIds → {id, name, pos} via players mode, then playerPool fill. */
 async function espnResolvePlayers(year, playerIds, s2, swid) {
   const uniq = [...new Set(playerIds.filter(id => id != null))];
   const out = new Map();
@@ -493,14 +536,21 @@ async function espnResolvePlayers(year, playerIds, s2, swid) {
     try {
       const rows = await espnProxy({
         mode: 'players', year, ids: ids.join(','),
-        ...(s2 ? { espn_s2: s2 } : {}),
-        ...(swid ? { swid } : {}),
+        ...espnCredParams(s2, swid),
       });
       for (const p of (Array.isArray(rows) ? rows : [])) {
-        const pos = ESPN_POS[p.defaultPositionId] || (p.id < 0 ? 'DST' : '?');
-        out.set(p.id, { name: espnPlayerName(p, pos), pos, team: ESPN_TEAM[p.proTeamId] || '' });
+        if (p?.id == null) continue;
+        out.set(p.id, espnPlayerRec(p));
       }
     } catch (e) { console.warn('espn player resolve failed', e); }
+  }
+  const missing = uniq.filter(id => !out.has(id));
+  if (missing.length) {
+    const pool = await espnPlayerPool(year, s2, swid);
+    for (const id of missing) {
+      const rec = pool.get(id);
+      if (rec) out.set(id, rec);
+    }
   }
   return out;
 }
@@ -510,11 +560,11 @@ async function loadEspnSeasonHistory(leagueId, year, s2, swid) {
   const data = await espnProxy({
     leagueId, year,
     views: 'mDraftDetail,mTeam,mSettings',
-    ...(s2 ? { espn_s2: s2 } : {}),
-    ...(swid ? { swid } : {}),
+    ...espnCredParams(s2, swid),
   });
   const picks = data.draftDetail?.picks || [];
-  if (!data.draftDetail?.drafted || !picks.length) return null;
+  // Prefer drafted=true, but accept any season that still has pick rows (offseason quirks).
+  if (!picks.length) return null;
   const resolved = await espnResolvePlayers(year, picks.map(p => p.playerId), s2, swid);
   const teamsById = {};
   for (const t of (data.teams || [])) {
@@ -644,10 +694,27 @@ function optimalLineup(roster, slots) {
 /* ================================================================
    RENDER
    ================================================================ */
+function updateConnectButton() {
+  const lg = STATE.league;
+  const connected = !!(lg && lg.platform !== 'demo');
+  for (const id of ['connect-btn', 'connect-btn-2']) {
+    const b = $('#' + id);
+    if (!b) continue;
+    if (id === 'connect-btn') {
+      b.textContent = connected ? 'Reconnect' : 'Connect league';
+      b.classList.toggle('vg-btn--primary', !connected);
+      b.classList.toggle('vg-btn--ghost', connected);
+    } else {
+      b.textContent = connected ? 'Switch / reconnect league' : 'Connect your league';
+    }
+  }
+}
+
 function afterLeagueLoaded() {
   const lg = STATE.league;
   rebuildOwnership();
   updateScoringBadge();
+  updateConnectButton();
   if (lg) {
     $('#league-badge').hidden = false;
     const me = lg.teams.find(t => t.id === lg.myId);
@@ -1051,10 +1118,14 @@ function renderOwnerCareers() {
     (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0)
     || b.titles - a.titles || b.avgPf - a.avgPf);
   if (!careers.length) {
-    const msg = live?.status === 'empty' || live?.status === 'err'
+    const msg = live?.status === 'empty' || live?.status === 'err' || live?.status === 'auth'
       ? (live.message || 'No historic drafts graded yet.')
       : 'No graded seasons yet — Lookback will fill this once draft history loads.';
-    el.innerHTML = `<div class="vg-empty">${escapeHtml(msg)}</div>`;
+    const cta = live?.status === 'auth'
+      ? ` <button type="button" class="vg-btn vg-btn--primary" id="ll-owners-reconnect" style="margin-top:10px">Reconnect with ESPN cookies</button>`
+      : '';
+    el.innerHTML = `<div class="vg-empty">${escapeHtml(msg)}${cta}</div>`;
+    $('#ll-owners-reconnect')?.addEventListener('click', openConnect);
     return;
   }
   const rows = careers.map(c => {
@@ -1188,6 +1259,8 @@ function renderLeagueSeason(season) {
       statusEl.textContent = `${live.leagueName}: no draft on file for ${season} — seeded mock below`;
     else if (live?.status === 'empty')
       statusEl.textContent = live.message || 'No historic drafts found for this league — showing seeded mock.';
+    else if (live?.status === 'auth')
+      statusEl.textContent = live.message || 'ESPN cookies required for draft history — use Reconnect.';
     else if (live?.status === 'err')
       statusEl.textContent = live.message || 'Could not load league history — showing seeded mock.';
     else statusEl.textContent = 'Seeded mock league (connect yours to grade real drafts).';
@@ -1524,6 +1597,18 @@ function applyLiveLookback(leagueName, graded) {
   renderTrades();
 }
 
+function lookbackFallbackSeed(lg, status, message) {
+  STATE.lookbackBySeason = new Map();
+  const seed = STATE.lookbackSeed;
+  STATE.lookback = seed;
+  if (seed) for (const s of seed.seasons) STATE.lookbackBySeason.set(s.season, s);
+  STATE.lookbackLive = { status, leagueName: lg.name, seasons: new Map(), message };
+  refreshLookbackSeasonPicker();
+  if (LB.season != null) renderLookback();
+  renderOwnerCareers();
+  renderTrades();
+}
+
 let _lbRefreshToken = 0;
 async function refreshLookbackFromLeague(lg) {
   const token = ++_lbRefreshToken;
@@ -1532,6 +1617,8 @@ async function refreshLookbackFromLeague(lg) {
   if (LB.season != null) renderLookback();
   try {
     let raw = [];
+    let authFailed = false;
+    let resolveThin = false;
     if (lg.platform === 'espn') {
       const creds = STATE.espnCreds || {};
       const start = Math.min(+lg.year || new Date().getFullYear(), (STATE.vectors?.seasons || []).at(-1) || 2025);
@@ -1546,51 +1633,43 @@ async function refreshLookbackFromLeague(lg) {
           if (rec) { raw.push(rec); misses = 0; }
           else if (++misses >= 3 && raw.length) break;
         } catch (e) {
-          if (e.status === 401) break;          // cookies required / expired
+          if (e.status === 401) { authFailed = true; break; }
           if (e.status === 404) { if (++misses >= 3 && raw.length) break; continue; }
           console.warn('espn history', y, e);
+          // A year that returns picks but zero resolved names looks like a miss — note it.
+          if (String(e.message || '').includes('resolve')) resolveThin = true;
         }
       }
     } else if (lg.platform === 'sleeper') {
       raw = await loadSleeperSeasonHistory(lg.leagueId);
     }
     if (token !== _lbRefreshToken) return;   // a newer connect superseded us
+    if (authFailed && !raw.length) {
+      const hasCreds = !!(STATE.espnCreds?.s2 && STATE.espnCreds?.swid);
+      lookbackFallbackSeed(lg, 'auth',
+        hasCreds
+          ? `ESPN auth failed for ${lg.name} — cookies expired or invalid. Reconnect and re-paste espn_s2 + SWID.`
+          : `Private league: paste espn_s2 + SWID via Reconnect to load draft history for ${lg.name}.`);
+      return;
+    }
     const graded = raw.map(gradeLeagueSeason).filter(Boolean);
     if (!graded.length) {
-      STATE.lookbackBySeason = new Map();
-      const seed = STATE.lookbackSeed;
-      STATE.lookback = seed;
-      if (seed) for (const s of seed.seasons) STATE.lookbackBySeason.set(s.season, s);
-      STATE.lookbackLive = {
-        status: 'empty',
-        leagueName: lg.name,
-        seasons: new Map(),
-        message: `No completed drafts found for ${lg.name} — showing seeded mock.`,
-      };
-      refreshLookbackSeasonPicker();
-      if (LB.season != null) renderLookback();
-      renderOwnerCareers();
-      renderTrades();
+      const why = resolveThin
+        ? `Draft picks found but player names could not be resolved for ${lg.name}.`
+        : `No completed drafts found for ${lg.name} — showing seeded mock.`;
+      lookbackFallbackSeed(lg, 'empty', why);
       return;
     }
     applyLiveLookback(lg.name, graded);
+    try {
+      localStorage.setItem('vg_lookback_' + lg.platform + '_' + lg.leagueId,
+        JSON.stringify({ at: Date.now(), seasons: graded }));
+    } catch (_) { /* quota */ }
   } catch (e) {
     if (token !== _lbRefreshToken) return;
     console.warn('lookback refresh failed', e);
-    STATE.lookbackBySeason = new Map();
-    const seed = STATE.lookbackSeed;
-    STATE.lookback = seed;
-    if (seed) for (const s of seed.seasons) STATE.lookbackBySeason.set(s.season, s);
-    STATE.lookbackLive = {
-      status: 'err',
-      leagueName: lg.name,
-      seasons: new Map(),
-      message: `Could not load draft history (${e.message || e}) — showing seeded mock.`,
-    };
-    refreshLookbackSeasonPicker();
-    if (LB.season != null) renderLookback();
-    renderOwnerCareers();
-    renderTrades();
+    lookbackFallbackSeed(lg, 'err',
+      `Could not load draft history (${e.message || e}) — showing seeded mock.`);
   }
 }
 

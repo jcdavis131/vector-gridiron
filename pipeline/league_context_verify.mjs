@@ -83,6 +83,19 @@ check(app.includes('function ownerCareerMap'), 'app.js defines ownerCareerMap');
 check(app.includes('function renderOwnerCareers'), 'app.js defines renderOwnerCareers');
 check(app.includes('renderTrades()') && app.includes('applyLiveLookback'), 'lookback ready refreshes trades');
 check(app.includes('partnerLabel') || app.includes('vg-owner-chip'), 'trades show owner career chips');
+// Regression: players/playerPool arrays must NOT be collapsed to data[0]
+check(
+  app.includes("rest.mode !== 'players'") && app.includes("rest.mode !== 'playerPool'"),
+  'espnProxy preserves players/playerPool arrays (no data[0] collapse)',
+);
+check(app.includes("headers['X-Espn-S2']") || app.includes('X-Espn-S2'), 'espn cookies sent via headers');
+check(app.includes("status: 'auth'") || app.includes("status === 'auth'"), 'lookback auth status distinct from empty');
+check(app.includes('updateConnectButton'), 'connected UX updates Connect → Reconnect');
+check(app.includes('mode: \'playerPool\'') || app.includes('mode: "playerPool"'), 'playerPool fallback for name resolve');
+
+const espnApi = fs.readFileSync('api/espn.js', 'utf8');
+check(espnApi.includes('playerPool'), 'api/espn.js supports playerPool mode');
+check(espnApi.includes('x-espn-s2'), 'api/espn.js reads cookie headers');
 
 console.log(fails ? `\n${fails} failure(s)` : '\nALL LEAGUE-CONTEXT CHECKS PASSED');
 process.exit(fails ? 1 : 0);

@@ -1,0 +1,26 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/model",
+      "destination": "/model.html"
+    },
+    {
+      "source": "/trends",
+      "destination": "/trends.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "gridiron.jcamd.com"
+        }
+      ],
+      "destination": "https://gridiron.dumbmodel.com/:path*",
+      "permanent": true
+    }
+  ]
+}

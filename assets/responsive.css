@@ -1,0 +1,314 @@
+/* Vector Gridiron — assets/responsive.css
+ * Mobile-first fluid layer. Loads after gridiron.css.
+ * Solo personal project, no connection to employer, built with public/free-tier only
+ * Mirrors vector-hoops + vector-pitch discipline:
+ *  - fluid gutter clamp + safe-area
+ *  - 44px touch mins, 16px inputs to avoid iOS zoom
+ *  - scoped canvas/svg only, no blanket rules
+ *  - momentum scroll for tabs & tables
+ */
+
+:root{
+  --page-gutter: clamp(12px, 4vw, 20px);
+  --layout-max: 760px;
+  --layout-wide: 1080px;
+  --touch-min: 44px;
+  --header-h: 56px;
+}
+
+/* global media */
+img{ max-width:100%; height:auto; }
+
+/* Do NOT blanket svg/canvas — game map owns its aspect */
+
+/* ---------- header ---------- */
+.vg-header{
+  padding: 10px max(var(--page-gutter), env(safe-area-inset-left)) 10px max(var(--page-gutter), env(safe-area-inset-right));
+  padding-top: max(10px, env(safe-area-inset-top));
+  gap: 10px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  backdrop-filter: blur(8px);
+}
+.vg-logo{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+.vg-spacer{ flex: 1 1 auto; }
+#league-badge, #scoring-badge{
+  flex: 0 0 auto;
+}
+#tour-btn, #connect-btn{
+  min-height: var(--touch-min);
+  min-width: var(--touch-min);
+  touch-action: manipulation;
+}
+#connect-btn{
+  flex: 0 0 auto;
+}
+@media (max-width: 540px){
+  .vg-header{
+    row-gap: 8px;
+  }
+  #connect-btn{
+    width: 100%;
+    order: 10;
+    justify-content: center;
+  }
+  .vg-logo{
+    font-size: clamp(14px, 4vw, 18px);
+  }
+}
+
+/* ---------- tabs : horizontal rail ---------- */
+.vg-tabs{
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-inline: max(var(--page-gutter), env(safe-area-inset-left));
+  padding-bottom: 2px;
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
+  /* fade edges hint */
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10px, black calc(100% - 10px), transparent);
+  mask-image: linear-gradient(to right, transparent, black 10px, black calc(100% - 10px), transparent);
+}
+.vg-tabs::-webkit-scrollbar{ display:none; }
+.vg-tab{
+  flex: 0 0 auto;
+  white-space: nowrap;
+  min-height: var(--touch-min);
+  padding: 0 14px;
+  font-size: 13px;
+  touch-action: manipulation;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 380px){
+  .vg-tab{ padding: 0 10px; font-size: 12px; }
+}
+
+/* ---------- main shell ---------- */
+main#app, #app{
+  width: min(100%, var(--layout-wide));
+  max-width: var(--layout-wide);
+  padding: clamp(14px,3vw,22px) var(--page-gutter) clamp(48px, 8vw, 80px);
+  padding-bottom: max(clamp(48px,8vw,80px), env(safe-area-inset-bottom));
+  margin-inline: auto;
+  box-sizing: border-box;
+  min-width: 0;
+}
+.vg-view{
+  min-width: 0;
+}
+.vg-hero{
+  padding: clamp(16px, 4vw, 28px) var(--page-gutter);
+  text-align: center;
+}
+.vg-hero h1{
+  font-size: clamp(22px, 6vw, 34px);
+  line-height: 1.1;
+}
+.vg-hero p{
+  font-size: clamp(14px, 3.5vw, 16px);
+  line-height: 1.5;
+  max-width: 60ch;
+  margin-inline: auto;
+}
+
+/* ---------- cards ---------- */
+.vg-card{
+  padding: clamp(12px, 2.5vw, 18px) clamp(12px, 3vw, 18px);
+  margin-bottom: clamp(10px, 2vw, 16px);
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
+}
+.vg-card__title{
+  font-size: clamp(13px, 3.2vw, 15px);
+  line-height: 1.3;
+  margin-bottom: 10px;
+  word-break: break-word;
+}
+
+/* ---------- draft room controls ---------- */
+.vg-dr-ctl{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: end;
+}
+.vg-dr-ctl > label, .vg-dr-ctl .vg-slot{
+  flex: 1 1 120px;
+  min-width: 0;
+}
+.vg-input, .vg-dr-ctl select, .vg-posfilter button, .vg-btn{
+  font-size: 16px; /* prevent iOS zoom */
+  min-height: var(--touch-min);
+  touch-action: manipulation;
+}
+.vg-input{
+  width: 100%;
+  box-sizing: border-box;
+}
+.vg-btn{
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 600px){
+  .vg-dr-ctl{
+    gap: 8px;
+  }
+  .vg-dr-ctl > label{ flex: 1 1 100%; }
+  #dr-start, #dr-auto, #dr-sync{
+    flex: 1 1 calc(50% - 8px);
+  }
+  #dr-start{ flex: 1 1 100%; }
+}
+
+/* draft grid */
+.vg-dr-grid{
+  display: grid;
+  gap: clamp(10px, 2vw, 16px);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 860px){
+  .vg-dr-grid{ grid-template-columns: 1.1fr 0.9fr; }
+}
+
+/* map canvas - the big fix */
+.vg-mapwrap{
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.2);
+}
+.vg-mapwrap canvas, #dr-map, #explorer-map{
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  max-width: 100%;
+  max-height: min(70vh, 600px);
+  touch-action: none; /* JS drag/zoom */
+}
+.vg-maplegend{
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 8px var(--page-gutter);
+  font-size: 12px;
+}
+
+/* posfilter chips */
+.vg-posfilter{
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+.vg-posfilter::-webkit-scrollbar{ display:none; }
+.vg-posfilter button{
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+/* tables - momentum scroll */
+.vg-tablewrap, .vg-tblwrap{
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  border-radius: 6px;
+}
+.vg-tbl, .vg-table{
+  width: max(680px, 100%);
+  min-width: 100%;
+}
+@media (min-width: 720px){
+  .vg-tbl, .vg-table{ width: 100%; }
+}
+.vg-tbl th, .vg-table th, .vg-tbl td, .vg-table td{
+  padding: 8px 8px;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+.vg-tbl td[style*="text-align:left"], .vg-table td[style*="text-align:left"]{
+  white-space: normal;
+  min-width: 140px;
+}
+
+/* rosters / player rows */
+.vg-playername{
+  min-width: 0;
+  gap: 8px;
+}
+.vg-headshot{
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+/* dialog / tour modal */
+.vg-dialog, dialog#nux, #nux-dialog{
+  width: min(92vw, 480px);
+  max-width: calc(100vw - 2 * var(--page-gutter));
+  max-height: min(86vh, 640px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: clamp(14px, 4vw, 22px);
+  margin: auto;
+  box-sizing: border-box;
+  inset: 0;
+}
+.vg-dialog::backdrop, dialog#nux::backdrop{
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+}
+@media (max-width: 480px){
+  .vg-dialog, dialog#nux{
+    width: calc(100vw - 16px);
+    max-height: 92vh;
+    margin: 8px auto auto;
+  }
+}
+
+/* footer note */
+.vg-footer, footer{
+  padding: 12px var(--page-gutter);
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* tiny phones */
+@media (max-width: 360px){
+  :root{ --page-gutter: 10px; }
+  .vg-card{ padding: 10px; }
+  .vg-tbl th, .vg-tbl td{ padding: 6px 6px; font-size: 11.5px; }
+}
+
+/* desktop up */
+@media (min-width: 1280px){
+  :root{ --layout-wide: 1200px; }
+}

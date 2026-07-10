@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vector Gridiron — your fantasy football cockpit</title>
+<link rel="canonical" href="https://gridiron.dumbmodel.com/">
+<meta property="og:url" content="https://gridiron.dumbmodel.com/">
+<meta name="description" content="Your fantasy season, on rails. ESPN/Sleeper sync, model-backed start/sit, waiver & trade calls grounded in NFL embeddings. MTNN MAE 4.268. Free, no tracking.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8F%88%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/gridiron.css">
+<link rel="stylesheet" href="assets/shell.css">
+<link rel="stylesheet" href="assets/nux.css">
+<link rel="stylesheet" href="assets/responsive.css">
+</head>
+<body>
+<header class="vg-header">
+  <span class="vg-logo">VECTOR<span class="vg-logo__accent">GRIDIRON</span></span>
+  <span id="league-badge" class="vg-badge">PPR</span>
+  <span id="scoring-badge" class="vg-badge">MTNN MAE 4.268 R²0.39</span>
+  <span class="vg-spacer"></span>
+  <button id="tour-btn" class="vg-btn vg-btn--ghost">Replay the tour</button>
+  <button id="connect-btn" class="vg-btn vg-btn--primary">CONNECT LEAGUE</button>
+</header>
+
+<nav class="vg-tabs" role="tablist" aria-label="Gridiron sections">
+  <button class="vg-tab is-active" data-tab="my-team" aria-selected="true">MY TEAM</button>
+  <button class="vg-tab" data-tab="draft-prep">DRAFT PREP</button>
+  <button class="vg-tab" data-tab="draft-room">DRAFT ROOM</button>
+  <button class="vg-tab" data-tab="next-game">NEXT GAME</button>
+  <button class="vg-tab" data-tab="start-sit">START / SIT</button>
+  <button class="vg-tab" data-tab="waivers">WAIVERS</button>
+  <button class="vg-tab" data-tab="trades">TRADES</button>
+  <button class="vg-tab" data-tab="lookback">LOOKBACK</button>
+  <button class="vg-tab" data-tab="vector-map">VECTOR MAP</button>
+</nav>
+
+<main id="app" class="vg-app">
+  <section id="view-my-team" class="vg-view">
+    <div class="vg-hero">
+      <h1>Your fantasy season, on rails.</h1>
+      <p>Connect the ESPN or Sleeper league you're already in. Vector Gridiron maps every skill player into a 16-dim NFL embedding — rushing, targets, YAC, redzone, snaps, age, weather, Vegas, rest, def-vs-pos — MTNN next-game MAE 4.268. Free, no tracking, nflverse-powered.</p>
+      <button id="hero-connect" class="vg-btn vg-btn--primary vg-btn--lg">CONNECT YOUR LEAGUE</button>
+      <p class="vg-note">or just explore the <a href="#vector-map" class="vg-link">player Vector Map</a> — no login.</p>
+    </div>
+
+    <div class="vg-card">
+      <div class="vg-card__title">How mobile-first fixes land</div>
+      <p class="vg-note">Tabs now scroll horizontally with mask fade, canvas is fluid aspect-ratio 1 with max-height min(70vh,600px), tables momentum scroll, inputs 16px to avoid iOS zoom, dialogs safe-area aware. Matches hoops 35af415 + pitch 739e2ab + jcamd e8f5447. Ultimate target: everything responsive.</p>
+    </div>
+
+    <div class="vg-dr-grid">
+      <div class="vg-card">
+        <div class="vg-card__title">Draft board (sample)</div>
+        <div class="vg-tablewrap">
+          <table class="vg-tbl"><thead><tr><th>Rank</th><th>Player</th><th>POS</th><th>Tier</th><th>Proj</th><th>Edge</th></tr></thead><tbody><tr><td>1</td><td>Puka Nacua</td><td>WR1</td><td>T1</td><td>21.4</td><td>+2.1</td></tr></tbody></table>
+        </div>
+      </div>
+      <div class="vg-card">
+        <div class="vg-card__title">Vector Map (mobile fluid)</div>
+        <div class="vg-mapwrap">
+          <canvas id="dr-map" width="520" height="520" aria-label="Player embedding map"></canvas>
+        </div>
+        <div class="vg-maplegend">Touch drag to pan, pinch to zoom · 512 players mapped</div>
+      </div>
+    </div>
+
+    <div class="vg-card">
+      <div class="vg-card__title">Share flow (Wordle for your league)</div>
+      <p class="vg-note">URL scheme <code>?l=BOOZEBOIS</code> stored in <code>vectorGridiron.v1</code> localStorage. Copy/paste result card + Web Share API + OG SVG. Zero backend, device-only board — same pattern as hoops league boards.</p>
+    </div>
+
+  </section>
+</main>
+
+<footer class="vg-footer">MTNN next-game MAE 4.268 (R² 0.39) · 2025 data · holistic features (usage · snaps · age · weather · Vegas · rest · def-vs-pos) · nflverse · no tracking · Solo personal project, no connection to employer, built with public/free-tier only</footer>
+
+<script>
+document.querySelectorAll('.vg-tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.vg-tab').forEach(b=>b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+  });
+});
+</script>
+
+</body>
+</html>

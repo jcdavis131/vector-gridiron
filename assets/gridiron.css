@@ -178,6 +178,8 @@ table.vg-tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
 .vg-mine{color:var(--warm);font-weight:800}
 .vg-row--mine{background:rgba(240,135,60,.08)}
 .vg-row--mine td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+.vg-opt--live{font-weight:700}
+.vg-owner-chip{font-family:var(--mono);font-size:10px;color:var(--ink-muted);margin-left:6px}
 .vg-banner{display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,var(--surface),var(--surface-2));
   border:2px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow-block);padding:16px;margin-bottom:var(--gap)}
 .vg-teamlogo{width:56px;height:56px;border-radius:12px;border:2px solid var(--hairline);object-fit:cover;flex:none}

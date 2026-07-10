@@ -652,14 +652,22 @@ function afterLeagueLoaded() {
     $('#league-badge').hidden = false;
     const me = lg.teams.find(t => t.id === lg.myId);
     $('#league-badge').innerHTML = `${escapeHtml(lg.name)}${me ? ' · <b>' + escapeHtml(me.name) + '</b>' : ''}`;
+  } else {
+    $('#league-badge').hidden = true;
   }
   renderTeam(); renderStartSit(); renderWaivers(); renderTrades(); renderDraft();
-  if (MAP) { buildMapPts(); if (MAP.paused) drawMap(); }   // highlight my players
-  if (LB.season != null) renderLookback();   // reflect league scoring in grades
+  renderOwnerCareers();
+  if (MAP) { buildMapPts(); if (MAP.paused) drawMap(); }
+  refreshLookbackSeasonPicker();
+  if (LB.season != null) renderLookback();
   if (lg && lg.myId) selectView('team');
-  // Kick off historic draft refresh (async) — Lookback swaps mock → real when ready.
   if (lg && lg.platform !== 'demo') refreshLookbackFromLeague(lg);
   else if (!lg) restoreLookbackSeed();
+  else {
+    // demo: keep seed but still show owner board from seed seasons
+    STATE.lookbackLive = null;
+    renderOwnerCareers();
+  }
 }
 function updateScoringBadge() {
   $('#scoring-badge').innerHTML = 'scoring <b>' + STATE.scoring.toUpperCase() + '</b>';
@@ -837,7 +845,7 @@ function renderTrades() {
   const me = myTeam();
   if (!me) { body.innerHTML = '<div class="vg-empty">Connect a league and pick your team to scan for trades.</div>'; return; }
   const lg = STATE.league;
-  // positional strength per team = summed proj of best starters at each pos
+  const careers = ownerCareerMap();
   const strength = t => {
     const s = { QB: 0, RB: 0, WR: 0, TE: 0, K: 0, DST: 0 };
     const byPos = { QB: [], RB: [], WR: [], TE: [], K: [], DST: [] };
@@ -853,8 +861,6 @@ function renderTrades() {
   const all = lg.teams.map(strength);
   all.forEach(s => ALL_POS.forEach(p => leagueAvg[p] += s[p] / all.length));
   const myS = strength(me);
-  // Trade finder stays skill-focused (K/DST rarely trade 1-for-1 usefully) but
-  // still surfaces them when the slot gap is large.
   const tradePos = ALL_POS;
   const mySurplus = tradePos.filter(p => myS[p] > leagueAvg[p] * 1.12).sort((a, b) => (myS[b] - leagueAvg[b]) - (myS[a] - leagueAvg[a]));
   const myNeed = tradePos.filter(p => myS[p] < leagueAvg[p] * 0.9).sort((a, b) => (leagueAvg[a] - myS[a]) - (leagueAvg[b] - myS[b]));
@@ -867,11 +873,10 @@ function renderTrades() {
         if (partner.id === me.id) continue;
         const ps = all[ti];
         if (!(ps[give] < leagueAvg[give] * 0.95 && ps[get] > leagueAvg[get] * 1.05)) continue;
-        // pick tradeable players of comparable value
         const myGive = bestBench(me, give);
         const theirGive = bestBench(partner, get);
         if (myGive && theirGive && Math.abs((proj(myGive) || 0) - (proj(theirGive) || 0)) < 4) {
-          ideas.push({ partner: partner.name, give, get, myGive, theirGive });
+          ideas.push({ partner, give, get, myGive, theirGive });
         }
       }
     }
@@ -881,19 +886,30 @@ function renderTrades() {
     body.innerHTML = `<div class="vg-empty">Your roster is balanced vs the league — no obvious surplus/need to arbitrage. Nice draft.</div>`;
     return;
   }
+  const histNote = careers.size
+    ? ` · partner career draft grades from ${STATE.lookbackLive?.leagueName || 'Lookback'}`
+    : '';
   const summary = `<p class="vg-note" style="margin-bottom:12px">`
     + (mySurplus.length ? `Surplus: ${mySurplus.map(p => `<span class="vg-pos ${p}">${p}</span>`).join(' ')} · ` : '')
     + (myNeed.length ? `Need: ${myNeed.map(p => `<span class="vg-pos ${p}">${p}</span>`).join(' ')}` : '')
+    + histNote
     + `</p>`;
+  const partnerLabel = t => {
+    const c = careers.get(ownerNorm(t.name));
+    if (!c) return escapeHtml(t.name);
+    return `${escapeHtml(t.name)} <span class="vg-owner-chip">${c.avgGrade} · ${c.titles}🏆 · ${c.seasons}y</span>`;
+  };
   const rows = uniq.map(x =>
-    `<tr><td>${escapeHtml(x.partner)}</td>`
+    `<tr><td>${partnerLabel(x.partner)}</td>`
     + `<td>send ${nameCell(x.myGive)} <span class="vg-pos ${x.myGive.pos}">${x.myGive.pos}</span></td>`
     + `<td>get ${nameCell(x.theirGive)} <span class="vg-pos ${x.theirGive.pos}">${x.theirGive.pos}</span></td>`
     + `<td class="vg-num">${(proj(x.myGive) || 0).toFixed(1)}→${(proj(x.theirGive) || 0).toFixed(1)}</td></tr>`).join('');
   body.innerHTML = summary + (uniq.length
     ? table(['Partner', 'You send', 'You get', 'Proj swap'], rows)
     : `<div class="vg-empty">Found surplus/need but no clean 1-for-1 with a matching partner. Try the Vector Map for stylistic swaps.</div>`)
-    + `<p class="vg-note" style="margin-top:10px">Heuristic: your positional surplus → a partner's need, matched on projection (±4 pts). Suggestions, not gospel — check the comps on each player's profile.</p>`;
+    + `<p class="vg-note" style="margin-top:10px">Heuristic: your positional surplus → a partner's need, matched on projection (±4 pts).`
+    + (careers.size ? ` Career chips = avg Lookback draft grade · titles · seasons graded.` : ` Connect + wait for Lookback history to see owner draft grades on partners.`)
+    + `</p>`;
   bindNameLinks();
 }
 function bestBench(team, pos) {
@@ -940,6 +956,145 @@ const GRADE_TIERS = [[.95, 'A+'], [.88, 'A'], [.80, 'A-'], [.72, 'B+'], [.62, 'B
   [.52, 'B-'], [.42, 'C+'], [.32, 'C'], [.22, 'C-'], [.12, 'D'], [0, 'F']];
 const letterGrade = pct => (GRADE_TIERS.find(([t]) => pct >= t) || [0, 'F'])[1];
 const gradeClass = g => 't' + g[0];
+const GRADE_ORD = { 'A+': 12, A: 11, 'A-': 10, 'B+': 9, B: 8, 'B-': 7, 'C+': 6, C: 5, 'C-': 4, D: 3, F: 1 };
+const ORD_GRADE = Object.entries(GRADE_ORD).sort((a, b) => b[1] - a[1]);
+function gradeFromOrd(mean) {
+  if (!Number.isFinite(mean)) return '—';
+  let best = 'F', dist = Infinity;
+  for (const [g, o] of ORD_GRADE) {
+    const d = Math.abs(o - mean);
+    if (d < dist) { dist = d; best = g; }
+  }
+  return best;
+}
+function ownerNorm(name) {
+  return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+function isMyLookbackTeam(t) {
+  const lg = STATE.league;
+  if (!lg || !lg.myId) return false;
+  const me = lg.teams.find(x => x.id === lg.myId);
+  if (!me) return false;
+  if (t.id != null && String(t.id) === String(me.id)) return true;
+  return ownerNorm(t.name) === ownerNorm(me.name);
+}
+
+/** Multi-season owner rollup from live lookback (falls back to seed if no live). */
+function ownerCareerMap() {
+  const live = STATE.lookbackLive;
+  const seasons = [];
+  if (live?.status === 'ready' && live.seasons?.size) {
+    for (const rec of live.seasons.values()) seasons.push(rec);
+  } else if (STATE.league && STATE.lookbackBySeason.size) {
+    // Prefer only source=league records when mixed with seed overlay.
+    for (const rec of STATE.lookbackBySeason.values()) {
+      if (rec.source === 'league') seasons.push(rec);
+    }
+  }
+  const by = new Map();
+  for (const rec of seasons) {
+    for (const t of rec.teams || []) {
+      const k = ownerNorm(t.name);
+      if (!k) continue;
+      let row = by.get(k);
+      if (!row) {
+        row = {
+          key: k, name: t.name, id: t.id || null,
+          seasons: 0, titles: 0, pf: 0, gradeOrds: [],
+          bestGrade: null, worstGrade: null, years: [],
+        };
+        by.set(k, row);
+      }
+      row.seasons += 1;
+      row.years.push(rec.season);
+      if (t.champion) row.titles += 1;
+      row.pf += t.points_for || 0;
+      const ord = GRADE_ORD[t.grade];
+      if (ord != null) {
+        row.gradeOrds.push(ord);
+        if (!row.bestGrade || ord > (GRADE_ORD[row.bestGrade] || 0)) row.bestGrade = t.grade;
+        if (!row.worstGrade || ord < (GRADE_ORD[row.worstGrade] || 99)) row.worstGrade = t.grade;
+      }
+      if (t.id != null) row.id = t.id;
+    }
+  }
+  for (const row of by.values()) {
+    const mean = row.gradeOrds.length
+      ? row.gradeOrds.reduce((a, b) => a + b, 0) / row.gradeOrds.length
+      : NaN;
+    row.avgGrade = gradeFromOrd(mean);
+    row.avgPf = row.seasons ? row.pf / row.seasons : 0;
+  }
+  // Attach current-league id when names match.
+  if (STATE.league) {
+    for (const t of STATE.league.teams) {
+      const row = by.get(ownerNorm(t.name));
+      if (row) row.id = t.id;
+    }
+  }
+  return by;
+}
+
+function renderOwnerCareers() {
+  const el = $('#ll-owners');
+  if (!el) return;
+  const live = STATE.lookbackLive;
+  if (!STATE.league) {
+    el.innerHTML = '<div class="vg-empty">Connect your league to evaluate owners historically.</div>';
+    return;
+  }
+  if (live?.status === 'loading') {
+    el.innerHTML = `<div class="vg-empty">Loading draft history for ${escapeHtml(live.leagueName || 'your league')}…</div>`;
+    return;
+  }
+  const careers = [...ownerCareerMap().values()].sort((a, b) =>
+    (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0)
+    || b.titles - a.titles || b.avgPf - a.avgPf);
+  if (!careers.length) {
+    const msg = live?.status === 'empty' || live?.status === 'err'
+      ? (live.message || 'No historic drafts graded yet.')
+      : 'No graded seasons yet — Lookback will fill this once draft history loads.';
+    el.innerHTML = `<div class="vg-empty">${escapeHtml(msg)}</div>`;
+    return;
+  }
+  const rows = careers.map(c => {
+    const mine = isMyLookbackTeam(c);
+    return `<tr class="${mine ? 'vg-row--mine' : ''}"><td>${mine ? '★ ' : ''}${escapeHtml(c.name)}</td>`
+      + `<td><span class="vg-grade ${gradeClass(c.avgGrade)}">${c.avgGrade}</span></td>`
+      + `<td class="vg-num">${c.seasons}</td>`
+      + `<td class="vg-num">${c.titles}</td>`
+      + `<td class="vg-num">${c.avgPf.toFixed(0)}</td>`
+      + `<td><span class="vg-grade ${gradeClass(c.bestGrade || 'F')}">${c.bestGrade || '—'}</span>`
+      + ` / <span class="vg-grade ${gradeClass(c.worstGrade || 'F')}">${c.worstGrade || '—'}</span></td>`
+      + `<td class="vg-num" style="font-size:11px;text-align:left">${c.years.slice().sort((a, b) => b - a).join(', ')}</td></tr>`;
+  }).join('');
+  el.innerHTML = table(
+    ['Owner', 'Avg draft', 'Seasons', 'Titles', 'Avg PF', 'Best / worst', 'Years'],
+    rows,
+  ) + `<p class="vg-note" style="margin-top:8px">Career rollup from ${careers[0] && STATE.lookbackLive?.leagueName
+    ? escapeHtml(STATE.lookbackLive.leagueName) + "'s"
+    : 'graded'} real drafts (VOR letter grades). ★ = your team.</p>`;
+}
+
+function refreshLookbackSeasonPicker() {
+  const sel = $('#lookback-season');
+  if (!sel || !STATE.vectors) return;
+  const seasons = [...STATE.vectors.seasons].sort((a, b) => b - a);
+  const live = STATE.lookbackLive;
+  const cur = LB.season;
+  sel.innerHTML = seasons.map(s => {
+    const isLive = live?.status === 'ready' && live.seasons?.has(s);
+    const label = live?.status === 'ready'
+      ? (isLive ? `${s} · live` : `${s} · mock`)
+      : String(s);
+    return `<option value="${s}" class="${isLive ? 'vg-opt--live' : ''}">${label}</option>`;
+  }).join('');
+  if (cur != null && [...sel.options].some(o => +o.value === cur)) sel.value = String(cur);
+  else if (seasons.length) {
+    LB.season = seasons[0];
+    sel.value = String(LB.season);
+  }
+}
 
 // percentile of ppg within each (season, position) pool -> letter grade
 function seasonGrades(season) {
@@ -957,11 +1112,8 @@ function seasonGrades(season) {
 
 const LB = { season: null, pos: 'ALL' };
 function initLookback() {
+  refreshLookbackSeasonPicker();
   const sel = $('#lookback-season');
-  const seasons = [...STATE.vectors.seasons].sort((a, b) => b - a);
-  sel.innerHTML = seasons.map(s => `<option value="${s}">${s}</option>`).join('');
-  LB.season = seasons[0];
-  sel.value = String(LB.season);
   sel.addEventListener('change', () => { LB.season = +sel.value; renderLookback(); });
   $$('#lookback-posfilter button').forEach(b => b.addEventListener('click', () => {
     LB.pos = b.dataset.pos;
@@ -1015,6 +1167,7 @@ function renderLookback() {
        within position that season (A+ = top 5%). ${rows.length} qualified players
        (skill from vectors · K/DST from kdst history).</p>`;
   renderLeagueSeason(LB.season);
+  renderOwnerCareers();
   bindNameLinks();
 }
 
@@ -1048,7 +1201,7 @@ function renderLeagueSeason(season) {
   const teams = [...rec.teams].sort((a, b) => b.draft_value - a.draft_value);
   const rows = teams.map(t => {
     const bp = t.best_pick, wp = t.worst_pick;
-    const mine = STATE.league && STATE.league.teams.some(x => x.id === STATE.league.myId && x.name === t.name);
+    const mine = isMyLookbackTeam(t);
     return `<tr class="${t.champion ? 'vg-row--champ' : ''}${mine ? ' vg-row--mine' : ''}"><td><span class="vg-grade ${gradeClass(t.grade)}">${t.grade}</span></td>`
       + `<td>${t.champion ? '👑 ' : ''}${mine ? '★ ' : ''}${escapeHtml(t.name)}</td>`
       + `<td class="vg-num">${t.draft_value.toFixed(1)}</td>`
@@ -1214,6 +1367,7 @@ function gradeLeagueSeason(hist) {
         })[0]
       : null;
     return {
+      id: tm.id || null,
       name: tm.name,
       wins: tm.wins,
       points_for: tm.points_for,
@@ -1345,11 +1499,13 @@ function restoreLookbackSeed() {
   const seed = STATE.lookbackSeed;
   STATE.lookback = seed;
   if (seed) for (const s of seed.seasons) STATE.lookbackBySeason.set(s.season, s);
+  refreshLookbackSeasonPicker();
   if (LB.season != null) renderLookback();
+  renderOwnerCareers();
+  renderTrades();
 }
 
 function applyLiveLookback(leagueName, graded) {
-  // Overlay real seasons on the seed so years without a draft still show mock.
   const bySeason = new Map();
   const seed = STATE.lookbackSeed;
   if (seed) for (const s of seed.seasons) bySeason.set(s.season, s);
@@ -1360,22 +1516,19 @@ function applyLiveLookback(leagueName, graded) {
     leagueName,
     seasons: new Map(graded.map(g => [g.season, g])),
   };
-  // Prefer the most recent real season in the picker when available.
   const latestLive = Math.max(...graded.map(g => g.season));
-  if (Number.isFinite(latestLive)) {
-    const sel = $('#lookback-season');
-    if (sel && [...sel.options].some(o => +o.value === latestLive)) {
-      LB.season = latestLive;
-      sel.value = String(latestLive);
-    }
-  }
+  if (Number.isFinite(latestLive)) LB.season = latestLive;
+  refreshLookbackSeasonPicker();
   if (LB.season != null) renderLookback();
+  renderOwnerCareers();
+  renderTrades();
 }
 
 let _lbRefreshToken = 0;
 async function refreshLookbackFromLeague(lg) {
   const token = ++_lbRefreshToken;
   STATE.lookbackLive = { status: 'loading', leagueName: lg.name, seasons: new Map() };
+  renderOwnerCareers();
   if (LB.season != null) renderLookback();
   try {
     let raw = [];
@@ -1414,7 +1567,10 @@ async function refreshLookbackFromLeague(lg) {
         seasons: new Map(),
         message: `No completed drafts found for ${lg.name} — showing seeded mock.`,
       };
+      refreshLookbackSeasonPicker();
       if (LB.season != null) renderLookback();
+      renderOwnerCareers();
+      renderTrades();
       return;
     }
     applyLiveLookback(lg.name, graded);
@@ -1431,7 +1587,10 @@ async function refreshLookbackFromLeague(lg) {
       seasons: new Map(),
       message: `Could not load draft history (${e.message || e}) — showing seeded mock.`,
     };
+    refreshLookbackSeasonPicker();
     if (LB.season != null) renderLookback();
+    renderOwnerCareers();
+    renderTrades();
   }
 }
 
@@ -1750,8 +1909,11 @@ function focusMapOn(id) { if (MAP) { MAP.focus = id; if (MAP.paused) drawMap(); 
 function persistSession() {
   const lg = STATE.league;
   if (!lg || lg.platform === 'demo') return;
-  const creds = { platform: lg.platform, leagueId: lg.leagueId, year: lg.year, myId: lg.myId,
-    espn_s2: $('#espn-s2')?.value.trim(), swid: $('#espn-swid')?.value.trim() };
+  const creds = {
+    platform: lg.platform, leagueId: lg.leagueId, year: lg.year, myId: lg.myId,
+    espn_s2: $('#espn-s2')?.value.trim() || STATE.espnCreds?.s2 || '',
+    swid: $('#espn-swid')?.value.trim() || STATE.espnCreds?.swid || '',
+  };
   try { localStorage.setItem('vg_session', JSON.stringify(creds)); } catch (_) {}
 }
 async function restoreSession() {

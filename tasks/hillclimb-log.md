@@ -36,9 +36,13 @@
 | **playoff clutch (wk15+)** | n/a | **PROMOTED** (product; clutch ranking mode) |
 
 ## Next bets
-1. Revisit feature expand only with stronger prior (new data season)
+1. ~~Feature expand~~ — **skipped** until new season data (2025 holdout plateau)
 2. Soft-weight scale sweep only if new evidence
-3. Lengthen hill-climb loop (1m is noisy vs train time)
+3. Narrative weekly recaps from live matchups (copy, not just efficiency)
+
+## Skipped this tick
+- MAE feature expand — no stronger prior than failed EWMA/soft trials; gate stays 4.258
+- Soft-weight sweep — no new ablation evidence
 
 ## Shipped
 - README Methods · `family_ablation.py` · per-pos uncertainty
@@ -49,3 +53,4 @@
 - Tower contrib (gated attn×gate top-5) on nextgame/proj + profile UI
 - Weekly start/sit efficiency from Sleeper/ESPN matchups (latest 1–2 seasons)
 - Playoff clutch start/sit (weeks 15–18) + Clutch standings mode
+- Draft report cards show Start/sit + Clutch columns

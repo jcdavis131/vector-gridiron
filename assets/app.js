@@ -1781,19 +1781,23 @@ function renderLeagueSeason(season) {
   const rows = teams.map(t => {
     const bp = t.best_pick, wp = t.worst_pick;
     const mine = isFocusedLookbackTeam(t);
+    const ss = t.start_sit_eff != null ? `${(t.start_sit_eff * 100).toFixed(0)}%` : '—';
+    const cl = t.clutch_eff != null ? `${(t.clutch_eff * 100).toFixed(0)}%` : '—';
     return `<tr class="${t.champion ? 'vg-row--champ' : ''}${mine ? ' vg-row--mine' : ''}"><td><span class="vg-grade ${gradeClass(t.grade)}">${t.grade}</span></td>`
       + `<td>${t.champion ? '👑 ' : ''}${mine ? '★ ' : ''}${escapeHtml(t.ownerName || t.name)}</td>`
       + `<td class="vg-num">${t.draft_value.toFixed(1)}</td>`
+      + `<td class="vg-num">${ss}</td>`
+      + `<td class="vg-num">${cl}</td>`
       + `<td class="vg-num">${escapeHtml(t.record)}</td>`
       + `<td class="vg-num">${t.points_for.toFixed(0)}</td>`
       + `<td style="text-align:left;font-size:11px">${bp ? escapeHtml(bp.name) + ` <span class="vg-slot">pk${bp.pick}</span>` : '—'}</td>`
       + `<td style="text-align:left;font-size:11px" class="vg-unmatched">${wp ? escapeHtml(wp.name) + ` <span class="vg-slot">pk${wp.pick}</span>` : '—'}</td></tr>`;
   }).join('');
   $('#ll-cards').innerHTML =
-    table(['Grade', 'Owner', 'Draft VOR', 'Rec', 'PF', 'Best steal', 'Biggest bust'], rows)
+    table(['Grade', 'Owner', 'Draft VOR', 'Start/sit', 'Clutch', 'Rec', 'PF', 'Best steal', 'Biggest bust'], rows)
     + `<p class="vg-note" style="margin-top:8px">${isLive
-      ? `Your league's real ${season} draft, graded on value-over-replacement from actual NFL ${STATE.scoring.toUpperCase()} production (👑 = champion · ★ = focused owner, pinned top).`
-      : `Best-ball PPR · drafts graded on value-over-replacement captured (👑 = champion · ★ = focused). Seeded from real ${season} results; your league's actual draft history plugs into this same engine once connected.`}</p>`;
+      ? `Your league's real ${season} draft + weekly start/sit (👑 = champion · ★ = focused owner, pinned top). Clutch = weeks 15–18.`
+      : `Best-ball PPR · drafts graded on value-over-replacement (👑 = champion · ★ = focused). Connect your league for real drafts + start/sit.`}</p>`;
   $('#ll-story').innerHTML =
     `<p class="vg-story">${mdBold(rec.narratives.draft)}</p><p class="vg-story">${mdBold(rec.narratives.season)}</p>`;
   const weeks = rec.narratives.weeks || [];
@@ -1801,7 +1805,7 @@ function renderLeagueSeason(season) {
     ? `<details class="vg-weeks"><summary>${weeks.length} weekly recaps ▾</summary>`
       + weeks.map(w => `<p class="vg-weekline">${mdBold(w.text)}</p>`).join('') + `</details>`
     : (isLive
-      ? `<p class="vg-note">Weekly recaps stay on the seeded mock — your league's week-by-week story needs matchup history (coming next).</p>`
+      ? `<p class="vg-note">Narrative week-by-week recaps stay on the seeded mock — start/sit + clutch already use your real matchup boxscores.</p>`
       : '');
   renderRoast(season, rec);
 }

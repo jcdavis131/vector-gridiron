@@ -146,6 +146,12 @@ Bayesian CI — treat as a calibrated spread hint. Residual σ remains in
 (`python pipeline/family_ablation.py`) shows **usage** and **form** dominate
 held-out MAE; NGS/defense/role are near-flat on 2025.
 
+**Lookback manager grades** (when a league is connected): draft VOR letter
+grades, **start/sit efficiency** (actual starter pts ÷ optimal from that week's
+roster, platform scoring, latest 1–2 seasons), and **clutch** (same metric for
+weeks 15–18). Standings modes: Drafting · Start/Sit · Clutch · Titles · Scoring ·
+Playoffs · Career draft.
+
 **Known gaps (do not expect miracles):**
 - **Injuries 2025+** — nflverse injury feed dead after 2024; `availability`
   family is masked for those seasons; UI `avail` falls back to roster/depth.
@@ -153,6 +159,8 @@ held-out MAE; NGS/defense/role are near-flat on 2025.
   time → family coverage ~0.51 (masked when missing).
 - **R²** dropped slightly vs v1 (0.42 → 0.39) while MAE improved — we promote
   on MAE + baseline gates, not R² alone.
+- **Feature expand plateau** — EWMA / soft-weight / prune trials did not beat
+  MAE 4.258 on 2025; next expand waits on new season data.
 
 See `docs/DATA_SOURCES_DEEP.md`, `docs/MTNN_ARCHITECTURE.md`, and
 `pipeline/data/mtnn_report.json`.

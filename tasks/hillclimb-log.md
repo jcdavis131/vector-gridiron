@@ -38,11 +38,10 @@
 ## Next bets
 1. ~~Feature expand~~ — **skipped** until new season data (2025 holdout plateau)
 2. Soft-weight scale sweep only if new evidence
-3. Narrative weekly recaps from live matchups (copy, not just efficiency)
+3. ~~Narrative weekly recaps from live matchups~~ → **done**
 
 ## Skipped this tick
-- MAE feature expand — no stronger prior than failed EWMA/soft trials; gate stays 4.258
-- Soft-weight sweep — no new ablation evidence
+- MAE feature expand — still no stronger prior; gate stays 4.258
 
 ## Shipped
 - README Methods · `family_ablation.py` · per-pos uncertainty
@@ -54,3 +53,4 @@
 - Weekly start/sit efficiency from Sleeper/ESPN matchups (latest 1–2 seasons)
 - Playoff clutch start/sit (weeks 15–18) + Clutch standings mode
 - Draft report cards show Start/sit + Clutch columns
+- Live weekly matchup narratives (high score / bench left / sharp set)

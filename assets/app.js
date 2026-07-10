@@ -420,13 +420,20 @@ async function loadSleeperSeasonHistory(leagueId) {
         if (teams.length) {
           const ranked = [...teams].sort((a, b) => a.seed - b.seed || b.wins - a.wins || b.points_for - a.points_for);
           if (ranked[0]) ranked[0].champion = true;
-          // Start/sit for the two most recent seasons only (rate-limit).
           if (seasons.length < 2) {
             try {
-              await attachSleeperStartSit(id, teams, lg.roster_positions);
-            } catch (e) { console.warn('sleeper start/sit', e); }
+              const weekNarratives = await attachSleeperStartSit(id, teams, lg.roster_positions);
+              seasons.push({
+                season: +(lg.season || draft.season), leagueName: lg.name, teams,
+                weekNarratives: weekNarratives || [],
+              });
+            } catch (e) {
+              console.warn('sleeper start/sit', e);
+              seasons.push({ season: +(lg.season || draft.season), leagueName: lg.name, teams });
+            }
+          } else {
+            seasons.push({ season: +(lg.season || draft.season), leagueName: lg.name, teams });
           }
-          seasons.push({ season: +(lg.season || draft.season), leagueName: lg.name, teams });
         }
       }
       id = lg.previous_league_id || null;
@@ -497,14 +504,15 @@ function finalizeStartSit(teams) {
 
 /**
  * Sleeper weekly start/sit: actual starter pts vs optimal from that week's roster points.
- * Attaches start_sit_eff (0–1) and clutch_eff (weeks 15+).
+ * Attaches start_sit_eff / clutch_eff; returns week narrative objects for Lookback.
  */
 async function attachSleeperStartSit(leagueId, teams, rosterPositions) {
-  if (!teams?.length) return;
+  if (!teams?.length) return [];
   const players = await sleeperPlayers();
   const slots = countSlots(rosterPositions || []);
   const byRoster = Object.fromEntries(teams.map(t => [String(t.id), t]));
   initStartSitAcc(teams);
+  const weekNarratives = [];
   let emptyStreak = 0;
   for (let w = 1; w <= 18; w++) {
     let rows = [];
@@ -517,6 +525,7 @@ async function attachSleeperStartSit(leagueId, teams, rosterPositions) {
       continue;
     }
     emptyStreak = 0;
+    const weekSnap = [];
     for (const row of rows) {
       const tm = byRoster[String(row.roster_id)];
       if (!tm) continue;
@@ -528,20 +537,31 @@ async function attachSleeperStartSit(leagueId, teams, rosterPositions) {
         const pos = pl?.pos === 'DEF' ? 'DST' : (pl?.pos || '');
         return { pos, p: +p || 0 };
       });
-      accrueStartSit(tm, w, actual, optimalPtsFromPool(pool, slots));
+      const opt = optimalPtsFromPool(pool, slots);
+      accrueStartSit(tm, w, actual, opt);
+      if (opt > 0.5) {
+        weekSnap.push({
+          name: tm.ownerName || tm.name,
+          actual, opt, left: Math.max(0, opt - actual),
+        });
+      }
     }
+    const note = weekNarrativeFromSnap(w, weekSnap);
+    if (note) weekNarratives.push(note);
   }
   finalizeStartSit(teams);
+  return weekNarratives;
 }
 
 /**
  * ESPN weekly start/sit via mMatchup + scoringPeriodId.
- * Uses appliedStatTotal on roster entries; lineupSlotId 20/21 = bench/IR.
+ * Returns week narrative objects for Lookback.
  */
 async function attachEspnStartSit(leagueId, year, teams, slots, s2, swid) {
-  if (!teams?.length) return;
+  if (!teams?.length) return [];
   const byId = Object.fromEntries(teams.map(t => [String(t.id), t]));
   initStartSitAcc(teams);
+  const weekNarratives = [];
   let emptyStreak = 0;
   for (let w = 1; w <= 18; w++) {
     let data = null;
@@ -564,6 +584,7 @@ async function attachEspnStartSit(leagueId, year, teams, slots, s2, swid) {
       if (g.away) sides.push(g.away);
       if (g.home) sides.push(g.home);
     }
+    const weekSnap = [];
     for (const side of sides) {
       const tm = byId[String(side.teamId)];
       if (!tm) continue;
@@ -582,10 +603,39 @@ async function attachEspnStartSit(leagueId, year, teams, slots, s2, swid) {
         const slot = e.lineupSlotId;
         if (slot !== 20 && slot !== 21 && slot != null) actual += pts;
       }
-      accrueStartSit(tm, w, actual, optimalPtsFromPool(pool, slots));
+      const opt = optimalPtsFromPool(pool, slots);
+      accrueStartSit(tm, w, actual, opt);
+      if (opt > 0.5) {
+        weekSnap.push({
+          name: tm.ownerName || tm.name,
+          actual, opt, left: Math.max(0, opt - actual),
+        });
+      }
     }
+    const note = weekNarrativeFromSnap(w, weekSnap);
+    if (note) weekNarratives.push(note);
   }
   finalizeStartSit(teams);
+  return weekNarratives;
+}
+
+/** One-line weekly recap from that week's start/sit snapshot. */
+function weekNarrativeFromSnap(week, snap) {
+  if (!snap?.length) return null;
+  const high = [...snap].sort((a, b) => b.actual - a.actual)[0];
+  const worst = [...snap].sort((a, b) => b.left - a.left)[0];
+  const sharp = [...snap].sort((a, b) => (b.actual / b.opt) - (a.actual / a.opt))[0];
+  const parts = [`**Week ${week}.** **${high.name}** led the slate at ${high.actual.toFixed(0)} pts.`];
+  if (worst && worst.left >= 8) {
+    parts.push(`**${worst.name}** left ${worst.left.toFixed(0)} on the bench.`);
+  } else {
+    parts.push('Lineups were mostly tight.');
+  }
+  if (sharp && sharp.name !== high.name && sharp.opt > 0) {
+    parts.push(`Sharpest set: **${sharp.name}** (${(100 * sharp.actual / sharp.opt).toFixed(0)}% of optimal).`);
+  }
+  if (week >= SS_PLAYOFF_WEEK) parts.push('_Playoff window._');
+  return { week, text: parts.join(' ') };
 }
 
 /* ---------- ESPN (via thin serverless proxy at /api/espn) ---------- */
@@ -766,7 +816,11 @@ async function loadEspnSeasonHistory(leagueId, year, s2, swid, withStartSit = fa
   if (withStartSit) {
     try {
       const slots = espnSlots(data.settings) || { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 1, K: 1, DST: 1 };
-      await attachEspnStartSit(leagueId, year, teams, slots, s2, swid);
+      const weekNarratives = await attachEspnStartSit(leagueId, year, teams, slots, s2, swid);
+      return {
+        season: +year, leagueName: data.settings?.name || '', teams,
+        weekNarratives: weekNarratives || [],
+      };
     } catch (e) { console.warn('espn start/sit', e); }
   }
   return { season: +year, leagueName: data.settings?.name || '', teams };
@@ -1805,7 +1859,7 @@ function renderLeagueSeason(season) {
     ? `<details class="vg-weeks"><summary>${weeks.length} weekly recaps ▾</summary>`
       + weeks.map(w => `<p class="vg-weekline">${mdBold(w.text)}</p>`).join('') + `</details>`
     : (isLive
-      ? `<p class="vg-note">Narrative week-by-week recaps stay on the seeded mock — start/sit + clutch already use your real matchup boxscores.</p>`
+      ? `<p class="vg-note">No weekly matchup recaps for this season yet — reconnect after completed weeks, or pick a year with start/sit history.</p>`
       : '');
   renderRoast(season, rec);
 }
@@ -2037,13 +2091,18 @@ function gradeLeagueSeason(hist) {
   ].filter(Boolean).join(' ');
 
   scored.sort((a, b) => b.wins - a.wins || b.points_for - a.points_for);
+  const weekNarratives = (hist.weekNarratives || []).slice();
   return {
     season: hist.season,
     source: 'league',
     leagueName: hist.leagueName || '',
     champion: champ.name,
     teams: scored,
-    narratives: { draft: draftNarr, season: seasonNarr, weeks: [] },
+    narratives: {
+      draft: draftNarr,
+      season: seasonNarr,
+      weeks: weekNarratives,
+    },
   };
 }
 

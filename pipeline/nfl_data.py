@@ -37,6 +37,7 @@ NGS_URL = REL + "/nextgen_stats/ngs_{year}_{stat}.csv.gz"
 PFR_ADV_URL = REL + "/pfr_advstats/advstats_week_{stat}_{year}.csv"
 DRAFT_URL = REL + "/draft_picks/draft_picks.csv"
 COMBINE_URL = REL + "/combine/combine.csv"
+PBP_URL = REL + "/pbp/play_by_play_{year}.parquet"
 # ffopportunity weekly EP — cite "ffopportunity / ffverse (CC-BY-SA 4.0)"
 EP_WEEKLY_URL = (
     "https://github.com/ffverse/ffopportunity/releases/download/"
@@ -178,6 +179,15 @@ def draft_picks(offline: bool = False) -> list[dict]:
 
 def combine(offline: bool = False) -> list[dict]:
     return _rows(fetch_text(COMBINE_URL, "combine.csv", offline))
+
+
+def pbp_parquet_path(year: int, offline: bool = False) -> Path | None:
+    """Download nflverse play-by-play parquet (~20MB/year). Returns cache path."""
+    name = f"play_by_play_{year}.parquet"
+    raw = fetch_bytes(PBP_URL.format(year=year), name, offline)
+    if raw is None:
+        return None
+    return CACHE / name
 
 
 # ---------------------------------------------------------------------------

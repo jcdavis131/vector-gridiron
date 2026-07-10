@@ -1,10 +1,11 @@
 # Hill-climb experiment log — 2026-07-10
 
-## Promoted baseline (keep)
-- PPR MAE **4.268** · R² 0.39 · 82 feats / 13 families
-- Assets restored from git; `HILL_CLIMB_FEATURES = False` in `build_features.py`
+## Promoted baseline (current)
+- PPR MAE **4.258** · R² **0.402** · **85** feats / 13 families
+- `RZ_FEATURES = True` (pbp RZ tgt/carry/inside-5 shares)
+- `HILL_CLIMB_FEATURES = False` (EWMA bundle still off)
 
-## Family ablation (on promoted checkpoint)
+## Family ablation (on pre-RZ 4.268 checkpoint)
 | Family | ΔMAE when dropped |
 |--------|-------------------|
 | usage | +0.493 |
@@ -15,16 +16,18 @@
 | market | +0.021 |
 | defense / ngs / role / availability / context / conditions / pfr | ~0 |
 
-## Feature expand trials (did **not** promote)
+## Trials
 | Config | Test MAE | Notes |
 |--------|----------|-------|
-| +EWMA +DvP pass/rush +snapΔ +rz_proxy +WR1 + family_drop=0.1 | **4.278** | beats baselines, worse than 4.268 |
-| same, family_drop=0.0 | **4.378** | worse than v1 |
+| +EWMA +DvP +snapΔ +rz_proxy +WR1 + family_drop=0.1 | 4.278 | not promoted |
+| same, family_drop=0.0 | 4.378 | not promoted |
+| **+pbp RZ shares only** | **4.258** | **PROMOTED** (beats 4.268) |
 
-Code path retained behind `HILL_CLIMB_FEATURES`. Next bets: true pbp RZ shares; prune flat families; quantile heads — not more redundant form means.
+## Next bets
+1. Soft-prune / zero flat families (NGS, defense, role, availability) at train
+2. Quantile / pinball uncertainty heads
+3. Revisit EWMA only on top of RZ (not the full failed bundle)
 
-## Shipped this arc
-- README Methods honesty
-- `pipeline/family_ablation.py` + ablation in `mtnn_report.json`
-- Per-pos residual / `uncertainty` export path in train (when retrain promotes)
-- Next Game copy notes floor–ceil = residual σ
+## Shipped
+- README Methods · `family_ablation.py` · per-pos uncertainty
+- `build_rz.py` + nflverse pbp parquet · RZ opportunity cols

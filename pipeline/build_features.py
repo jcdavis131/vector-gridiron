@@ -34,6 +34,8 @@ MIN_PRIOR = 1
 # Hill-climb expand (EWMA / pass-rush DvP / snapΔ / RZ proxy / WR1) — held-out 2025
 # MAE 4.278–4.378 vs promoted 4.268. Keep code path; default OFF until it earns promote.
 HILL_CLIMB_FEATURES = False
+# True pbp red-zone shares (nflverse) — separate bet from the failed expand bundle.
+RZ_FEATURES = True
 
 # ---------------------------------------------------------------------------
 # Family feature specs (order = column order within family)
@@ -49,7 +51,9 @@ USAGE_KEYS = [
 ] + (["snap_delta"] if HILL_CLIMB_FEATURES else [])
 OPP_KEYS = [
     "ep_fpts", "ep_diff", "rec_attempt", "rush_attempt", "td_exp", "rec_air_yards",
-] + (["td_rate", "rz_proxy"] if HILL_CLIMB_FEATURES else [])
+] + (["td_rate", "rz_proxy"] if HILL_CLIMB_FEATURES else []) + (
+    ["rz_tgt_share", "rz_carry_share", "inside5_share"] if RZ_FEATURES else []
+)
 ROLE_KEYS = ["depth_rank", "is_starter", "depth_ahead"]
 AVAIL_KEYS = ["inj_out", "inj_doubtful", "inj_questionable", "games_missed_4"]
 META_KEYS = ["age", "exp", "height", "weight", "is_QB", "is_RB", "is_WR", "is_TE"]
@@ -485,7 +489,7 @@ def mean_keys(hist, keys):
 def assemble_row(
     hist, g, c, meta_row, pos, dvp, dvp4, dvp_pass, dvp_rush, dvp_pass4,
     depth_row, inj_hist, ngs_hist, pfr_hist,
-    ep_hist, qb_ep, team_pass_rate, committee_hhi, wr1_share, ped, prior_ppg, season,
+    ep_hist, rz_hist, qb_ep, team_pass_rate, committee_hhi, wr1_share, ped, prior_ppg, season,
 ):
     """Return (values[list], mask[list]) aligned to FEATURE_NAMES."""
     vals = {}
@@ -540,6 +544,15 @@ def assemble_row(
         else:
             vals["o_td_rate"] = vals["o_rz_proxy"] = 0.0
             mask["o_td_rate"] = mask["o_rz_proxy"] = 0.0
+    if RZ_FEATURES:
+        if rz_hist:
+            for k in ("rz_tgt_share", "rz_carry_share", "inside5_share"):
+                vals["o_" + k] = float(np.mean([x.get(k, 0.0) for x in rz_hist[-TRAIL:]]))
+                mask["o_" + k] = 1.0
+        else:
+            for k in ("rz_tgt_share", "rz_carry_share", "inside5_share"):
+                vals["o_" + k] = 0.0
+                mask["o_" + k] = 0.0
 
     # role
     if depth_row:
@@ -696,6 +709,25 @@ def build(last_season: int | None = None, offline: bool = False) -> dict:
 
     print("loading opportunity (ffopportunity EP) ...")
     ep_idx = opp.load_ep_index(seasons, offline)
+    rz_idx = {}
+    if RZ_FEATURES:
+        import build_rz as brz
+        if not (DATA / "rz_index.json").exists() and not offline:
+            print("building RZ index (first run) ...")
+            brz.build(last_season, offline=offline)
+        elif not (DATA / "rz_index.json").exists() and offline:
+            print("  rz_index.json missing and --offline — RZ features will be masked")
+        else:
+            # Refresh if stale seasons missing — rebuild when empty
+            pass
+        rz_raw = brz.load_index()
+        # key "gsis|season|week" → dict
+        for k, v in rz_raw.items():
+            parts = k.split("|")
+            if len(parts) == 3:
+                gsis, ys, wk = parts[0], int(parts[1]), int(parts[2])
+                rz_idx[(gsis, ys, wk)] = v
+        print(f"  RZ index: {len(rz_idx)} player-weeks")
 
     per_season = {}
     for s in seasons:
@@ -797,6 +829,8 @@ def build(last_season: int | None = None, offline: bool = False) -> dict:
                         pfr_hist.append(pd)
                 ep_hist = [ep_idx[(gsis, s, h["week"])]
                            for h in hist if (gsis, s, h["week"]) in ep_idx]
+                rz_hist = [rz_idx[(gsis, s, h["week"])]
+                           for h in hist if (gsis, s, h["week"]) in rz_idx]
                 pw = hist[-1]["week"]
                 pteam = hist[-1]["team"]
                 committee_hhi = hhi_map.get((pw, pteam), 0.0)
@@ -806,7 +840,7 @@ def build(last_season: int | None = None, offline: bool = False) -> dict:
 
                 row_v, row_m = assemble_row(
                     hist, g, c, meta.get(gsis, {}), pos, dvp, dvp4, dvp_p, dvp_r, dvp_p4,
-                    depth_row, inj_hist, ngs_hist, pfr_hist, ep_hist, qb_ep, team_pass,
+                    depth_row, inj_hist, ngs_hist, pfr_hist, ep_hist, rz_hist, qb_ep, team_pass,
                     committee_hhi, wr1, ped_by_gsis.get(gsis), prior_sp.get(gsis, 0.0), s,
                 )
                 X.append(row_v)
@@ -822,7 +856,7 @@ def build(last_season: int | None = None, offline: bool = False) -> dict:
     byes = team_byes(up_season, offline)
     upcoming = build_upcoming(
         up_season, per_season[last_season], ctx, meta, league_avg_pos,
-        league_avg_pass, league_avg_rush, last_season, byes, ep_idx, ped_by_gsis,
+        league_avg_pass, league_avg_rush, last_season, byes, ep_idx, rz_idx, ped_by_gsis,
     )
 
     Xa = np.array(X, dtype=np.float32)
@@ -873,7 +907,7 @@ def build(last_season: int | None = None, offline: bool = False) -> dict:
 
 def build_upcoming(up_season, last_bundle, ctx, meta, league_avg_pos,
                    league_avg_pass, league_avg_rush, last_season,
-                   byes, ep_idx, ped_by_gsis):
+                   byes, ep_idx, rz_idx, ped_by_gsis):
     bp = last_bundle["bp"]
     weeks = [w for (ssn, w, _t) in ctx if ssn == up_season]
     if not weeks:
@@ -904,6 +938,8 @@ def build_upcoming(up_season, last_bundle, ctx, meta, league_avg_pos,
                     if k[1] == pfr_id and last_bundle["pfr"][k].get("_mask")]
         ep_hist = [ep_idx[(gsis, last_season, g["week"])]
                    for g in games if (gsis, last_season, g["week"]) in ep_idx]
+        rz_hist = [rz_idx[(gsis, last_season, g["week"])]
+                   for g in games if (gsis, last_season, g["week"]) in rz_idx]
         inj_hist = [last_bundle["inj"].get((g["week"], gsis), "") for g in games]
         # WR1 share: max WR target_share on same team in last week of hist
         wr1 = 0.0
@@ -914,7 +950,7 @@ def build_upcoming(up_season, last_bundle, ctx, meta, league_avg_pos,
                     wr1 = max(wr1, g0.get("target_share", 0.0))
         row_v, row_m = assemble_row(
             games, games[-1], c, m, pos, dvp, dvp, dvp_p, dvp_r, dvp_p,
-            depth_row, inj_hist, ngs_hist, pfr_hist, ep_hist, 0.0, 0.55, 0.0, wr1,
+            depth_row, inj_hist, ngs_hist, pfr_hist, ep_hist, rz_hist, 0.0, 0.55, 0.0, wr1,
             ped_by_gsis.get(gsis), last_bundle["ppg"].get(gsis, 0.0), last_season,
         )
         rows.append(row_v)

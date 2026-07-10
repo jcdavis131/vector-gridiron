@@ -123,7 +123,8 @@ Held-out **2025** next-game PPR (temporal split: train ≤2023, val 2024, test 2
 
 | | MAE | notes |
 |--|-----|-------|
-| **MTNN v2** | **4.268** | R² 0.39 · 82 feats / 13 masked families · gated fusion |
+| **MTNN v2 + RZ** | **4.258** | R² 0.40 · 85 feats (pbp RZ shares) · gated fusion |
+| MTNN v2 (pre-RZ) | 4.268 | prior promote |
 | v1 (flat trunk) | 4.313 | reference |
 | last-4 mean | 4.616 | must beat |
 | season-to-date | 4.523 | must beat |

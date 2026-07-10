@@ -456,18 +456,55 @@ function optimalPtsFromPool(pool, slots) {
   return greedyFill(withVal, slots || { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 1, K: 1, DST: 1 }).total;
 }
 
+/** Fantasy playoff window for start/sit clutch (typical weeks 15–18). */
+const SS_PLAYOFF_WEEK = 15;
+
+function initStartSitAcc(teams) {
+  for (const t of teams) {
+    t._ss_weeks = 0; t._ss_actual = 0; t._ss_opt = 0;
+    t._cl_weeks = 0; t._cl_actual = 0; t._cl_opt = 0;
+  }
+}
+
+function accrueStartSit(tm, week, actual, opt) {
+  if (!tm || opt <= 0.5) return;
+  tm._ss_weeks += 1;
+  tm._ss_actual += actual;
+  tm._ss_opt += opt;
+  if (week >= SS_PLAYOFF_WEEK) {
+    tm._cl_weeks += 1;
+    tm._cl_actual += actual;
+    tm._cl_opt += opt;
+  }
+}
+
+function finalizeStartSit(teams) {
+  for (const t of teams) {
+    if (t._ss_weeks >= 4 && t._ss_opt > 0) {
+      t.start_sit_eff = Math.min(1, +(t._ss_actual / t._ss_opt).toFixed(3));
+      t.start_sit_left = +Math.max(0, t._ss_opt - t._ss_actual).toFixed(1);
+      t.start_sit_weeks = t._ss_weeks;
+    }
+    if (t._cl_weeks >= 2 && t._cl_opt > 0) {
+      t.clutch_eff = Math.min(1, +(t._cl_actual / t._cl_opt).toFixed(3));
+      t.clutch_left = +Math.max(0, t._cl_opt - t._cl_actual).toFixed(1);
+      t.clutch_weeks = t._cl_weeks;
+    }
+    delete t._ss_weeks; delete t._ss_actual; delete t._ss_opt;
+    delete t._cl_weeks; delete t._cl_actual; delete t._cl_opt;
+  }
+}
+
 /**
  * Sleeper weekly start/sit: actual starter pts vs optimal from that week's roster points.
- * Attaches start_sit_eff (0–1) and start_sit_left (pts left on bench) per team.
+ * Attaches start_sit_eff (0–1) and clutch_eff (weeks 15+).
  */
 async function attachSleeperStartSit(leagueId, teams, rosterPositions) {
   if (!teams?.length) return;
   const players = await sleeperPlayers();
   const slots = countSlots(rosterPositions || []);
   const byRoster = Object.fromEntries(teams.map(t => [String(t.id), t]));
-  for (const t of teams) {
-    t._ss_weeks = 0; t._ss_actual = 0; t._ss_opt = 0;
-  }
+  initStartSitAcc(teams);
   let emptyStreak = 0;
   for (let w = 1; w <= 18; w++) {
     let rows = [];
@@ -491,21 +528,10 @@ async function attachSleeperStartSit(leagueId, teams, rosterPositions) {
         const pos = pl?.pos === 'DEF' ? 'DST' : (pl?.pos || '');
         return { pos, p: +p || 0 };
       });
-      const opt = optimalPtsFromPool(pool, slots);
-      if (opt <= 0.5) continue;
-      tm._ss_weeks += 1;
-      tm._ss_actual += actual;
-      tm._ss_opt += opt;
+      accrueStartSit(tm, w, actual, optimalPtsFromPool(pool, slots));
     }
   }
-  for (const t of teams) {
-    if (t._ss_weeks >= 4 && t._ss_opt > 0) {
-      t.start_sit_eff = Math.min(1, +(t._ss_actual / t._ss_opt).toFixed(3));
-      t.start_sit_left = +Math.max(0, t._ss_opt - t._ss_actual).toFixed(1);
-      t.start_sit_weeks = t._ss_weeks;
-    }
-    delete t._ss_weeks; delete t._ss_actual; delete t._ss_opt;
-  }
+  finalizeStartSit(teams);
 }
 
 /**
@@ -515,9 +541,7 @@ async function attachSleeperStartSit(leagueId, teams, rosterPositions) {
 async function attachEspnStartSit(leagueId, year, teams, slots, s2, swid) {
   if (!teams?.length) return;
   const byId = Object.fromEntries(teams.map(t => [String(t.id), t]));
-  for (const t of teams) {
-    t._ss_weeks = 0; t._ss_actual = 0; t._ss_opt = 0;
-  }
+  initStartSitAcc(teams);
   let emptyStreak = 0;
   for (let w = 1; w <= 18; w++) {
     let data = null;
@@ -558,21 +582,10 @@ async function attachEspnStartSit(leagueId, year, teams, slots, s2, swid) {
         const slot = e.lineupSlotId;
         if (slot !== 20 && slot !== 21 && slot != null) actual += pts;
       }
-      const opt = optimalPtsFromPool(pool, slots);
-      if (opt <= 0.5) continue;
-      tm._ss_weeks += 1;
-      tm._ss_actual += actual;
-      tm._ss_opt += opt;
+      accrueStartSit(tm, w, actual, optimalPtsFromPool(pool, slots));
     }
   }
-  for (const t of teams) {
-    if (t._ss_weeks >= 4 && t._ss_opt > 0) {
-      t.start_sit_eff = Math.min(1, +(t._ss_actual / t._ss_opt).toFixed(3));
-      t.start_sit_left = +Math.max(0, t._ss_opt - t._ss_actual).toFixed(1);
-      t.start_sit_weeks = t._ss_weeks;
-    }
-    delete t._ss_weeks; delete t._ss_actual; delete t._ss_opt;
-  }
+  finalizeStartSit(teams);
 }
 
 /* ---------- ESPN (via thin serverless proxy at /api/espn) ---------- */
@@ -1301,7 +1314,7 @@ function ownerCareerMap() {
           id: t.id || null,
           teamNames: [],
           seasons: 0, titles: 0, pf: 0, gradeOrds: [],
-          ssEffs: [],
+          ssEffs: [], clutchEffs: [],
           bestGrade: null, worstGrade: null, years: [],
         };
         by.set(k, row);
@@ -1311,6 +1324,7 @@ function ownerCareerMap() {
       if (t.champion) row.titles += 1;
       row.pf += t.points_for || 0;
       if (t.start_sit_eff != null) row.ssEffs.push(t.start_sit_eff);
+      if (t.clutch_eff != null) row.clutchEffs.push(t.clutch_eff);
       const ord = GRADE_ORD[t.grade];
       if (ord != null) {
         row.gradeOrds.push(ord);
@@ -1334,6 +1348,9 @@ function ownerCareerMap() {
     row.avgPf = row.seasons ? row.pf / row.seasons : 0;
     row.avgStartSit = row.ssEffs?.length
       ? row.ssEffs.reduce((a, b) => a + b, 0) / row.ssEffs.length
+      : null;
+    row.avgClutch = row.clutchEffs?.length
+      ? row.clutchEffs.reduce((a, b) => a + b, 0) / row.clutchEffs.length
       : null;
     row.currentTeam = row.teamNames[row.teamNames.length - 1] || null;
   }
@@ -1381,6 +1398,8 @@ function renderOwnerCareers() {
       || b.titles - a.titles || b.avgPf - a.avgPf,
     startsit: (a, b) => (b.avgStartSit ?? -1) - (a.avgStartSit ?? -1)
       || (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0),
+    clutch: (a, b) => (b.avgClutch ?? -1) - (a.avgClutch ?? -1)
+      || (b.avgStartSit ?? -1) - (a.avgStartSit ?? -1),
     titles: (a, b) => b.titles - a.titles || (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0),
     pf: (a, b) => b.avgPf - a.avgPf || b.titles - a.titles,
     playoffs: (a, b) => b.titles - a.titles || b.avgPf - a.avgPf,
@@ -1484,6 +1503,9 @@ function renderYouCard(season) {
       metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(team.start_sit_eff * 100).toFixed(0)}%</div><div class="vg-metric__l">start/sit</div></div>`);
       metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(team.start_sit_left || 0).toFixed(0)}</div><div class="vg-metric__l">pts left on bench</div></div>`);
     }
+    if (team.clutch_eff != null) {
+      metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(team.clutch_eff * 100).toFixed(0)}%</div><div class="vg-metric__l">clutch (wk15+)</div></div>`);
+    }
   }
   if (career) {
     metrics.push(`<div class="vg-metric"><div class="vg-metric__n"><span class="vg-grade ${gradeClass(career.avgGrade)}">${career.avgGrade}</span></div><div class="vg-metric__l">career draft</div></div>`);
@@ -1517,6 +1539,7 @@ function renderLeagueRankings(season) {
   const notes = {
     draft: 'Ranked by draft VOR captured that season · ★ = focused owner.',
     startsit: 'Start/sit efficiency = actual starter pts ÷ optimal from that week\'s roster (platform points). Needs ≥4 weeks of matchups.',
+    clutch: 'Playoff-window start/sit (weeks 15–18) — who set the right lineup when it counted.',
     titles: 'Career titles (multi-season) · season view still shows that year\'s record.',
     pf: 'Season points for · higher scoring managers rise.',
     playoffs: 'Champions first, then playoff seed / wins · ★ = focused owner.',
@@ -1567,10 +1590,31 @@ function renderLeagueRankings(season) {
         + `<td>${mine ? '★ ' : ''}${escapeHtml(t.ownerName || t.name)}</td>`
         + `<td><span class="vg-grade ${gradeClass(t.start_sit_grade || 'C')}">${t.start_sit_grade || '—'}</span></td>`
         + `<td class="vg-num">${(t.start_sit_eff * 100).toFixed(0)}%</td>`
+        + `<td class="vg-num">${t.clutch_eff != null ? (t.clutch_eff * 100).toFixed(0) + '%' : '—'}</td>`
         + `<td class="vg-num">${(t.start_sit_left || 0).toFixed(0)}</td>`
         + `<td class="vg-num">${t.start_sit_weeks || '—'}</td></tr>`;
     }).join('');
-    el.innerHTML = table(['#', 'Owner', 'Grade', 'Efficiency', 'Pts left on bench', 'Weeks'], rows);
+    el.innerHTML = table(['#', 'Owner', 'Grade', 'Efficiency', 'Clutch', 'Pts left on bench', 'Weeks'], rows);
+    return;
+  }
+  if (mode === 'clutch') {
+    const withCl = rec.teams.filter(t => t.clutch_eff != null);
+    if (!withCl.length) {
+      el.innerHTML = '<div class="vg-empty">No playoff-window matchups (weeks 15–18) graded yet for this season.</div>';
+      return;
+    }
+    const ranked = [...withCl].sort((a, b) => b.clutch_eff - a.clutch_eff);
+    const rows = ranked.map((t, i) => {
+      const mine = isFocusedLookbackTeam(t);
+      return `<tr class="${mine ? 'vg-row--mine' : ''}"><td class="vg-num">${i + 1}</td>`
+        + `<td>${mine ? '★ ' : ''}${escapeHtml(t.ownerName || t.name)}</td>`
+        + `<td><span class="vg-grade ${gradeClass(t.clutch_grade || 'C')}">${t.clutch_grade || '—'}</span></td>`
+        + `<td class="vg-num">${(t.clutch_eff * 100).toFixed(0)}%</td>`
+        + `<td class="vg-num">${(t.clutch_left || 0).toFixed(0)}</td>`
+        + `<td class="vg-num">${t.clutch_weeks || '—'}</td>`
+        + `<td class="vg-num">${t.start_sit_eff != null ? (t.start_sit_eff * 100).toFixed(0) + '%' : '—'}</td></tr>`;
+    }).join('');
+    el.innerHTML = table(['#', 'Owner', 'Grade', 'Clutch eff', 'Pts left', 'Playoff wks', 'Season start/sit'], rows);
     return;
   }
   const cmp = {
@@ -1923,6 +1967,9 @@ function gradeLeagueSeason(hist) {
       start_sit_eff: tm.start_sit_eff ?? null,
       start_sit_left: tm.start_sit_left ?? null,
       start_sit_weeks: tm.start_sit_weeks ?? null,
+      clutch_eff: tm.clutch_eff ?? null,
+      clutch_left: tm.clutch_left ?? null,
+      clutch_weeks: tm.clutch_weeks ?? null,
       _picks: tm.picks,
     };
   });
@@ -1934,6 +1981,12 @@ function gradeLeagueSeason(hist) {
   ssRanked.forEach((t, i) => {
     const nn = ssRanked.length;
     t.start_sit_grade = letterGrade(nn > 1 ? 1 - i / (nn - 1) : 1);
+  });
+  const clRanked = scored.filter(t => t.clutch_eff != null)
+    .sort((a, b) => b.clutch_eff - a.clutch_eff);
+  clRanked.forEach((t, i) => {
+    const nn = clRanked.length;
+    t.clutch_grade = letterGrade(nn > 1 ? 1 - i / (nn - 1) : 1);
   });
 
   const pickOf = new Map();

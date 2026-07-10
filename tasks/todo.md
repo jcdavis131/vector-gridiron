@@ -9,7 +9,8 @@
 - [x] **Soft ngs+defense ×0.25** — MAE 4.310, **not** promoted
 - [x] **tower_contrib UI** — MAE **4.258** tied — **promoted**
 - [x] **Weekly start/sit ingest** — matchup efficiency + Lookback ranking mode
-- [ ] Hill-climb next: pause expand · or playoff clutch metric
+- [x] **Playoff clutch (wk15+)** — clutch_eff + Clutch standings mode
+- [ ] Hill-climb next: pause expand until new season data · or slow loop
 - Loop armed every **1m** until stopped (PID 19624)
 
 ## Promoted

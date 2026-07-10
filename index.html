@@ -176,6 +176,10 @@
           <label class="vg-slot" for="lookback-season">Season</label><br>
           <select class="vg-input" id="lookback-season" style="max-width:130px"></select>
         </div>
+        <div>
+          <label class="vg-slot" for="lookback-owner">Focus owner</label><br>
+          <select class="vg-input" id="lookback-owner" style="max-width:220px"></select>
+        </div>
         <div class="vg-posfilter" id="lookback-posfilter" role="group" aria-label="Position filter">
           <button type="button" data-pos="ALL" aria-pressed="true">All</button>
           <button type="button" data-pos="QB">QB</button>
@@ -188,9 +192,22 @@
       </div>
       <div id="lookback-superlatives"></div>
     </div>
+    <div class="vg-card vg-card--you" id="ll-you-wrap">
+      <div class="vg-card__title" id="ll-you-title">Your report card</div>
+      <p class="vg-note" id="ll-you-sub" style="margin:0 0 10px">Connect a league to pin your draft grade, record, and career arc first.</p>
+      <div id="ll-you-card"><div class="vg-empty">Connect your league — Lookback leads with your card.</div></div>
+    </div>
     <div class="vg-card">
-      <div class="vg-card__title" id="lookback-perfect-title">The perfect roster you could've started</div>
-      <div id="lookback-perfect"></div>
+      <div class="vg-card__title">League standings — who is best at…</div>
+      <div class="vg-posfilter" id="ll-rank-mode" role="group" aria-label="Ranking mode" style="margin-bottom:12px">
+        <button type="button" data-mode="draft" aria-pressed="true">Drafting</button>
+        <button type="button" data-mode="titles">Titles</button>
+        <button type="button" data-mode="pf">Scoring</button>
+        <button type="button" data-mode="playoffs">Playoffs</button>
+        <button type="button" data-mode="career" title="Multi-season career rollup">Career draft</button>
+      </div>
+      <p class="vg-note" id="ll-rank-note" style="margin:0 0 10px">Draft value over replacement · ★ = focused owner.</p>
+      <div id="ll-rankings"><div class="vg-empty">Load a season to rank owners.</div></div>
     </div>
     <div class="vg-card">
       <div class="vg-card__title">Draft report cards — <span id="ll-season-a">—</span> league</div>
@@ -198,8 +215,8 @@
       <div id="ll-cards"></div>
     </div>
     <div class="vg-card">
-      <div class="vg-card__title">League owners — career draft grades</div>
-      <p class="vg-note" style="margin:0 0 10px">Rolled up by <b>manager</b> (ESPN/Sleeper owner id), not team name — renames stay on one career. Average draft grade, titles, points for.</p>
+      <div class="vg-card__title">League owners — career</div>
+      <p class="vg-note" style="margin:0 0 10px">Rolled up by <b>manager</b> (ESPN/Sleeper owner id), not team name. Your row stays on top; toggle Focus owner above to inspect anyone else. Start/sit efficiency needs weekly lineup history (not graded yet).</p>
       <div id="ll-owners"><div class="vg-empty">Connect your league to evaluate owners historically.</div></div>
     </div>
     <div class="vg-card">
@@ -213,6 +230,10 @@
     <div class="vg-card">
       <div class="vg-card__title">Week by week</div>
       <div id="ll-weeks"></div>
+    </div>
+    <div class="vg-card">
+      <div class="vg-card__title" id="lookback-perfect-title">The perfect roster you could've started</div>
+      <div id="lookback-perfect"></div>
     </div>
     <div class="vg-card">
       <div class="vg-card__title">Season report card — every qualified player, graded</div>

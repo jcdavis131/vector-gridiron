@@ -486,11 +486,26 @@ def main():
     r2 = lambda y, p: float(1 - np.sum((y - p) ** 2) / max(1e-9, np.sum((y - y.mean()) ** 2)))
     f_last4 = X[te][:, feats.index("f_fpts_ppr")]
     f_std = X[te][:, feats.index("std_ppr")]
+    y0, p0 = yte[:, 0], pte[:, 0]
+    abs_e = np.abs(y0 - p0)
+    # MAPE: floor denom so near-zero weeks don't explode (fantasy pts)
+    mape_denom = np.maximum(np.abs(y0), 1.0)
+    pos_te = np.array([META[i]["pos"] for i in np.where(te)[0]]) if te.any() else np.array([])
+    per_pos_mae = {}
+    for p in SKILL:
+        m = pos_te == p
+        if m.sum() >= 30:
+            per_pos_mae[p] = round(float(np.mean(abs_e[m])), 3)
     report = {
-        "model_fpts_mae": round(mae(pte[:, 0], yte[:, 0]), 3),
-        "model_fpts_r2": round(r2(yte[:, 0], pte[:, 0]), 3),
-        "baseline_last4_mae": round(mae(f_last4, yte[:, 0]), 3),
-        "baseline_seasontodate_mae": round(mae(f_std, yte[:, 0]), 3),
+        "model_fpts_mae": round(mae(p0, y0), 3),
+        "model_fpts_r2": round(r2(y0, p0), 3),
+        "model_fpts_rmse": round(float(np.sqrt(np.mean((y0 - p0) ** 2))), 3),
+        "model_fpts_medae": round(float(np.median(abs_e)), 3),
+        "model_fpts_mape": round(float(np.mean(abs_e / mape_denom)), 3),
+        "model_fpts_bias": round(float(np.mean(p0 - y0)), 3),
+        "per_pos_mae": per_pos_mae,
+        "baseline_last4_mae": round(mae(f_last4, y0), 3),
+        "baseline_seasontodate_mae": round(mae(f_std, y0), 3),
         "per_stat_mae": {t: round(mae(pte[:, i], yte[:, i]), 2)
                          for i, t in enumerate(targets)},
         "test_season": int(seasons[te][0]) if te.any() else None,
@@ -502,6 +517,8 @@ def main():
         "family_drop": args.family_drop,
         "d_emb": args.d_emb,
         "hill_climb": "rz+conformal80_abs_resid",
+        "promote_metric": "mae",
+        "metrics_note": "MAE is the promote gate; MAPE/RMSE/MedAE/bias are diagnostic.",
     }
     # Split-conformal bands: per-pos quantile of |residual| at level α (default 80%).
     # Point estimate unchanged; floor/ceil = proj ± q̂ (not ±σ).
@@ -509,8 +526,7 @@ def main():
     resid_by_pos = {}  # kept as σ for diagnostics
     conf_by_pos = {}
     if te.any():
-        pos_te = np.array([META[i]["pos"] for i in np.where(te)[0]])
-        abs_all = np.abs(yte[:, 0] - pte[:, 0])
+        abs_all = abs_e
         for p in SKILL:
             mask_p = pos_te == p
             if mask_p.sum() >= 30:

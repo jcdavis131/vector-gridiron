@@ -119,7 +119,11 @@ Credentials live only in your browser's `localStorage`.
 
 ## Methods (honesty)
 
-Held-out **2025** next-game PPR (temporal split: train ≤2023, val 2024, test 2025):
+Held-out **2025** next-game PPR (temporal split: train ≤2023, val 2024, test 2025).
+**Promote gate = MAE.** Diagnostic battery on the same held-out set (also in
+`mtnn_report.json`): RMSE **6.17** · MedAE **2.77** · MAPE **1.04** (noisy —
+many near-zero weeks; denom floored at 1.0) · bias **−1.12** (slight under-
+predict) · per-pos MAE QB 6.41 / RB 4.34 / WR 4.07 / TE 3.43.
 
 | | MAE | notes |
 |--|-----|-------|
@@ -128,6 +132,11 @@ Held-out **2025** next-game PPR (temporal split: train ≤2023, val 2024, test 2
 | v1 (flat trunk) | 4.313 | reference |
 | last-4 mean | 4.616 | must beat |
 | season-to-date | 4.523 | must beat |
+
+**K / DST:** not in the skill MTNN (QB/RB/WR/TE only). Kickers and team defenses
+use season-rate models in `pipeline/build_kdst.py` → `assets/kdst.json`, merged
+into roster / start-sit / draft / lookback. The MTNN `defense` family is
+**opponent DvP**, not fantasy DST units.
 
 **Floor / ceiling** on the board are **split-conformal** bands: per-position
 quantile of absolute held-out residual at level 80% (coverage ≈ 0.80 on 2025

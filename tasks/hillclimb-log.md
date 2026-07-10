@@ -38,3 +38,5 @@
 - README Methods · `family_ablation.py` · per-pos uncertainty
 - `build_rz.py` + nflverse pbp parquet · RZ opportunity cols
 - Conformal floor/ceil (abs residual q80 by position)
+- Metrics battery (MAPE/RMSE/MedAE/bias/per-pos) — MAE remains promote gate
+- Owner-first Lookback (focus picker · you card · standings modes)

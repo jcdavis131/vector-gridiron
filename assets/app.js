@@ -1100,6 +1100,40 @@ function isMyLookbackTeam(t) {
   return !!(myLabel && theirLabel && myLabel === theirLabel);
 }
 
+/** Resolve focus key: 'me' → connected manager, else an ownerCareerKey. */
+function resolveFocusKey() {
+  if (LB.focusKey && LB.focusKey !== 'me') return LB.focusKey;
+  const lg = STATE.league;
+  if (!lg?.myId) return null;
+  const me = lg.teams.find(x => x.id === lg.myId);
+  return ownerCareerKey(me);
+}
+
+function isFocusedLookbackTeam(t) {
+  const fk = resolveFocusKey();
+  if (!fk) return isMyLookbackTeam(t);
+  return ownerCareerKey(t) === fk || (t.key && t.key === fk);
+}
+
+function myLookbackTeamLabel() {
+  const lg = STATE.league;
+  if (!lg?.myId) return null;
+  const me = lg.teams.find(x => x.id === lg.myId);
+  if (!me) return null;
+  return me.ownerName || me.name || 'You';
+}
+
+/** Pin focused owner to top; stable secondary sort via cmp(a,b). */
+function sortFocusFirst(list, cmp) {
+  const fk = resolveFocusKey();
+  return [...list].sort((a, b) => {
+    const am = isFocusedLookbackTeam(a) ? 1 : 0;
+    const bm = isFocusedLookbackTeam(b) ? 1 : 0;
+    if (am !== bm) return bm - am;
+    return cmp(a, b);
+  });
+}
+
 /** Multi-season owner rollup from live lookback (falls back to seed if no live). */
 function ownerCareerMap() {
   const live = STATE.lookbackLive;
@@ -1184,9 +1218,7 @@ function renderOwnerCareers() {
     el.innerHTML = `<div class="vg-empty">Loading draft history for ${escapeHtml(live.leagueName || 'your league')}…</div>`;
     return;
   }
-  const careers = [...ownerCareerMap().values()].sort((a, b) =>
-    (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0)
-    || b.titles - a.titles || b.avgPf - a.avgPf);
+  let careers = [...ownerCareerMap().values()];
   if (!careers.length) {
     const msg = live?.status === 'empty' || live?.status === 'err' || live?.status === 'auth'
       ? (live.message || 'No historic drafts graded yet.')
@@ -1198,15 +1230,25 @@ function renderOwnerCareers() {
     $('#ll-owners-reconnect')?.addEventListener('click', openConnect);
     return;
   }
-  const rows = careers.map(c => {
-    const mine = isMyLookbackTeam(c);
+  const mode = LB.rankMode === 'career' ? 'draft' : LB.rankMode;
+  const cmp = {
+    draft: (a, b) => (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0)
+      || b.titles - a.titles || b.avgPf - a.avgPf,
+    titles: (a, b) => b.titles - a.titles || (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0),
+    pf: (a, b) => b.avgPf - a.avgPf || b.titles - a.titles,
+    playoffs: (a, b) => b.titles - a.titles || b.avgPf - a.avgPf,
+  }[mode] || ((a, b) => (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0));
+  careers = sortFocusFirst(careers, cmp);
+  const rows = careers.map((c, i) => {
+    const mine = isFocusedLookbackTeam(c);
     const aka = (c.teamNames || []).filter(n => n && n !== c.currentTeam);
     const teamLine = c.currentTeam
       ? `<div style="font-size:11px;opacity:.7;margin-top:2px">${escapeHtml(c.currentTeam)}`
         + (aka.length ? ` · aka ${escapeHtml(aka.slice(0, 3).join(', '))}${aka.length > 3 ? '…' : ''}` : '')
         + `</div>`
       : '';
-    return `<tr class="${mine ? 'vg-row--mine' : ''}"><td>${mine ? '★ ' : ''}<b>${escapeHtml(c.name)}</b>${teamLine}</td>`
+    return `<tr class="${mine ? 'vg-row--mine' : ''}"><td class="vg-num">${i + 1}</td>`
+      + `<td>${mine ? '★ ' : ''}<b>${escapeHtml(c.name)}</b>${teamLine}</td>`
       + `<td><span class="vg-grade ${gradeClass(c.avgGrade)}">${c.avgGrade}</span></td>`
       + `<td class="vg-num">${c.seasons}</td>`
       + `<td class="vg-num">${c.titles}</td>`
@@ -1216,12 +1258,162 @@ function renderOwnerCareers() {
       + `<td class="vg-num" style="font-size:11px;text-align:left">${c.years.slice().sort((a, b) => b - a).join(', ')}</td></tr>`;
   }).join('');
   el.innerHTML = table(
-    ['Owner', 'Avg draft', 'Seasons', 'Titles', 'Avg PF', 'Best / worst', 'Years'],
+    ['#', 'Owner', 'Avg draft', 'Seasons', 'Titles', 'Avg PF', 'Best / worst', 'Years'],
     rows,
-  ) + `<p class="vg-note" style="margin-top:8px">Aligned by <b>manager identity</b> (not team name), so renames don't split careers.
-    Grades from ${careers[0] && STATE.lookbackLive?.leagueName
-      ? escapeHtml(STATE.lookbackLive.leagueName) + "'s"
-      : 'graded'} real drafts (VOR). ★ = you.</p>`;
+  ) + `<p class="vg-note" style="margin-top:8px">Aligned by <b>manager identity</b> (not team name).
+    ★ = focused owner (default: you). Start/sit &amp; bench skill need weekly lineup history — not graded yet.</p>`;
+}
+
+function refreshLookbackOwnerPicker() {
+  const sel = $('#lookback-owner');
+  if (!sel) return;
+  const lg = STATE.league;
+  const careers = [...ownerCareerMap().values()]
+    .sort((a, b) => String(a.name).localeCompare(String(b.name)));
+  const meLabel = myLookbackTeamLabel();
+  const opts = [];
+  if (lg?.myId && meLabel) {
+    opts.push(`<option value="me">★ You — ${escapeHtml(meLabel)}</option>`);
+  } else {
+    opts.push(`<option value="me">★ You (connect a league)</option>`);
+  }
+  for (const c of careers) {
+    if (isMyLookbackTeam(c)) continue;
+    const label = c.currentTeam ? `${c.name} · ${c.currentTeam}` : c.name;
+    opts.push(`<option value="${escapeAttr(c.key)}">${escapeHtml(label)}</option>`);
+  }
+  // Also offer current-league teams not yet in career map
+  if (lg) {
+    const seen = new Set(careers.map(c => c.key));
+    for (const t of lg.teams) {
+      const k = ownerCareerKey(t);
+      if (!k || seen.has(k) || isMyLookbackTeam(t)) continue;
+      opts.push(`<option value="${escapeAttr(k)}">${escapeHtml(t.ownerName || t.name)}</option>`);
+      seen.add(k);
+    }
+  }
+  const prev = LB.focusKey || 'me';
+  sel.innerHTML = opts.join('');
+  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+  else { sel.value = 'me'; LB.focusKey = 'me'; }
+}
+
+function renderYouCard(season) {
+  const wrap = $('#ll-you-card');
+  const title = $('#ll-you-title');
+  const sub = $('#ll-you-sub');
+  if (!wrap) return;
+  const rec = STATE.lookbackBySeason.get(season);
+  const fk = resolveFocusKey();
+  const careers = ownerCareerMap();
+  const career = fk ? careers.get(fk) : null;
+  const team = rec?.teams?.find(t => isFocusedLookbackTeam(t));
+  const label = team
+    ? (team.ownerName || team.name)
+    : (career?.name || myLookbackTeamLabel() || 'Focused owner');
+  const isYou = LB.focusKey === 'me' || isMyLookbackTeam(team || career || {});
+  if (title) title.textContent = isYou ? 'Your report card' : `Report card — ${label}`;
+  if (sub) {
+    sub.textContent = team
+      ? `${season} draft grade · record · PF · best steal / bust`
+      : (STATE.league
+        ? `No ${season} draft on file for this owner — career rollup below when available.`
+        : 'Connect a league to pin your card first, then toggle any owner.');
+  }
+  if (!team && !career) {
+    wrap.innerHTML = '<div class="vg-empty">Connect your league — Lookback leads with your card.</div>';
+    return;
+  }
+  const g = team?.grade || career?.avgGrade || '—';
+  const metrics = [];
+  if (team) {
+    metrics.push(`<div class="vg-metric"><div class="vg-metric__n"><span class="vg-grade ${gradeClass(g)}">${g}</span></div><div class="vg-metric__l">draft grade</div></div>`);
+    metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${escapeHtml(team.record || '—')}</div><div class="vg-metric__l">record</div></div>`);
+    metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(team.points_for || 0).toFixed(0)}</div><div class="vg-metric__l">points for</div></div>`);
+    metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(team.draft_value || 0).toFixed(1)}</div><div class="vg-metric__l">draft VOR</div></div>`);
+  }
+  if (career) {
+    metrics.push(`<div class="vg-metric"><div class="vg-metric__n"><span class="vg-grade ${gradeClass(career.avgGrade)}">${career.avgGrade}</span></div><div class="vg-metric__l">career draft</div></div>`);
+    metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${career.titles}</div><div class="vg-metric__l">titles</div></div>`);
+    metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${career.seasons}</div><div class="vg-metric__l">seasons graded</div></div>`);
+  }
+  const bp = team?.best_pick, wp = team?.worst_pick;
+  const picks = (bp || wp)
+    ? `<div class="vg-you__picks"><span class="vg-val vg-val--up">STEAL</span> ${bp ? escapeHtml(bp.name) + ` <span class="vg-slot">pk${bp.pick}</span>` : '—'}
+         &nbsp; <span class="vg-val vg-val--dn">BUST</span> ${wp ? escapeHtml(wp.name) + ` <span class="vg-slot">pk${wp.pick}</span>` : '—'}</div>`
+    : '';
+  const champ = team?.champion ? '<span class="vg-you__champ">👑 Champion</span>' : '';
+  wrap.innerHTML =
+    `<div class="vg-you">
+      <div class="vg-you__hd"><b>${escapeHtml(label)}</b> ${champ}
+        ${team?.name && team.name !== label ? `<span class="vg-owner-chip">${escapeHtml(team.name)}</span>` : ''}</div>
+      <div class="vg-lineup-total">${metrics.join('')}</div>
+      ${picks}
+      ${team?.roast?.line ? `<p class="vg-roast__line" style="margin-top:8px">${escapeHtml(team.roast.line)}</p>` : ''}
+    </div>`;
+}
+
+function renderLeagueRankings(season) {
+  const el = $('#ll-rankings');
+  const note = $('#ll-rank-note');
+  if (!el) return;
+  const mode = LB.rankMode || 'draft';
+  const notes = {
+    draft: 'Ranked by draft VOR captured that season · ★ = focused owner.',
+    titles: 'Career titles (multi-season) · season view still shows that year\'s record.',
+    pf: 'Season points for · higher scoring managers rise.',
+    playoffs: 'Champions first, then playoff seed / wins · ★ = focused owner.',
+    career: 'Career average draft grade across graded seasons.',
+  };
+  if (note) note.textContent = notes[mode] || notes.draft;
+
+  if (mode === 'career' || mode === 'titles') {
+    const careers = [...ownerCareerMap().values()];
+    if (!careers.length) {
+      el.innerHTML = '<div class="vg-empty">Connect + load Lookback history for career standings.</div>';
+      return;
+    }
+    const cmp = mode === 'titles'
+      ? (a, b) => b.titles - a.titles || (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0)
+      : (a, b) => (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0) || b.titles - a.titles;
+    const ranked = [...careers].sort(cmp);
+    const rows = ranked.map((c, i) => {
+      const mine = isFocusedLookbackTeam(c);
+      return `<tr class="${mine ? 'vg-row--mine' : ''}"><td class="vg-num">${i + 1}</td>`
+        + `<td>${mine ? '★ ' : ''}<b>${escapeHtml(c.name)}</b></td>`
+        + `<td><span class="vg-grade ${gradeClass(c.avgGrade)}">${c.avgGrade}</span></td>`
+        + `<td class="vg-num">${c.titles}</td>`
+        + `<td class="vg-num">${c.seasons}</td>`
+        + `<td class="vg-num">${c.avgPf.toFixed(0)}</td></tr>`;
+    }).join('');
+    el.innerHTML = table(['#', 'Owner', 'Avg draft', 'Titles', 'Seasons', 'Avg PF'], rows);
+    return;
+  }
+
+  const rec = STATE.lookbackBySeason.get(season);
+  if (!rec?.teams?.length) {
+    el.innerHTML = '<div class="vg-empty">No league season loaded for rankings.</div>';
+    return;
+  }
+  const cmp = {
+    draft: (a, b) => b.draft_value - a.draft_value,
+    pf: (a, b) => b.points_for - a.points_for,
+    playoffs: (a, b) => (b.champion ? 1 : 0) - (a.champion ? 1 : 0)
+      || (a.seed || 99) - (b.seed || 99) || b.wins - a.wins || b.points_for - a.points_for,
+  }[mode] || ((a, b) => b.draft_value - a.draft_value);
+  const ranked = [...rec.teams].sort(cmp);
+  const rows = ranked.map((t, i) => {
+    const mine = isFocusedLookbackTeam(t);
+    return `<tr class="${t.champion ? 'vg-row--champ' : ''}${mine ? ' vg-row--mine' : ''}">`
+      + `<td class="vg-num">${i + 1}</td>`
+      + `<td>${t.champion ? '👑 ' : ''}${mine ? '★ ' : ''}${escapeHtml(t.ownerName || t.name)}</td>`
+      + `<td><span class="vg-grade ${gradeClass(t.grade)}">${t.grade}</span></td>`
+      + `<td class="vg-num">${(t.draft_value || 0).toFixed(1)}</td>`
+      + `<td class="vg-num">${escapeHtml(t.record || '—')}</td>`
+      + `<td class="vg-num">${(t.points_for || 0).toFixed(0)}</td></tr>`;
+  }).join('');
+  el.innerHTML = table(['#', 'Owner', 'Grade', 'Draft VOR', 'Rec', 'PF'], rows)
+    + `<p class="vg-note" style="margin-top:8px">Start/sit ranking needs weekly starter history — coming after matchup ingest.</p>`;
 }
 
 function refreshLookbackSeasonPicker() {
@@ -1258,7 +1450,7 @@ function seasonGrades(season) {
   return { pool, grade };
 }
 
-const LB = { season: null, pos: 'ALL' };
+const LB = { season: null, pos: 'ALL', focusKey: 'me', rankMode: 'draft' };
 function initLookback() {
   refreshLookbackSeasonPicker();
   const sel = $('#lookback-season');
@@ -1268,11 +1460,22 @@ function initLookback() {
     $$('#lookback-posfilter button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
     renderLookback();
   }));
+  $('#lookback-owner')?.addEventListener('change', e => {
+    LB.focusKey = e.target.value || 'me';
+    renderLookback();
+  });
+  $$('#ll-rank-mode button').forEach(b => b.addEventListener('click', () => {
+    LB.rankMode = b.dataset.mode;
+    $$('#ll-rank-mode button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    renderLeagueRankings(LB.season);
+    renderOwnerCareers();
+  }));
   renderLookback();
 }
 
 function renderLookback() {
   if (!STATE.vectors || LB.season == null) return;
+  refreshLookbackOwnerPicker();
   const { pool, grade } = seasonGrades(LB.season);
   const sorted = [...pool].sort((a, b) => ppgOf(b) - ppgOf(a));
   const leader = pos => sorted.find(p => p.pos === pos);
@@ -1285,11 +1488,14 @@ function renderLookback() {
        <div class="vg-super__n">${escapeHtml(p.name)}</div>
        <div class="vg-super__v">${ppgOf(p).toFixed(1)} ${sc}/g</div></div>` : '').join('') + '</div>';
 
+  renderYouCard(LB.season);
+  renderLeagueRankings(LB.season);
+
   // what-if: the best startable lineup of that season by ACTUAL ppg (incl K/DST)
   const slots = (STATE.league && STATE.league.slots) || { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 1, K: 1, DST: 1 };
   const withVal = sorted.filter(p => ALL_POS.includes(p.pos)).map(p => ({ player: p, p: ppgOf(p) }));
   const { starters, total } = greedyFill(withVal, slots);
-  $('#lookback-perfect-title').textContent = `The perfect roster you could've started — ${LB.season}`;
+  $('#lookback-perfect-title').textContent = `The perfect roster anyone could've started — ${LB.season}`;
   $('#lookback-perfect').innerHTML =
     `<div class="vg-lineup-total"><div class="vg-metric"><div class="vg-metric__n">${total.toFixed(1)}</div>
       <div class="vg-metric__l">${sc} pts / week</div></div></div>`
@@ -1348,12 +1554,12 @@ function renderLeagueSeason(season) {
     return;
   }
   const isLive = !!(rec.source === 'league' || (live?.seasons?.has(season)));
-  const teams = [...rec.teams].sort((a, b) => b.draft_value - a.draft_value);
+  const teams = sortFocusFirst(rec.teams, (a, b) => b.draft_value - a.draft_value);
   const rows = teams.map(t => {
     const bp = t.best_pick, wp = t.worst_pick;
-    const mine = isMyLookbackTeam(t);
+    const mine = isFocusedLookbackTeam(t);
     return `<tr class="${t.champion ? 'vg-row--champ' : ''}${mine ? ' vg-row--mine' : ''}"><td><span class="vg-grade ${gradeClass(t.grade)}">${t.grade}</span></td>`
-      + `<td>${t.champion ? '👑 ' : ''}${mine ? '★ ' : ''}${escapeHtml(t.name)}</td>`
+      + `<td>${t.champion ? '👑 ' : ''}${mine ? '★ ' : ''}${escapeHtml(t.ownerName || t.name)}</td>`
       + `<td class="vg-num">${t.draft_value.toFixed(1)}</td>`
       + `<td class="vg-num">${escapeHtml(t.record)}</td>`
       + `<td class="vg-num">${t.points_for.toFixed(0)}</td>`
@@ -1361,10 +1567,10 @@ function renderLeagueSeason(season) {
       + `<td style="text-align:left;font-size:11px" class="vg-unmatched">${wp ? escapeHtml(wp.name) + ` <span class="vg-slot">pk${wp.pick}</span>` : '—'}</td></tr>`;
   }).join('');
   $('#ll-cards').innerHTML =
-    table(['Grade', 'Team', 'Draft VOR', 'Rec', 'PF', 'Best steal', 'Biggest bust'], rows)
+    table(['Grade', 'Owner', 'Draft VOR', 'Rec', 'PF', 'Best steal', 'Biggest bust'], rows)
     + `<p class="vg-note" style="margin-top:8px">${isLive
-      ? `Your league's real ${season} draft, graded on value-over-replacement from actual NFL ${STATE.scoring.toUpperCase()} production (👑 = champion).`
-      : `Best-ball PPR · drafts graded on value-over-replacement captured (👑 = champion). Seeded from real ${season} results; your league's actual draft history plugs into this same engine once connected.`}</p>`;
+      ? `Your league's real ${season} draft, graded on value-over-replacement from actual NFL ${STATE.scoring.toUpperCase()} production (👑 = champion · ★ = focused owner, pinned top).`
+      : `Best-ball PPR · drafts graded on value-over-replacement captured (👑 = champion · ★ = focused). Seeded from real ${season} results; your league's actual draft history plugs into this same engine once connected.`}</p>`;
   $('#ll-story').innerHTML =
     `<p class="vg-story">${mdBold(rec.narratives.draft)}</p><p class="vg-story">${mdBold(rec.narratives.season)}</p>`;
   const weeks = rec.narratives.weeks || [];
@@ -1381,22 +1587,27 @@ function renderLeagueSeason(season) {
 // copy buttons so you can paste the roast straight into the league group chat.
 function renderRoast(season, rec) {
   $('#ll-season-c').textContent = season;
-  const teams = [...rec.teams].filter(t => t.roast)
-    .sort((a, b) => (a.roast.miss ? a.roast.miss.vor : 0) - (b.roast.miss ? b.roast.miss.vor : 0));
+  const teams = sortFocusFirst(
+    [...rec.teams].filter(t => t.roast),
+    (a, b) => (a.roast.miss ? a.roast.miss.vor : 0) - (b.roast.miss ? b.roast.miss.vor : 0),
+  );
   const chip = pl => pl ? `${escapeHtml(pl.name)} <span class="vg-slot">pk${pl.pick}</span>` : '—';
   $('#ll-roast').innerHTML =
     `<div style="margin-bottom:12px"><button class="vg-btn vg-btn--primary" id="ll-roast-copyall">📋 Copy the whole roast</button>
        <span class="vg-note" id="ll-roast-msg" style="margin-left:8px"></span></div>`
-    + teams.map(t => `<div class="vg-roast">
-        <div class="vg-roast__hd"><b>${escapeHtml(t.name)}</b> <span class="vg-grade ${gradeClass(t.grade)}">${t.grade}</span>
+    + teams.map(t => {
+      const mine = isFocusedLookbackTeam(t);
+      return `<div class="vg-roast${mine ? ' vg-roast--mine' : ''}">
+        <div class="vg-roast__hd"><b>${mine ? '★ ' : ''}${escapeHtml(t.ownerName || t.name)}</b> <span class="vg-grade ${gradeClass(t.grade)}">${t.grade}</span>
           <button class="vg-btn vg-btn--ghost vg-roast__copy" data-name="${escapeAttr(t.name)}">copy</button></div>
         <p class="vg-roast__line">${escapeHtml(t.roast.line)}</p>
         <div class="vg-roast__pk"><span class="vg-val vg-val--dn">MISS</span> ${chip(t.roast.miss)}
           &nbsp; <span class="vg-val vg-val--up">HIT</span> ${chip(t.roast.hit)}
           &nbsp; <span class="vg-slot">redraft →</span> ${chip(t.roast.redraft)}</div>
-      </div>`).join('')
+      </div>`;
+    }).join('')
     + `<p class="vg-note" style="margin-top:8px">Best-ball hindsight: MISS = worst pick vs its draft cost · redraft = the best player still on the board when they took it.${rec.source === 'league' ? ` Graded from your league's real ${season} draft.` : ` Seeded from real ${season}; your league's real draft roasts through the same engine once connected.`}</p>`;
-  const lineFor = t => `${t.name} (${t.grade}): ${t.roast.line}`;
+  const lineFor = t => `${t.ownerName || t.name} (${t.grade}): ${t.roast.line}`;
   $('#ll-roast-copyall').addEventListener('click', () => {
     copyText(`🔥 ${season} Draft Roast 🔥\n\n` + teams.map(lineFor).join('\n\n'), '#ll-roast-msg', 'Roast copied — go start something.');
   });

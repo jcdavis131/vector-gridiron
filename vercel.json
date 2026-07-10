@@ -1,0 +1,14 @@
+{
+  "cleanUrls": true,
+  "functions": {
+    "api/espn.js": { "maxDuration": 10 }
+  },
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, stale-while-revalidate=86400" }
+      ]
+    }
+  ]
+}

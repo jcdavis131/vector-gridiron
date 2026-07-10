@@ -1,0 +1,5 @@
+# Raw nflverse feeds — regenerated on demand, never served. Keep them out of
+# the deployment (the built assets/*.json ARE served and stay).
+pipeline/cache/
+pipeline/data/
+pipeline/*.mjs

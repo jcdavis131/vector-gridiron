@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vector Gridiron — your fantasy football cockpit</title>
+<meta name="description" content="Sync your ESPN or Sleeper league and get model-backed start/sit, waiver, and trade calls grounded in an NFL player-embedding space. Context-honest, zero tracking.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#127944;</text></svg>">
+<link rel="stylesheet" href="assets/gridiron.css">
+</head>
+<body>
+
+<header class="vg-header">
+  <span class="vg-logo">VECTOR<span class="vg-logo__accent">GRIDIRON</span></span>
+  <span class="vg-scoring" id="scoring-badge">scoring <b>PPR</b></span>
+  <span class="vg-spacer"></span>
+  <span class="vg-scoring" id="league-badge" hidden></span>
+  <button class="vg-btn vg-btn--ghost" id="tour-btn" type="button" title="Replay the tour" aria-label="Replay the tour">?</button>
+  <button class="vg-btn vg-btn--primary" id="connect-btn" type="button">Connect league</button>
+</header>
+
+<nav class="vg-tabs" id="tabs" role="tablist">
+  <button class="vg-tab" role="tab" data-view="team"    aria-selected="true">My Team</button>
+  <button class="vg-tab" role="tab" data-view="draft"   aria-selected="false">Draft Prep</button>
+  <button class="vg-tab" role="tab" data-view="draftroom" aria-selected="false">Draft Room</button>
+  <button class="vg-tab" role="tab" data-view="nextgame" aria-selected="false">Next Game</button>
+  <button class="vg-tab" role="tab" data-view="startsit" aria-selected="false">Start / Sit</button>
+  <button class="vg-tab" role="tab" data-view="waivers" aria-selected="false">Waivers</button>
+  <button class="vg-tab" role="tab" data-view="trades"  aria-selected="false">Trades</button>
+  <button class="vg-tab" role="tab" data-view="lookback" aria-selected="false">Lookback</button>
+  <button class="vg-tab" role="tab" data-view="explorer" aria-selected="false">Vector Map</button>
+</nav>
+
+<main id="app">
+
+  <!-- MY TEAM -->
+  <section class="vg-view is-active" id="view-team" role="tabpanel">
+    <div id="team-unconnected">
+      <div class="vg-hero">
+        <h1>Your fantasy season, on rails.</h1>
+        <p>Connect the ESPN or Sleeper league you're already in. Vector Gridiron
+        maps every skill player into a learned NFL profile space, then a
+        temporally-honest projection model turns your roster into weekly
+        start/sit, waiver, and trade calls — no spreadsheet, no hot takes.</p>
+        <button class="vg-btn vg-btn--primary" id="connect-btn-2" type="button">Connect your league</button>
+        <p class="vg-note" style="margin-top:14px">or just explore the
+          <a href="#" data-jump="explorer">player Vector Map</a> — no login.</p>
+      </div>
+    </div>
+    <div id="team-connected" hidden>
+      <div id="team-banner"></div>
+      <div class="vg-card">
+        <div class="vg-card__title" id="team-title">My roster</div>
+        <div id="roster-body"></div>
+      </div>
+      <div class="vg-card">
+        <div class="vg-card__title">League power rankings — by projected starter strength</div>
+        <div id="power-body"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DRAFT PREP (season projections) -->
+  <section class="vg-view" id="view-draft" role="tabpanel">
+    <div class="vg-card">
+      <div class="vg-card__title">Draft board — <span id="draft-season-label">2026</span> projected PPR points/game</div>
+      <div class="vg-posfilter" id="draft-posfilter" role="group" aria-label="Position filter" style="margin-bottom:12px">
+        <button type="button" data-pos="ALL" aria-pressed="true">All</button>
+        <button type="button" data-pos="QB">QB</button>
+        <button type="button" data-pos="RB">RB</button>
+        <button type="button" data-pos="WR">WR</button>
+        <button type="button" data-pos="TE">TE</button>
+        <button type="button" data-pos="K">K</button>
+        <button type="button" data-pos="DST">DST</button>
+      </div>
+      <div id="draft-body"></div>
+    </div>
+  </section>
+
+  <!-- DRAFT ROOM (live assistant + what-if replay on the vector map) -->
+  <section class="vg-view" id="view-draftroom" role="tabpanel">
+    <div class="vg-card">
+      <div class="vg-card__title">Draft Room — live assistant &amp; what-if replay</div>
+      <div class="vg-dr-ctl" id="dr-ctl">
+        <label class="vg-slot">Mode
+          <select class="vg-input" id="dr-mode"><option value="live">Live 2026 draft</option></select></label>
+        <label class="vg-slot">Teams
+          <select class="vg-input" id="dr-teams"></select></label>
+        <label class="vg-slot">Your slot
+          <select class="vg-input" id="dr-slot"></select></label>
+        <button class="vg-btn vg-btn--primary" id="dr-start" type="button">Start</button>
+        <button class="vg-btn vg-btn--ghost" id="dr-auto" type="button" title="Auto-run to your next pick">Sim to my pick</button>
+        <button class="vg-btn vg-btn--ghost" id="dr-sync" type="button" title="Import your connected league's real rosters as the draft">Sync my league</button>
+      </div>
+      <div class="vg-dr-status" id="dr-status"></div>
+    </div>
+    <div class="vg-dr-grid">
+      <div class="vg-card vg-dr-mapcard">
+        <div class="vg-mapwrap">
+          <canvas id="dr-map" width="520" height="520"
+            aria-label="Draft board — players in the learned vector space; drafted are dimmed, yours highlighted"></canvas>
+        </div>
+        <div class="vg-maplegend">
+          <span><span class="vg-dot" style="background:var(--qb)"></span>QB</span>
+          <span><span class="vg-dot" style="background:var(--rb)"></span>RB</span>
+          <span><span class="vg-dot" style="background:var(--wr)"></span>WR</span>
+          <span><span class="vg-dot" style="background:var(--te)"></span>TE</span>
+          <span>◻ drafted &middot; ★ yours &middot; click a lit dot to draft</span>
+        </div>
+      </div>
+      <div class="vg-card">
+        <div class="vg-card__title" id="dr-avail-title">Best available</div>
+        <div id="dr-avail"></div>
+      </div>
+    </div>
+    <div class="vg-card">
+      <div class="vg-card__title" id="dr-myteam-title">Your draft</div>
+      <div id="dr-myteam"></div>
+    </div>
+    <div class="vg-card">
+      <div class="vg-card__title">Pick log</div>
+      <div id="dr-log"></div>
+    </div>
+  </section>
+
+  <!-- NEXT GAME (weekly MTNN) -->
+  <section class="vg-view" id="view-nextgame" role="tabpanel">
+    <div class="vg-card">
+      <div class="vg-card__title">Next-game projections — <span id="nextgame-week-label"></span>
+        <span class="vg-slot">(matchup + weather + Vegas)</span></div>
+      <div class="vg-posfilter" id="nextgame-posfilter" role="group" aria-label="Position filter" style="margin-bottom:12px">
+        <button type="button" data-pos="ALL" aria-pressed="true">All</button>
+        <button type="button" data-pos="QB">QB</button>
+        <button type="button" data-pos="RB">RB</button>
+        <button type="button" data-pos="WR">WR</button>
+        <button type="button" data-pos="TE">TE</button>
+        <button type="button" data-pos="K">K</button>
+        <button type="button" data-pos="DST">DST</button>
+      </div>
+      <div id="nextgame-body"></div>
+    </div>
+  </section>
+
+  <!-- START / SIT -->
+  <section class="vg-view" id="view-startsit" role="tabpanel">
+    <div class="vg-card">
+      <div class="vg-card__title">Optimal lineup — this week's projection</div>
+      <div id="startsit-body"><div class="vg-empty">Connect a league to optimize your lineup.</div></div>
+    </div>
+  </section>
+
+  <!-- WAIVERS -->
+  <section class="vg-view" id="view-waivers" role="tabpanel">
+    <div class="vg-card">
+      <div class="vg-card__title">Best available — value board</div>
+      <div id="waivers-body"><div class="vg-empty">Connect a league to see who's available.</div></div>
+    </div>
+  </section>
+
+  <!-- TRADES -->
+  <section class="vg-view" id="view-trades" role="tabpanel">
+    <div class="vg-card">
+      <div class="vg-card__title">Trade finder — surplus &rarr; need</div>
+      <div id="trades-body"><div class="vg-empty">Connect a league to scan for trades.</div></div>
+    </div>
+  </section>
+
+  <!-- LOOKBACK / retro / what-if -->
+  <section class="vg-view" id="view-lookback" role="tabpanel">
+    <div class="vg-card">
+      <div class="vg-card__title">Time machine — grade any past season</div>
+      <div class="vg-lookback-ctl">
+        <div>
+          <label class="vg-slot" for="lookback-season">Season</label><br>
+          <select class="vg-input" id="lookback-season" style="max-width:130px"></select>
+        </div>
+        <div class="vg-posfilter" id="lookback-posfilter" role="group" aria-label="Position filter">
+          <button type="button" data-pos="ALL" aria-pressed="true">All</button>
+          <button type="button" data-pos="QB">QB</button>
+          <button type="button" data-pos="RB">RB</button>
+          <button type="button" data-pos="WR">WR</button>
+          <button type="button" data-pos="TE">TE</button>
+          <button type="button" data-pos="K">K</button>
+          <button type="button" data-pos="DST">DST</button>
+        </div>
+      </div>
+      <div id="lookback-superlatives"></div>
+    </div>
+    <div class="vg-card">
+      <div class="vg-card__title" id="lookback-perfect-title">The perfect roster you could've started</div>
+      <div id="lookback-perfect"></div>
+    </div>
+    <div class="vg-card">
+      <div class="vg-card__title">Draft report cards — <span id="ll-season-a">—</span> league</div>
+      <p class="vg-note" id="ll-live-status" style="margin:0 0 10px">Seeded mock league (connect yours to grade real drafts).</p>
+      <div id="ll-cards"></div>
+    </div>
+    <div class="vg-card">
+      <div class="vg-card__title">The story of <span id="ll-season-b">—</span></div>
+      <div id="ll-story"></div>
+    </div>
+    <div class="vg-card">
+      <div class="vg-card__title">🔥 Draft roast — <span id="ll-season-c">—</span> · biggest hits &amp; misses</div>
+      <div id="ll-roast"></div>
+    </div>
+    <div class="vg-card">
+      <div class="vg-card__title">Week by week</div>
+      <div id="ll-weeks"></div>
+    </div>
+    <div class="vg-card">
+      <div class="vg-card__title">Season report card — every qualified player, graded</div>
+      <div id="lookback-grades"></div>
+    </div>
+  </section>
+
+  <!-- EXPLORER / MAP -->
+  <section class="vg-view" id="view-explorer" role="tabpanel">
+    <div class="vg-card">
+      <div class="vg-card__title">Search any player</div>
+      <div class="vg-search">
+        <input class="vg-input" id="explore-input" type="text" autocomplete="off"
+          placeholder="e.g. Christian McCaffrey, Ja'Marr Chase…" aria-controls="explore-suggest">
+        <ul class="vg-suggest" id="explore-suggest" role="listbox" hidden></ul>
+      </div>
+      <div id="explore-profile"></div>
+    </div>
+    <div class="vg-card">
+      <div class="vg-card__title">The vector map — NFL skill players in profile space</div>
+      <div class="vg-mapwrap">
+        <canvas id="map" width="640" height="640"
+          aria-label="3D point cloud of NFL skill players colored by position"></canvas>
+        <div class="vg-mapctl">
+          <button class="vg-btn vg-btn--ghost" id="map-pause" type="button">Pause</button>
+          <button class="vg-btn vg-btn--ghost" id="map-season" type="button">Latest yr</button>
+        </div>
+      </div>
+      <div class="vg-maplegend">
+        <span><span class="vg-dot" style="background:var(--qb)"></span>QB</span>
+        <span><span class="vg-dot" style="background:var(--rb)"></span>RB</span>
+        <span><span class="vg-dot" style="background:var(--wr)"></span>WR</span>
+        <span><span class="vg-dot" style="background:var(--te)"></span>TE</span>
+        <span id="map-axes">PC1 / PC2 / PC3 of the season-z profile space</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="vg-error" id="error-banner" hidden></div>
+</main>
+
+<!-- NUX — first-run onboarding -->
+<div class="vg-nux" id="nux" hidden>
+  <div class="vg-nux__card" role="dialog" aria-modal="true" aria-labelledby="nux-title">
+    <button class="vg-nux__skip" id="nux-skip" type="button">Skip tour</button>
+
+    <div class="vg-nux__stage" id="nux-stage">
+      <!-- 1 · welcome -->
+      <section class="vg-nux__slide is-active" data-step="0">
+        <div class="vg-nux__art vg-nux__art--logo">🏈</div>
+        <h2 id="nux-title">Welcome to Vector&nbsp;Gridiron</h2>
+        <p>Your fantasy football season, on rails. Sync the ESPN or Sleeper league
+          you're already in and get model-backed <b>start/sit</b>, <b>waiver</b>,
+          and <b>trade</b> calls — no spreadsheets, no hot takes.</p>
+        <p class="vg-nux__tiny">30-second tour · you can skip anytime</p>
+      </section>
+
+      <!-- 2 · the map -->
+      <section class="vg-nux__slide" data-step="1">
+        <div class="vg-nux__art">
+          <div class="vg-nux__dots">
+            <span style="--c:var(--qb)"></span><span style="--c:var(--rb)"></span>
+            <span style="--c:var(--wr)"></span><span style="--c:var(--te)"></span>
+            <span style="--c:var(--wr)"></span><span style="--c:var(--rb)"></span>
+            <span style="--c:var(--te)"></span><span style="--c:var(--qb)"></span>
+          </div>
+        </div>
+        <h2>Every skill player, mapped</h2>
+        <p>We turn 9 seasons of NFL box scores into a per-game statistical
+          <b>profile</b> for each player, then place them in a learned space where
+          neighbors <b>play alike</b>. That powers comps, trade ideas, and the
+          3D Vector Map.</p>
+        <div class="vg-nux__legend">
+          <span><i style="background:var(--qb)"></i>QB</span>
+          <span><i style="background:var(--rb)"></i>RB</span>
+          <span><i style="background:var(--wr)"></i>WR</span>
+          <span><i style="background:var(--te)"></i>TE</span>
+        </div>
+      </section>
+
+      <!-- 3 · the model -->
+      <section class="vg-nux__slide" data-step="2">
+        <div class="vg-nux__art">
+          <div class="vg-nux__meters">
+            <div><b>4.78</b><span>model MAE</span></div>
+            <div class="is-worse"><b>5.13</b><span>guess-the-average</span></div>
+          </div>
+        </div>
+        <h2>Projections you can actually trust</h2>
+        <p>A neural net projects weekly points from each player's recent form.
+          It's scored the honest way — trained on 2016–22, tested on a season it
+          never saw (2024) — and it <b>beats</b> what you'd get eyeballing the
+          averages. Every projection ships with a <b>floor and ceiling</b>,
+          because weekly fantasy is noisy and pretending otherwise is a lie.</p>
+      </section>
+
+      <!-- 4 · connect -->
+      <section class="vg-nux__slide" data-step="3">
+        <div class="vg-nux__art vg-nux__art--logo">🔗</div>
+        <h2>Bring your league</h2>
+        <p>Connect read-only in seconds. Credentials live only in your browser —
+          nothing is stored on a server. Not ready? Explore a demo league built
+          from the real projection board.</p>
+        <div class="vg-nux__cta">
+          <button class="vg-btn vg-btn--primary" id="nux-connect" type="button">Connect my league</button>
+          <button class="vg-btn vg-btn--ghost" id="nux-demo" type="button">Explore a demo league</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="vg-nux__foot">
+      <div class="vg-nux__dotsnav" id="nux-dotsnav" aria-hidden="true"></div>
+      <div class="vg-nux__nav">
+        <button class="vg-btn vg-btn--ghost" id="nux-back" type="button" disabled>Back</button>
+        <button class="vg-btn vg-btn--primary" id="nux-next" type="button">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONNECT MODAL -->
+<div class="vg-backdrop" id="connect-backdrop" hidden>
+  <div class="vg-modal" role="dialog" aria-modal="true" aria-labelledby="connect-title">
+    <h2 id="connect-title">Connect your league</h2>
+    <p class="vg-modal__sub">Read-only. Credentials live only in this browser
+      (localStorage) and are sent straight to the platform's API. Nothing is stored on a server.</p>
+
+    <div class="vg-platform" id="platform-pick">
+      <button class="vg-btn" data-platform="espn" aria-pressed="true">ESPN</button>
+      <button class="vg-btn" data-platform="sleeper" aria-pressed="false">Sleeper</button>
+    </div>
+
+    <div id="fields-espn">
+      <div class="vg-field">
+        <label for="espn-league">ESPN League ID</label>
+        <input class="vg-input" id="espn-league" inputmode="numeric" value="91786" placeholder="e.g. 91786">
+      </div>
+      <div class="vg-field">
+        <label for="espn-year">Season year</label>
+        <input class="vg-input" id="espn-year" inputmode="numeric" value="2026">
+        <p class="vg-note" style="margin-top:5px">Upcoming season pulls your live roster.
+          Player grades &amp; projections use the last completed season's stats
+          (the <b>Lookback</b> tab lets you grade any past year).</p>
+      </div>
+
+      <!-- hidden canonical cookie store; filled by the paste box / bookmarklet -->
+      <input type="hidden" id="espn-s2">
+      <input type="hidden" id="espn-swid">
+
+      <div class="vg-tip">
+        <b>Private league?</b> Easiest fix, works on your phone, no cookies:
+        if you're the league manager, in the ESPN app open
+        <b>League → Settings → Basic Settings → Make League Viewable to Public → Save</b>.
+        Then just the League ID above connects.
+      </div>
+
+      <details class="vg-adv" id="espn-cookie-adv">
+        <summary>Not the manager? Paste cookies instead</summary>
+        <div style="margin-top:10px">
+          <div class="vg-field">
+            <label for="espn-cookies">Paste your ESPN cookies</label>
+            <textarea class="vg-input" id="espn-cookies" rows="3"
+              placeholder="Paste the two values (espn_s2 and SWID) here — any order, or as espn_s2=…; SWID={…}. We pull out both."></textarea>
+            <div class="vg-cookie-status" id="espn-cookie-status"></div>
+          </div>
+          <details class="vg-adv" open>
+            <summary>How do I get these?</summary>
+            <div style="margin-top:8px">
+              <p class="vg-note"><b>Reliable way (use a computer once):</b></p>
+              <ol class="vg-steps">
+                <li>On a computer, open <b>fantasy.espn.com</b> in Chrome/Edge and sign in so you can see your league.</li>
+                <li>Press <b>F12</b> (or right-click → Inspect) → <b>Application</b> tab → left side <b>Cookies</b> → <b>https://fantasy.espn.com</b>.</li>
+                <li>Find <b>espn_s2</b>, copy its (long) Value. Find <b>SWID</b>, copy its Value (looks like <code>{XXXX-…}</code>).</li>
+                <li>Paste both into the box above — order doesn't matter.</li>
+              </ol>
+              <p class="vg-note"><b>On your phone only?</b> Do the steps on a computer, then text/email
+                the two values to yourself and paste them here. They're login tokens — send only to yourself.</p>
+              <p class="vg-note" style="margin-top:8px"><b>Shortcut (desktop bookmarklet):</b> drag this to your
+                bookmarks bar, open fantasy.espn.com logged in, click it — it copies both for you.
+                If it says "not found", use the reliable way above.</p>
+              <a class="vg-bookmarklet" id="espn-bookmarklet"
+                 href="javascript:(function(){try{var c=document.cookie;var s2=(c.match(/espn_s2=([^;]+)/)||[])[1];var sw=(c.match(/SWID=([^;]+)/)||[])[1];if(s2&&sw){navigator.clipboard.writeText('espn_s2='+s2+'; SWID='+sw);alert('Copied your ESPN cookies. Paste them into Vector Gridiron.');}else{alert('Not found here (espn_s2 may be protected). Use DevTools > Application > Cookies > fantasy.espn.com.');}}catch(e){alert('Bookmarklet error: '+e);}})();">🍪 Grab ESPN cookies</a>
+            </div>
+          </details>
+        </div>
+      </details>
+    </div>
+
+    <div id="fields-sleeper" hidden>
+      <div class="vg-field">
+        <label for="sleeper-league">Sleeper League ID</label>
+        <input class="vg-input" id="sleeper-league" inputmode="numeric" placeholder="e.g. 987654321098765432">
+      </div>
+      <p class="vg-note">Open your league on sleeper.com — the long number in the
+        URL is the League ID. Sleeper is fully public; no cookies needed.</p>
+    </div>
+
+    <div class="vg-field" style="margin-top:6px">
+      <label for="my-team">Which team is yours? (optional — set after load)</label>
+      <select class="vg-input" id="my-team"><option value="">— load league first —</option></select>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="vg-btn vg-btn--primary" id="connect-go" type="button" style="flex:1">Load league</button>
+      <button class="vg-btn vg-btn--ghost" id="connect-cancel" type="button">Cancel</button>
+    </div>
+    <div class="vg-status" id="connect-status"></div>
+  </div>
+</div>
+
+<footer class="vg-footer" id="footer">
+  <span id="foot-model">multi-task MTNN</span> · holistic features (usage · snaps · age · weather · Vegas · rest · def-vs-pos) ·
+  data <span id="foot-built">—</span> · nflverse · no tracking
+</footer>
+
+<script src="assets/app.js" defer></script>
+</body>
+</html>

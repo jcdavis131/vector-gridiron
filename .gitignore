@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Pipeline cache (raw nflverse CSVs — resumable, regenerated on demand).
+# Kept out of git; the built assets/*.json ARE committed.
+pipeline/cache/
+pipeline/data/
+
+# Local secrets — league cookies never belong in the repo.
+.env
+*.local
+
+# OS / editor
+.DS_Store
+.vercel
+
+.vercel

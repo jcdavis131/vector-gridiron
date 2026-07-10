@@ -22,10 +22,11 @@
 | +EWMA +DvP +snapΔ +rz_proxy +WR1 + family_drop=0.1 | 4.278 | not promoted |
 | same, family_drop=0.0 | 4.378 | not promoted |
 | **+pbp RZ shares only** | **4.258** | **PROMOTED** (beats 4.268) |
+| prune ngs+defense+role+availability | 4.283 | not promoted (worse than RZ) |
 
 ## Next bets
-1. Soft-prune / zero flat families (NGS, defense, role, availability) at train
-2. Quantile / pinball uncertainty heads
+1. Quantile / pinball uncertainty heads (product + maybe MAE)
+2. Soft-weight flat families (not hard zero) or drop only `conditions`
 3. Revisit EWMA only on top of RZ (not the full failed bundle)
 
 ## Shipped

@@ -308,9 +308,11 @@ def main():
     ap.add_argument("--epochs", type=int, default=60)
     ap.add_argument("--skip-build", action="store_true",
                     help="use existing train_matrix.npz + rebuild upcoming only")
-    ap.add_argument("--family-drop", type=float, default=0.1,
+    ap.add_argument("--family-drop", type=float, default=0.0,
                     help="train-time probability of zeroing a whole family mask")
     ap.add_argument("--d-emb", type=int, default=32)
+    ap.add_argument("--zero-families", default="",
+                    help="comma-separated families to permanently zero (prune bet)")
     args = ap.parse_args()
     t0 = time.time()
     torch.manual_seed(SEED)
@@ -318,13 +320,6 @@ def main():
 
     last_season = nfl.latest_stats_season(args.offline)
     print(f"latest published season = {last_season}; projecting {last_season + 1}")
-    if args.skip_build and (DATA / "train_matrix.npz").exists():
-        print("loading existing train_matrix.npz (--skip-build) ...")
-        # Still need upcoming rows — call build which rebuilds everything unless we
-        # only load npz. Prefer full build for feature changes; skip-build loads matrix
-        # and rebuilds upcoming via bf.build (full). For true skip, load npz + upcoming
-        # from a prior run is complex — keep full build when features change.
-        print("  note: feature schema may have changed; prefer full build")
     print("building holistic multi-family feature matrix ...")
     D = bf.build(last_season, offline=args.offline)
     X, M, Y = D["X"], D["M"], D["Y"]
@@ -332,6 +327,26 @@ def main():
     META = D["meta"]
     feats, targets = D["feature_names"], D["target_names"]
     families = D["families"]
+    zero_fams = [f.strip() for f in args.zero_families.split(",") if f.strip()]
+    if zero_fams:
+        n_z = 0
+        for fam in zero_fams:
+            cols = families.get(fam, [])
+            for col in cols:
+                if col not in feats:
+                    continue
+                i = feats.index(col)
+                M[:, i] = 0.0
+                X[:, i] = 0.0
+                n_z += 1
+            # also zero upcoming
+            up = D["upcoming"]
+            for col in cols:
+                if col in feats:
+                    i = feats.index(col)
+                    up["masks"][:, i] = 0.0
+                    up["rows"][:, i] = 0.0
+        print(f"  pruned families {zero_fams} ({n_z} cols zeroed)")
     print(f"  X={X.shape}, families={list(families)}, targets={targets}")
 
     seasons = np.array([m["season"] for m in META])

@@ -1,9 +1,9 @@
 # Todo — Gridiron hill-climb loop
 
-- [x] **RZ pbp shares** — MAE 4.258 promoted (was 4.268)
-- [ ] **Next: prune flat families** — zero NGS/defense/role/availability at train; gate vs 4.258
-- [ ] **Then: quantile uncertainty** — if prune doesn't win
-- [ ] Loop continues every 20m until stopped
+- [x] **RZ pbp shares** — MAE **4.258** promoted (`8cbf1ca`)
+- [x] **Prune flat families** — MAE 4.283, **not** promoted
+- [ ] **Next: quantile / pinball uncertainty** — or soft-weight conditions-only drop
+- Loop armed every **20m** (PID tracked in terminal) until stopped
 
 ## Promoted
 

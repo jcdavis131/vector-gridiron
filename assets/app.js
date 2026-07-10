@@ -1849,7 +1849,8 @@ function renderNextGame() {
   $('#nextgame-body').innerHTML = table(['Player', 'Pos', 'Matchup', 'Conditions', 'Proj', 'Fl–Ce', 'Projected line'], body)
     + `<p class="vg-note" style="margin-top:8px">Multi-task MTNN for ${STATE.next.season} Week ${STATE.next.week}:
        ${STATE.latestSeason} form × each team's real opponent, roof/weather, and Vegas implied total.
-       K/DST use season-rate projections (no weekly matchup model). Re-run the pipeline weekly to roll forward.</p>`;
+       Floor–ceiling = ± per-position residual σ (not a calibrated CI). K/DST use season-rate projections.
+       Re-run the pipeline weekly to roll forward.</p>`;
   bindNameLinks();
 }
 

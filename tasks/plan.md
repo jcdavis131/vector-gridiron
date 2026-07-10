@@ -1,43 +1,46 @@
-# Plan — Gridiron MTNN v2 (hoops rigor)
+# Plan — Vector Gridiron hill-climb (post-MTNN v2)
 
-> Generated 2026-07-09 under `/auto-mode` after session-orient + deep research.  
-> Spec: `docs/SPEC.md` · Sources: `docs/DATA_SOURCES_DEEP.md` · Arch: `docs/MTNN_ARCHITECTURE.md`
+> Generated 2026-07-10 under `/auto-mode` · baseline `5fe5c03` clean  
+> Spec parents: `docs/SPEC.md` · `docs/MTNN_ARCHITECTURE.md` · `docs/DATA_SOURCES_DEEP.md`  
+> Live evidence: held-out 2025 PPR MAE **4.268** (v1 4.313); matrix 49881×82 / 13 families
 
 ## Goal
 
-Raise Vector Gridiron’s weekly fantasy MTNN to Vector Hoops rigor: deep cited data sources, masked feature families, multi-tower multi-task net, promotion gates — without breaking the existing UI artifact contract.
+Hill-climb the **end-to-end game**: better features → better MTNN → honest uncertainty → UI that explains predictions — without breaking artifact contracts or promoting a worse model.
 
 ## Dependency order
 
 ```
-docs (SPEC/sources/arch)
-    → nfl_data ingest expand
-        → build_opportunity (EP/RZ)
-            → build_features (families + masks)
-                → feature_inspect
-                    → train_mtnn + export assets
-                        → verify_accuracy + verify_logic
-                            → refresh.py + README Methods
+Methods honesty (README)
+    → drop-one family ablation → mtnn_report
+        → P0 features (RZ + EWMA + DvP) → rebuild matrix
+            → family dropout + small HP smoke → promote if MAE wins
+                → uncertainty (floor/ceil) + tower_contrib UI
+                    → context/role polish
+                        → verify + deploy
 ```
 
-## Vertical slices
+## Vertical slices (acceptance)
 
-1. **Docs locked** — catalog + SPEC + arch + this plan (approval gate).
-2. **Ingest P0/P1 feeds** — depth_charts, NGS, PFR adv, ffopportunity EP (download), wire into `nfl_data.py`.
-3. **Family matrix** — rewrite `build_features.py` to emit `Z, mask, manifest` + upcoming rows.
-4. **MTNN train/export** — `train_mtnn.py` towers/heads; write nextgame/projections/embedding.
-5. **Gates + refresh** — verify scripts; point `refresh.py` at v2; Methods honesty.
+| # | Deliverable | Done when |
+|---|-------------|-----------|
+| 1 | README Methods honesty | MAE/R², NGS+injury caveats, floor/ceil definition cited |
+| 2 | Family ablation report | `mtnn_report.json` has per-family ΔMAE; prune note if any hurt |
+| 3 | P0 feature fill | RZ shares + EWMA form + richer DvP in matrix; MAE ≤ 4.268 (prefer ≤4.20) |
+| 4 | Reg + HP smoke | family dropout and/or d_emb trial; promote only if G2/G3 pass |
+| 5 | Uncertainty + tower_contrib | nextgame players carry calibrated floor/ceil + top family weights; UI shows them |
+| 6 | Verify + ship | `verify_accuracy` + `verify_logic` green; prod deploy |
+
+## Out of scope (this board)
+
+- Paid PFF; transformer fusion (only if #3–4 plateau)
+- Fixing nflverse injury 2025+ / NGS 2025 unpublished (document only)
+- League-connect UX (already shipped)
 
 ## Risks
 
 | Risk | Mitigation |
 |------|------------|
-| Injury feed dead 2025+ | Mask family; document; depth chart as role proxy |
-| EP download missing | Derive RZ shares from pbp subset or defer EP with mask |
-| Bigger net overfits | Cap params; early stop; G3 vs v1 MAE |
-| Train time long | CPU batch 512; optional CUDA; cost-transparency if >20 min |
-| No git repo | Docs only until user asks to init/commit |
-
-## Out of scope
-
-Paid PFF; in-season participation; Transformer fusion until gated towers beat v1.
+| Feature fill regresses MAE | Keep prior `train_matrix` / checkpoint; promote only on gate |
+| Train >20 min | cost-transparency pause; `--skip-build` for HP loops |
+| UI breaks old clients | additive JSON fields only |

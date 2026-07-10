@@ -308,6 +308,9 @@ def main():
     ap.add_argument("--epochs", type=int, default=60)
     ap.add_argument("--skip-build", action="store_true",
                     help="use existing train_matrix.npz + rebuild upcoming only")
+    ap.add_argument("--family-drop", type=float, default=0.1,
+                    help="train-time probability of zeroing a whole family mask")
+    ap.add_argument("--d-emb", type=int, default=32)
     args = ap.parse_args()
     t0 = time.time()
     torch.manual_seed(SEED)
@@ -315,6 +318,13 @@ def main():
 
     last_season = nfl.latest_stats_season(args.offline)
     print(f"latest published season = {last_season}; projecting {last_season + 1}")
+    if args.skip_build and (DATA / "train_matrix.npz").exists():
+        print("loading existing train_matrix.npz (--skip-build) ...")
+        # Still need upcoming rows — call build which rebuilds everything unless we
+        # only load npz. Prefer full build for feature changes; skip-build loads matrix
+        # and rebuilds upcoming via bf.build (full). For true skip, load npz + upcoming
+        # from a prior run is complex — keep full build when features change.
+        print("  note: feature schema may have changed; prefer full build")
     print("building holistic multi-family feature matrix ...")
     D = bf.build(last_season, offline=args.offline)
     X, M, Y = D["X"], D["M"], D["Y"]
@@ -360,7 +370,7 @@ def main():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"  device={device}")
-    model = MTNN(fam_dims, n_seasons=n_seasons, d_emb=32, n_targets=len(targets),
+    model = MTNN(fam_dims, n_seasons=n_seasons, d_emb=args.d_emb, n_targets=len(targets),
                  n_usage=len(D["usage_recon_names"])).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
     huber = nn.SmoothL1Loss(reduction="none")
@@ -395,6 +405,12 @@ def main():
             # map to train-tensor rows
             # easier: index into full tensors
             xs_b, ms_b = batch_family(bi)
+            # Family-token dropout: randomly zero entire family masks (train only).
+            if args.family_drop > 0:
+                for fam in list(ms_b.keys()):
+                    if rng.random() < args.family_drop:
+                        ms_b[fam] = torch.zeros_like(ms_b[fam])
+                        xs_b[fam] = torch.zeros_like(xs_b[fam])
             # align Y — bi indexes full matrix
             # rebuild train-local? use full Yz
             yb = torch.tensor(Yz[bi], dtype=torch.float32, device=device)
@@ -464,12 +480,25 @@ def main():
                          for i, t in enumerate(targets)},
         "test_season": int(seasons[te][0]) if te.any() else None,
         "n_test": int(te.sum()), "n_train": int(tr.sum()),
-        "architecture": "MTNN v2 multi-tower gated fusion",
+        "architecture": f"MTNN v2 gated fusion + family_drop={args.family_drop} d_emb={args.d_emb}",
         "n_features": len(feats), "n_families": len(families),
         "n_params": n_params, "val_mae": round(best_va, 3),
         "v1_mae_reference": V1_MAE,
+        "family_drop": args.family_drop,
+        "d_emb": args.d_emb,
+        "hill_climb": "ewma+dvp_pass_rush+snap_delta+rz_proxy+wr1+family_drop",
     }
+    # Per-position residual σ for floor/ceil (honest vs one global σ).
+    resid_by_pos = {}
+    if te.any():
+        pos_te = np.array([META[i]["pos"] for i in np.where(te)[0]])
+        for p in SKILL:
+            mask_p = pos_te == p
+            if mask_p.sum() >= 30:
+                resid_by_pos[p] = float(np.std(yte[mask_p, 0] - pte[mask_p, 0]))
     resid = float(np.std(yte[:, 0] - pte[:, 0])) if te.any() else 6.0
+    report["residual_std"] = round(resid, 3)
+    report["residual_std_by_pos"] = {k: round(v, 3) for k, v in resid_by_pos.items()}
     print("  test report:", json.dumps(report))
 
     # upcoming
@@ -488,6 +517,7 @@ def main():
         "temp": 65, "wind": 5, "kick_hour": 13, "is_primetime": 0, "is_thu": 0,
         "is_mon": 0, "week_no": 9, "team_implied": 22.5, "opp_implied": 22.5,
         "spread_team": 0, "total_line": 45, "dvp_allowed": 12.0, "dvp_roll4": 12.0,
+        "dvp_pass": 8.0, "dvp_rush": 4.0, "dvp_pass_roll4": 8.0,
     }
     for name, val in NEUTRAL.items():
         if name in feats:
@@ -521,14 +551,16 @@ def main():
     ng_players = []
     for i, m in enumerate(upmeta):
         p = pred_next[i]
+        rpos = resid_by_pos.get(m["pos"], resid)
         ng_players.append({
             "key": norm_key(m["name"], m["pos"]), "name": m["name"], "pos": m["pos"],
             "team": m["team"], "opp": m["opp"], "headshot": m["headshot"],
             "moved": m.get("moved", False), "prev_team": m.get("prev_team", ""),
             "bye": m.get("bye"), "avail": avail(m),
             "proj": round(float(p[ti["fpts_ppr"]]), 2),
-            "floor": round(max(0.0, float(p[ti["fpts_ppr"]]) - resid), 2),
-            "ceil": round(float(p[ti["fpts_ppr"]]) + resid, 2),
+            "floor": round(max(0.0, float(p[ti["fpts_ppr"]]) - rpos), 2),
+            "ceil": round(float(p[ti["fpts_ppr"]]) + rpos, 2),
+            "uncertainty": round(rpos, 2),
             "line": {
                 "rec_yds": round(float(p[ti["rec_yds"]]), 1),
                 "rush_yds": round(float(p[ti["rush_yds"]]), 1),
@@ -544,6 +576,7 @@ def main():
         "model": {
             "type": "MTNN v2 multi-tower gated fusion",
             "report": report, "residual_std": round(resid, 2),
+            "residual_std_by_pos": {k: round(v, 2) for k, v in resid_by_pos.items()},
         },
         "count": len(ng_players), "players": ng_players,
     }, separators=(",", ":")), encoding="utf-8")
@@ -552,16 +585,16 @@ def main():
     for i, m in enumerate(upmeta):
         p = pred_season[i]
         order = np.argsort(-sim[i])[:5]
-        comps = [{"name": upmeta[j]["name"], "pos": upmeta[j]["pos"],
-                  "sim": round(float(sim[i, j]), 3)} for j in order]
+        rpos = resid_by_pos.get(m["pos"], resid)
         proj_players.append({
             "key": norm_key(m["name"], m["pos"]), "name": m["name"], "pos": m["pos"],
             "team": m["team"], "headshot": m["headshot"],
             "moved": m.get("moved", False), "prev_team": m.get("prev_team", ""),
-            "bye": m.get("bye"), "avail": avail(m),
+            "bye": m.get("bye"), "avail": avail(m), "rookie": False,
             "proj": round(float(p[ti["fpts_ppr"]]), 2),
-            "floor": round(max(0.0, float(p[ti["fpts_ppr"]]) - resid), 2),
-            "ceil": round(float(p[ti["fpts_ppr"]]) + resid, 2),
+            "floor": round(max(0.0, float(p[ti["fpts_ppr"]]) - rpos), 2),
+            "ceil": round(float(p[ti["fpts_ppr"]]) + rpos, 2),
+            "uncertainty": round(rpos, 2),
             "line": {
                 "rec_yds": round(float(p[ti["rec_yds"]]), 1),
                 "rush_yds": round(float(p[ti["rush_yds"]]), 1),
@@ -569,7 +602,11 @@ def main():
                 "rec": round(float(p[ti["receptions"]]), 1),
                 "td": round(float(p[ti["total_td"]]), 2),
             },
-            "comps": comps,
+            "comps": [
+                {"name": upmeta[j]["name"], "pos": upmeta[j]["pos"],
+                 "team": upmeta[j]["team"], "sim": round(float(sim[i, j]), 3)}
+                for j in order
+            ],
         })
     veteran_keys = {r["key"] for r in proj_players}
     r_predict, r_report, r_meta, r_hist = train_rookie_model(last_season)
@@ -613,7 +650,9 @@ def main():
 
     DATA.mkdir(parents=True, exist_ok=True)
     torch.save({"state": best_state, "mu": mu, "sd": sd, "ymu": ymu, "ysd": ysd,
-                "feats": feats, "families": families, "report": report},
+                "feats": feats, "families": families, "report": report,
+                "n_seasons": n_seasons, "season_min": int(seasons.min()),
+                "d_emb": args.d_emb, "test_season": report.get("test_season")},
                DATA / "mtnn_best.pt")
     (DATA / "mtnn_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 

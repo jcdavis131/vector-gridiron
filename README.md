@@ -117,6 +117,35 @@ A **Try demo** button and first-run **NUX** make it lovable before you connect.
 Scoring format is **auto-detected** from league settings (falls back to PPR).
 Credentials live only in your browser's `localStorage`.
 
+## Methods (honesty)
+
+Held-out **2025** next-game PPR (temporal split: train ≤2023, val 2024, test 2025):
+
+| | MAE | notes |
+|--|-----|-------|
+| **MTNN v2** | **4.268** | R² 0.39 · 82 feats / 13 masked families · gated fusion |
+| v1 (flat trunk) | 4.313 | reference |
+| last-4 mean | 4.616 | must beat |
+| season-to-date | 4.523 | must beat |
+
+**Floor / ceiling** on the board are ± one global residual σ from the test set
+(~6.1 PPR), not calibrated prediction intervals — treat them as a spread hint,
+not a confidence interval. Family ablation and richer uncertainty are the
+active hill-climb (`tasks/plan.md`, `tasks/hillclimb-log.md`). Family ablation
+(`python pipeline/family_ablation.py`) shows **usage** and **form** dominate
+held-out MAE; NGS/defense/role are near-flat on 2025.
+
+**Known gaps (do not expect miracles):**
+- **Injuries 2025+** — nflverse injury feed dead after 2024; `availability`
+  family is masked for those seasons; UI `avail` falls back to roster/depth.
+- **NGS** — 2024 placeholders empty on nflverse; 2025 unpublished at train
+  time → family coverage ~0.51 (masked when missing).
+- **R²** dropped slightly vs v1 (0.42 → 0.39) while MAE improved — we promote
+  on MAE + baseline gates, not R² alone.
+
+See `docs/DATA_SOURCES_DEEP.md`, `docs/MTNN_ARCHITECTURE.md`, and
+`pipeline/data/mtnn_report.json`.
+
 ## Verify
 ```
 python pipeline/verify_accuracy.py   # MTNN v2 promotion gates

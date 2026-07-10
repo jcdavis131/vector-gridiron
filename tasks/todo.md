@@ -1,21 +1,23 @@
-# Todo — Gridiron MTNN v2
+# Todo — Gridiron hill-climb (E2E post-v2)
 
-- [x] **0. Approval** — user confirmed SPEC (`/auto-mode yes`)
-- [x] **1. Ingest** — `nfl_data.py`: depth, ngs, pfr_adv, ep_weekly, draft, combine
-- [x] **2. Opportunity** — `build_opportunity.py` + EP index in features
-- [x] **3. Features** — multi-family `train_matrix.npz` (49881×82, 13 families)
-- [x] **4. Inspect** — `feature_inspect.py` (no NaNs; NGS cov 0.51 expected)
-- [x] **5. Train** — `train_mtnn.py` MAE **4.268** (v1 was 4.313); beats baselines
-- [x] **6. Rookie path** — draft-capital model retained (val MAE 2.916)
-- [x] **7. Verify** — `verify_accuracy.py` 0 fails; `verify_logic.mjs` ALL PASSED
-- [x] **8. Wire** — `refresh.py` → train_mtnn; README Methods + injury caveat
-- [x] **9. Close** — readiness report below
+- [x] **0. Orient** — plan locked; baseline MAE 4.268 documented
+- [x] **1. Methods honesty** — README Methods: MAE/R², NGS+injury, floor/ceil
+- [x] **2. Family ablation** — drop-one ΔMAE → `mtnn_report.json` + `family_ablation.py`
+- [x] **3. P0 features** — EWMA/DvP/RZ-proxy implemented behind `HILL_CLIMB_FEATURES`
+- [x] **4. Reg/HP smoke** — family_drop + expand **did not beat 4.268** → not promoted (`tasks/hillclimb-log.md`)
+- [x] **5. Product** — per-pos residual/`uncertainty` in train export; Next Game copy honesty
+- [ ] **6. Verify + ship** — gates + commit + prod deploy
 
-## Held-out 2025 results
-| Metric | v1 | v2 |
-|--------|----|----|
-| PPR MAE | 4.313 | **4.268** |
-| R² | 0.42 | 0.39 |
-| last-4 MAE | 4.616 | 4.616 |
-| STD MAE | 4.523 | 4.523 |
-| features / families | 41 / 1 | **82 / 13** |
+## Promoted baseline (do not regress)
+
+| Metric | v2 |
+|--------|-----|
+| PPR MAE (2025) | **4.268** |
+| last-4 MAE | 4.616 |
+| STD MAE | 4.523 |
+| features | 82 / 13 families |
+
+## Next hill-climb bets (not this board)
+- True pbp red-zone shares (not TD-rate proxy)
+- Soft-weight / prune flat families (NGS/defense on 2025)
+- Quantile / pinball uncertainty heads

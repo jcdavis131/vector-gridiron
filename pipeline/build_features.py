@@ -31,6 +31,9 @@ DATA = ROOT / "pipeline" / "data"
 SKILL = {"QB", "RB", "WR", "TE"}
 TRAIL = 4
 MIN_PRIOR = 1
+# Hill-climb expand (EWMA / pass-rush DvP / snapΔ / RZ proxy / WR1) — held-out 2025
+# MAE 4.278–4.378 vs promoted 4.268. Keep code path; default OFF until it earns promote.
+HILL_CLIMB_FEATURES = False
 
 # ---------------------------------------------------------------------------
 # Family feature specs (order = column order within family)
@@ -43,10 +46,10 @@ FORM_KEYS = [
 USAGE_KEYS = [
     "snap_pct", "target_share", "air_yards_share", "wopr", "touches",
     "racr", "pacr", "cpoe",
-]
+] + (["snap_delta"] if HILL_CLIMB_FEATURES else [])
 OPP_KEYS = [
     "ep_fpts", "ep_diff", "rec_attempt", "rush_attempt", "td_exp", "rec_air_yards",
-]
+] + (["td_rate", "rz_proxy"] if HILL_CLIMB_FEATURES else [])
 ROLE_KEYS = ["depth_rank", "is_starter", "depth_ahead"]
 AVAIL_KEYS = ["inj_out", "inj_doubtful", "inj_questionable", "games_missed_4"]
 META_KEYS = ["age", "exp", "height", "weight", "is_QB", "is_RB", "is_WR", "is_TE"]
@@ -55,7 +58,9 @@ COND_KEYS = [
     "kick_hour", "is_primetime", "is_thu", "is_mon", "week_no",
 ]
 MARKET_KEYS = ["team_implied", "opp_implied", "spread_team", "total_line"]
-DEF_KEYS = ["dvp_allowed", "dvp_roll4"]
+DEF_KEYS = ["dvp_allowed", "dvp_roll4"] + (
+    ["dvp_pass", "dvp_rush", "dvp_pass_roll4"] if HILL_CLIMB_FEATURES else []
+)
 NGS_KEYS = [
     "ngs_sep", "ngs_cushion", "ngs_yac_oe", "ngs_air_share", "ngs_ryoe",
     "ngs_eff", "ngs_cpoe", "ngs_ttt", "ngs_aggr",
@@ -64,11 +69,16 @@ PFR_KEYS = [
     "pfr_ybc_avg", "pfr_yac_avg", "pfr_broken", "pfr_drop_pct",
     "pfr_pressure_pct", "pfr_bad_throw_pct",
 ]
-CTX_KEYS = ["qb_ep_fpts", "team_pass_rate", "committee_hhi"]
+CTX_KEYS = ["qb_ep_fpts", "team_pass_rate", "committee_hhi"] + (
+    ["wr1_target_share"] if HILL_CLIMB_FEATURES else []
+)
 PED_KEYS = ["draft_pick_log", "draft_round", "combine_forty", "combine_vertical"]
 
+_FORM_EXTRA = (
+    ["ewma_ppr_3", "ewma_ppr_5", "ewma_ppr_8"] if HILL_CLIMB_FEATURES else []
+)
 FAMILIES: dict[str, list[str]] = {
-    "form": ["f_" + k for k in FORM_KEYS] + ["std_ppr", "games_played", "prior_ppg"],
+    "form": ["f_" + k for k in FORM_KEYS] + ["std_ppr", "games_played", "prior_ppg"] + _FORM_EXTRA,
     "usage": ["u_" + k for k in USAGE_KEYS],
     "opportunity": ["o_" + k for k in OPP_KEYS],
     "role": ["r_" + k for k in ROLE_KEYS],
@@ -188,6 +198,17 @@ def game_context(offline: bool) -> dict:
 
 
 def weekly_record(r: dict, snap_pct: float) -> dict:
+    rec_td = num(r, "receiving_tds")
+    rush_td = num(r, "rushing_tds")
+    pass_td = num(r, "passing_tds")
+    rec_yds = num(r, "receiving_yards")
+    rush_yds = num(r, "rushing_yards")
+    pass_yds = num(r, "passing_yards")
+    receptions = num(r, "receptions")
+    # Component fantasy (half-ish) for DvP pass vs rush splits.
+    recv_fpts = rec_yds / 10.0 + receptions + rec_td * 6.0
+    rush_fpts = rush_yds / 10.0 + rush_td * 6.0
+    pass_fpts = pass_yds / 25.0 + pass_td * 4.0
     return {
         "gsis": r.get("player_id"),
         "name": r.get("player_display_name") or r.get("player_name"),
@@ -199,11 +220,11 @@ def weekly_record(r: dict, snap_pct: float) -> dict:
         "fpts_ppr": num(r, "fantasy_points_ppr"),
         "targets": num(r, "targets"),
         "carries": num(r, "carries"),
-        "receptions": num(r, "receptions"),
-        "touches": num(r, "carries") + num(r, "receptions"),
-        "rec_yds": num(r, "receiving_yards"),
-        "rush_yds": num(r, "rushing_yards"),
-        "pass_yds": num(r, "passing_yards"),
+        "receptions": receptions,
+        "touches": num(r, "carries") + receptions,
+        "rec_yds": rec_yds,
+        "rush_yds": rush_yds,
+        "pass_yds": pass_yds,
         "pass_att": num(r, "attempts"),
         "target_share": num(r, "target_share"),
         "air_yards_share": num(r, "air_yards_share"),
@@ -212,8 +233,10 @@ def weekly_record(r: dict, snap_pct: float) -> dict:
         "pacr": num(r, "pacr"),
         "cpoe": num(r, "passing_cpoe"),
         "epa": num(r, "passing_epa") + num(r, "rushing_epa") + num(r, "receiving_epa"),
-        "total_td": (num(r, "passing_tds") + num(r, "rushing_tds")
-                     + num(r, "receiving_tds")),
+        "total_td": pass_td + rush_td + rec_td,
+        "recv_fpts": recv_fpts,
+        "rush_fpts": rush_fpts,
+        "pass_fpts": pass_fpts,
         "snap_pct": snap_pct,
     }
 
@@ -376,7 +399,7 @@ def pedigree_table(offline: bool) -> dict:
 def load_season(season: int, meta: dict, offline: bool):
     stats = nfl.weekly_stats(season, offline)
     if not stats:
-        return {}, {}, {}, {}, {}, {}, {}
+        return {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
     snap_by_pfr = {}
     for s in nfl.snaps(season, offline):
         if s.get("game_type") not in ("REG", "regular", ""):
@@ -385,7 +408,10 @@ def load_season(season: int, meta: dict, offline: bool):
         snap_by_pfr[(int(num(s, "week")), s.get("pfr_player_id"))] = num(s, "offense_pct")
     by_player = {}
     allowed = {}
+    allowed_pass = {}
+    allowed_rush = {}
     team_week_touches = {}
+    team_week_targets = {}
     for r in stats:
         if r.get("season_type") != "REG":
             continue
@@ -399,15 +425,23 @@ def load_season(season: int, meta: dict, offline: bool):
         by_player.setdefault(gsis, []).append(rec)
         key = (wk, rec["opp"], pos)
         allowed[key] = allowed.get(key, 0.0) + rec["fpts_ppr"]
+        # Pass-game DvP: QB pass fantasy + WR/TE/RB receiving fantasy vs that D.
+        if pos == "QB":
+            allowed_pass[key] = allowed_pass.get(key, 0.0) + rec["pass_fpts"]
+        else:
+            allowed_pass[key] = allowed_pass.get(key, 0.0) + rec["recv_fpts"]
+        allowed_rush[key] = allowed_rush.get(key, 0.0) + rec["rush_fpts"]
         tk = (wk, rec["team"])
         team_week_touches[tk] = team_week_touches.get(tk, 0.0) + rec["touches"]
+        team_week_targets[tk] = team_week_targets.get(tk, 0.0) + rec["targets"]
     for arr in by_player.values():
         arr.sort(key=lambda g: g["week"])
     depth = index_depth(season, offline)
     inj = index_injuries(season, offline)
     ngs_i = index_ngs(season, offline)
     pfr_i = index_pfr(season, offline)
-    return by_player, allowed, depth, inj, ngs_i, pfr_i, team_week_touches
+    return (by_player, allowed, allowed_pass, allowed_rush, depth, inj, ngs_i, pfr_i,
+            team_week_touches, team_week_targets)
 
 
 def season_ppg(by_player):
@@ -427,6 +461,17 @@ def dvp_roll4(allowed, week, defteam, pos, league_avg):
     return sum(vals) / len(vals) if vals else league_avg
 
 
+def ewma_series(vals: list[float], span: int) -> float:
+    """Exponentially weighted mean over chronological vals (oldest→newest)."""
+    if not vals:
+        return 0.0
+    alpha = 2.0 / (span + 1.0)
+    s = float(vals[0])
+    for v in vals[1:]:
+        s = alpha * float(v) + (1.0 - alpha) * s
+    return s
+
+
 def mean_keys(hist, keys):
     if not hist:
         return [0.0] * len(keys)
@@ -438,8 +483,9 @@ def mean_keys(hist, keys):
 # ---------------------------------------------------------------------------
 
 def assemble_row(
-    hist, g, c, meta_row, pos, dvp, dvp4, depth_row, inj_hist, ngs_hist, pfr_hist,
-    ep_hist, qb_ep, team_pass_rate, committee_hhi, ped, prior_ppg, season,
+    hist, g, c, meta_row, pos, dvp, dvp4, dvp_pass, dvp_rush, dvp_pass4,
+    depth_row, inj_hist, ngs_hist, pfr_hist,
+    ep_hist, qb_ep, team_pass_rate, committee_hhi, wr1_share, ped, prior_ppg, season,
 ):
     """Return (values[list], mask[list]) aligned to FEATURE_NAMES."""
     vals = {}
@@ -454,21 +500,46 @@ def assemble_row(
     vals["games_played"] = float(len(hist))
     vals["prior_ppg"] = float(prior_ppg)
     mask["std_ppr"] = mask["games_played"] = mask["prior_ppg"] = 1.0
+    if HILL_CLIMB_FEATURES:
+        ppg_hist = [x["fpts_ppr"] for x in hist]
+        vals["ewma_ppr_3"] = ewma_series(ppg_hist, 3)
+        vals["ewma_ppr_5"] = ewma_series(ppg_hist, 5)
+        vals["ewma_ppr_8"] = ewma_series(ppg_hist, 8)
+        mask["ewma_ppr_3"] = mask["ewma_ppr_5"] = mask["ewma_ppr_8"] = 1.0
 
     # usage
     for k in USAGE_KEYS:
+        if k == "snap_delta":
+            continue
         vals["u_" + k] = float(np.mean([x.get(k, 0.0) for x in window]))
         mask["u_" + k] = 1.0
+    if HILL_CLIMB_FEATURES:
+        snaps = [x.get("snap_pct", 0.0) for x in hist]
+        if len(snaps) >= 2:
+            vals["u_snap_delta"] = float(snaps[-1] - np.mean(snaps[:-1][-3:]))
+            mask["u_snap_delta"] = 1.0
+        else:
+            vals["u_snap_delta"] = 0.0
+            mask["u_snap_delta"] = 0.0
 
     # opportunity (EP) — mask if no prior EP weeks
+    ep_core = ("ep_fpts", "ep_diff", "rec_attempt", "rush_attempt", "td_exp", "rec_air_yards")
     if ep_hist:
-        for k in OPP_KEYS:
+        for k in ep_core:
             vals["o_" + k] = float(np.mean([x.get(k, 0.0) for x in ep_hist[-TRAIL:]]))
             mask["o_" + k] = 1.0
     else:
-        for k in OPP_KEYS:
+        for k in ep_core:
             vals["o_" + k] = 0.0
             mask["o_" + k] = 0.0
+    if HILL_CLIMB_FEATURES:
+        if hist:
+            vals["o_td_rate"] = float(np.mean([x.get("total_td", 0.0) for x in window]))
+            vals["o_rz_proxy"] = float(np.mean([1.0 if x.get("total_td", 0) >= 1 else 0.0 for x in window]))
+            mask["o_td_rate"] = mask["o_rz_proxy"] = 1.0
+        else:
+            vals["o_td_rate"] = vals["o_rz_proxy"] = 0.0
+            mask["o_td_rate"] = mask["o_rz_proxy"] = 0.0
 
     # role
     if depth_row:
@@ -535,6 +606,12 @@ def assemble_row(
     vals["dvp_allowed"] = dvp
     vals["dvp_roll4"] = dvp4
     mask["dvp_allowed"] = mask["dvp_roll4"] = 1.0
+    if HILL_CLIMB_FEATURES:
+        vals["dvp_pass"] = dvp_pass
+        vals["dvp_rush"] = dvp_rush
+        vals["dvp_pass_roll4"] = dvp_pass4
+        for k in ("dvp_pass", "dvp_rush", "dvp_pass_roll4"):
+            mask[k] = 1.0
 
     # ngs
     if ngs_hist:
@@ -562,8 +639,10 @@ def assemble_row(
     vals["c_qb_ep_fpts"] = qb_ep
     vals["c_team_pass_rate"] = team_pass_rate
     vals["c_committee_hhi"] = committee_hhi
+    if HILL_CLIMB_FEATURES:
+        vals["c_wr1_target_share"] = wr1_share
     for k in CTX_KEYS:
-        mask["c_" + k] = 1.0 if (qb_ep or team_pass_rate or committee_hhi) else 0.5
+        mask["c_" + k] = 1.0
         # soft-mask: always feed context defaults
         mask["c_" + k] = 1.0
 
@@ -621,35 +700,50 @@ def build(last_season: int | None = None, offline: bool = False) -> dict:
     per_season = {}
     for s in seasons:
         print(f"  loading season {s} ...")
-        bp, allowed, depth, inj, ngs_i, pfr_i, twt = load_season(s, meta, offline)
+        (bp, allowed, allowed_pass, allowed_rush, depth, inj, ngs_i, pfr_i,
+         twt, twtgt) = load_season(s, meta, offline)
         per_season[s] = {
-            "bp": bp, "allowed": allowed, "depth": depth, "inj": inj,
-            "ngs": ngs_i, "pfr": pfr_i, "twt": twt, "ppg": season_ppg(bp),
+            "bp": bp, "allowed": allowed, "allowed_pass": allowed_pass,
+            "allowed_rush": allowed_rush, "depth": depth, "inj": inj,
+            "ngs": ngs_i, "pfr": pfr_i, "twt": twt, "twtgt": twtgt,
+            "ppg": season_ppg(bp),
         }
 
     league_avg_pos = {}
+    league_avg_pass = {}
+    league_avg_rush = {}
     for s in seasons:
         allowed = per_season[s]["allowed"]
+        ap = per_season[s]["allowed_pass"]
+        ar = per_season[s]["allowed_rush"]
         for pos in ("QB", "RB", "WR", "TE"):
             vals = [v for (w, d, p), v in allowed.items() if p == pos]
             league_avg_pos[(s, pos)] = float(np.mean(vals)) if vals else 12.0
+            pv = [v for (w, d, p), v in ap.items() if p == pos]
+            league_avg_pass[(s, pos)] = float(np.mean(pv)) if pv else 8.0
+            rv = [v for (w, d, p), v in ar.items() if p == pos]
+            league_avg_rush[(s, pos)] = float(np.mean(rv)) if rv else 4.0
 
     X, M, Y, META, Y_USAGE = [], [], [], [], []
 
     for s in seasons:
         bundle = per_season[s]
         bp, allowed = bundle["bp"], bundle["allowed"]
+        allowed_pass, allowed_rush = bundle["allowed_pass"], bundle["allowed_rush"]
         prior_sp = per_season.get(s - 1, {}).get("ppg", {})
         # Precompute context maps for this season (avoid O(n²) scans).
         qb_ep_map = {}
         team_pass_map = {}  # (week, team) -> pass rate
         rb_touches = {}     # (week, team) -> list of RB touches
+        wr_targets = {}     # (week, team) -> list of WR target shares
         gsis_team_week = {}
         for gsis, games in bp.items():
             for g0 in games:
                 gsis_team_week[(gsis, g0["week"])] = (g0["team"], g0["pos"])
                 if g0["pos"] == "RB":
                     rb_touches.setdefault((g0["week"], g0["team"]), []).append(g0["touches"])
+                if g0["pos"] == "WR":
+                    wr_targets.setdefault((g0["week"], g0["team"]), []).append(g0.get("target_share", 0.0))
         team_att = {}  # (week, team) -> [passish, rush]
         for (gsis, ys, wk), ev in ep_idx.items():
             if ys != s:
@@ -671,6 +765,7 @@ def build(last_season: int | None = None, offline: bool = False) -> dict:
         for key, shares in rb_touches.items():
             total = sum(shares)
             hhi_map[key] = sum((x / total) ** 2 for x in shares) if total > 0 else 0.0
+        wr1_map = {key: max(shares) if shares else 0.0 for key, shares in wr_targets.items()}
 
         for gsis, games in bp.items():
             for i in range(len(games)):
@@ -681,10 +776,12 @@ def build(last_season: int | None = None, offline: bool = False) -> dict:
                 if c is None:
                     continue
                 hist = games[:i]
-                dvp = dvp_prior(allowed, g["week"], g["team"], g["pos"],
-                                league_avg_pos[(s, g["pos"])])
-                dvp4 = dvp_roll4(allowed, g["week"], g["team"], g["pos"],
-                                 league_avg_pos[(s, g["pos"])])
+                pos = g["pos"]
+                dvp = dvp_prior(allowed, g["week"], g["team"], pos, league_avg_pos[(s, pos)])
+                dvp4 = dvp_roll4(allowed, g["week"], g["team"], pos, league_avg_pos[(s, pos)])
+                dvp_p = dvp_prior(allowed_pass, g["week"], g["team"], pos, league_avg_pass[(s, pos)])
+                dvp_r = dvp_prior(allowed_rush, g["week"], g["team"], pos, league_avg_rush[(s, pos)])
+                dvp_p4 = dvp_roll4(allowed_pass, g["week"], g["team"], pos, league_avg_pass[(s, pos)])
                 depth_row = bundle["depth"].get((g["week"], gsis))
                 inj_hist = [bundle["inj"].get((h["week"], gsis), "") for h in hist]
                 ngs_hist = []
@@ -705,11 +802,12 @@ def build(last_season: int | None = None, offline: bool = False) -> dict:
                 committee_hhi = hhi_map.get((pw, pteam), 0.0)
                 qb_ep = qb_ep_map.get((pw, pteam), 0.0)
                 team_pass = team_pass_map.get((pw, pteam), 0.55)
+                wr1 = wr1_map.get((pw, pteam), 0.0)
 
                 row_v, row_m = assemble_row(
-                    hist, g, c, meta.get(gsis, {}), g["pos"], dvp, dvp4, depth_row,
-                    inj_hist, ngs_hist, pfr_hist, ep_hist, qb_ep, team_pass,
-                    committee_hhi, ped_by_gsis.get(gsis), prior_sp.get(gsis, 0.0), s,
+                    hist, g, c, meta.get(gsis, {}), pos, dvp, dvp4, dvp_p, dvp_r, dvp_p4,
+                    depth_row, inj_hist, ngs_hist, pfr_hist, ep_hist, qb_ep, team_pass,
+                    committee_hhi, wr1, ped_by_gsis.get(gsis), prior_sp.get(gsis, 0.0), s,
                 )
                 X.append(row_v)
                 M.append(row_m)
@@ -724,7 +822,7 @@ def build(last_season: int | None = None, offline: bool = False) -> dict:
     byes = team_byes(up_season, offline)
     upcoming = build_upcoming(
         up_season, per_season[last_season], ctx, meta, league_avg_pos,
-        last_season, byes, ep_idx, ped_by_gsis,
+        league_avg_pass, league_avg_rush, last_season, byes, ep_idx, ped_by_gsis,
     )
 
     Xa = np.array(X, dtype=np.float32)
@@ -773,7 +871,8 @@ def build(last_season: int | None = None, offline: bool = False) -> dict:
     }
 
 
-def build_upcoming(up_season, last_bundle, ctx, meta, league_avg_pos, last_season,
+def build_upcoming(up_season, last_bundle, ctx, meta, league_avg_pos,
+                   league_avg_pass, league_avg_rush, last_season,
                    byes, ep_idx, ped_by_gsis):
     bp = last_bundle["bp"]
     weeks = [w for (ssn, w, _t) in ctx if ssn == up_season]
@@ -795,6 +894,8 @@ def build_upcoming(up_season, last_bundle, ctx, meta, league_avg_pos, last_seaso
             continue
         pos = games[-1]["pos"]
         dvp = league_avg_pos.get((last_season, pos), 12.0)
+        dvp_p = league_avg_pass.get((last_season, pos), 8.0)
+        dvp_r = league_avg_rush.get((last_season, pos), 4.0)
         depth_row = last_bundle["depth"].get((games[-1]["week"], gsis))
         ngs_hist = [last_bundle["ngs"][k] for k in last_bundle["ngs"]
                     if k[1] == gsis and last_bundle["ngs"][k].get("_mask")]
@@ -804,9 +905,16 @@ def build_upcoming(up_season, last_bundle, ctx, meta, league_avg_pos, last_seaso
         ep_hist = [ep_idx[(gsis, last_season, g["week"])]
                    for g in games if (gsis, last_season, g["week"]) in ep_idx]
         inj_hist = [last_bundle["inj"].get((g["week"], gsis), "") for g in games]
+        # WR1 share: max WR target_share on same team in last week of hist
+        wr1 = 0.0
+        last_wk, last_tm = games[-1]["week"], games[-1]["team"]
+        for _gid, gs in bp.items():
+            for g0 in gs:
+                if g0["week"] == last_wk and g0["team"] == last_tm and g0["pos"] == "WR":
+                    wr1 = max(wr1, g0.get("target_share", 0.0))
         row_v, row_m = assemble_row(
-            games, games[-1], c, m, pos, dvp, dvp, depth_row, inj_hist,
-            ngs_hist, pfr_hist, ep_hist, 0.0, 0.55, 0.0,
+            games, games[-1], c, m, pos, dvp, dvp, dvp_p, dvp_r, dvp_p,
+            depth_row, inj_hist, ngs_hist, pfr_hist, ep_hist, 0.0, 0.55, 0.0, wr1,
             ped_by_gsis.get(gsis), last_bundle["ppg"].get(gsis, 0.0), last_season,
         )
         rows.append(row_v)

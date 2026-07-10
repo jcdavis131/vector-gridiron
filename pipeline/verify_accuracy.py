@@ -81,6 +81,9 @@ def main() -> int:
           "README mentions opportunity / EP source")
     check("2025" in readme and ("injur" in readme.lower()),
           "README documents injury feed caveat")
+    check("Methods" in readme, "README has Methods honesty section")
+    check("residual" in readme.lower() or "Floor / ceiling" in readme,
+          "README explains floor/ceiling residual")
 
     print(f"\n{fails} failure(s)")
     return 1 if fails else 0

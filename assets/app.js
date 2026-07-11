@@ -108,13 +108,15 @@ async function boot() {
     STATE.kdst = kdst;
     if (look) for (const s of look.seasons) STATE.lookbackBySeason.set(s.season, s);
     // K/DST get real projections everywhere (roster, start/sit, waivers) — they
-    // live in kdst.json (nflverse zeroes kicker points), merged as proj records.
+    // live in kdst.json (nflverse zeroes kicker points), merged as proj + nextgame.
     if (kdst) for (const [arr, pos] of [[kdst.kickers, 'K'], [kdst.dst, 'DST']]) {
       for (const p of (arr || [])) {
         const key = normKey(p.name, pos);
-        STATE.projByKey.set(key, { key, name: p.name, pos, team: p.team,
+        const row = { key, name: p.name, pos, team: p.team,
           proj: p.proj, floor: Math.max(0, +(p.proj - 4).toFixed(1)), ceil: +(p.proj + 4).toFixed(1),
-          bye: p.bye ?? null, comps: [] });
+          bye: p.bye ?? null, comps: [], source: 'kdst' };
+        STATE.projByKey.set(key, row);
+        STATE.nextByKey.set(key, row);
       }
     }
     $('#foot-built').textContent = proj.built || vec.built || '';

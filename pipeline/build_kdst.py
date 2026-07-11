@@ -29,6 +29,7 @@ from pathlib import Path
 
 import nfl_data as nfl
 from nfl_data import num
+from composite_score import walk_forward_mae
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "assets"
@@ -159,15 +160,25 @@ def build():
     for i, d in enumerate(dst):
         d["rank_pos"] = i + 1
 
+    k_hold = walk_forward_mae(k_hist)
+    d_hold = walk_forward_mae(dst_hist)
+
     ASSETS.mkdir(exist_ok=True)
     (ASSETS / "kdst.json").write_text(json.dumps({
         "built": time.strftime("%Y-%m-%d"), "proj_season": last + 1,
         "seasons": seasons, "kickers": kickers, "dst": dst,
+        "holdout": {
+            "method": "walk_forward_season_ppg_0.65_0.35",
+            "kicker_mae": k_hold["mae"], "kicker_n": k_hold["n"],
+            "dst_mae": d_hold["mae"], "dst_n": d_hold["n"],
+        },
     }, separators=(",", ":")), encoding="utf-8")
     print(f"wrote kdst.json: {len(kickers)} kickers, {len(dst)} DST, "
           f"seasons {seasons[0]}-{seasons[-1]}, projecting {last + 1}")
     print("  top K:", ", ".join(f"{k['name']} {k['proj']}" for k in kickers[:3]))
     print("  top DST:", ", ".join(f"{d['name']} {d['proj']}" for d in dst[:3]))
+    print(f"  holdout MAE K={k_hold['mae']} (n={k_hold['n']}) "
+          f"DST={d_hold['mae']} (n={d_hold['n']})")
 
 
 if __name__ == "__main__":

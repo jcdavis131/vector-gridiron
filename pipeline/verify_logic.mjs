@@ -55,12 +55,15 @@ if (fs.existsSync('assets/adp.json')) {
   check(edges.some(e => e >= 8) && edges.some(e => e <= -8), `value edges span VALUE and REACH (max +${Math.max(...edges)}, min ${Math.min(...edges)})`);
 }
 
-// 2) every projection carries comps (learned embedding) + a stat line
-const withComps = proj.players.filter(p => p.comps && p.comps.length >= 3).length;
-check(withComps === proj.count, `all ${proj.count} projections have comps (${withComps})`);
+// 2) skill projections carry comps (learned embedding) + a stat line
+//    K/DST are season-rate (source=kdst) — no embedding comps / vector join.
+const skill = proj.players.filter(p => p.source !== 'kdst' && p.pos !== 'K' && p.pos !== 'DST');
+const kdstN = proj.count - skill.length;
+const withComps = skill.filter(p => p.comps && p.comps.length >= 3).length;
+check(withComps === skill.length, `all ${skill.length} skill projections have comps (${withComps}; +${kdstN} K/DST)`);
 check(proj.players.every(p => p.line && 'rush_yds' in p.line && 'rec_yds' in p.line), 'every projection has a stat line');
-let matched = 0; for (const p of proj.players) if (vecByKey.has(p.key)) matched++;
-check(matched / proj.count > 0.8, `proj->2025-vector join ${(100 * matched / proj.count).toFixed(0)}% (rest are low-sample, comps via embedding)`);
+let matched = 0; for (const p of skill) if (vecByKey.has(p.key)) matched++;
+check(matched / skill.length > 0.8, `proj->2025-vector join ${(100 * matched / skill.length).toFixed(0)}% of skill (rest low-sample/rookies)`);
 
 // availability: byes (schedule), team-changes (latest_team), roster status
 check(proj.players.every(p => p.bye == null || (p.bye >= 1 && p.bye <= 18)), 'projections carry valid bye weeks');

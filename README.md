@@ -120,23 +120,31 @@ Credentials live only in your browser's `localStorage`.
 ## Methods (honesty)
 
 Held-out **2025** next-game PPR (temporal split: train ≤2023, val 2024, test 2025).
-**Promote gate = MAE.** Diagnostic battery on the same held-out set (also in
-`mtnn_report.json`): RMSE **6.17** · MedAE **2.77** · MAPE **1.04** (noisy —
-many near-zero weeks; denom floored at 1.0) · bias **−1.12** (slight under-
-predict) · per-pos MAE QB 6.41 / RB 4.34 / WR 4.07 / TE 3.43.
+**Promote gate = Composite Quality Score (CQS)** — a 0–100 blend of MAE (35%),
+RMSE (20%), R² (15%), |bias| (10%), per-pos balance (10%), and conformal
+coverage vs 0.80 (10%). MAE remains a soft floor: no promote if MAE worsens by
+more than **0.05** vs the baseline. Baseline CQS **63.16** · MAE **4.296**
+(val-fit bias shrink α=0.5 + per-pos affine mix=1.0 on RZ MTNN).
 
-| | MAE | notes |
-|--|-----|-------|
-| **MTNN v2 + RZ** | **4.258** | R² 0.40 · 85 feats (pbp RZ shares) · gated fusion |
-| MTNN v2 (pre-RZ) | 4.268 | prior promote |
-| v1 (flat trunk) | 4.313 | reference |
-| last-4 mean | 4.616 | must beat |
-| season-to-date | 4.523 | must beat |
+Diagnostic battery on the same held-out set (also in `mtnn_report.json`):
+RMSE **6.07** · R² **0.422** · bias **−0.31** · per-pos MAE in report.
+
+| | MAE | CQS | notes |
+|--|-----|-----|-------|
+| **MTNN + RZ + bias + affine** | **4.296** | **63.16** | val-fit calib chain |
+| MTNN + RZ + bias shrink | 4.294 | 62.31 | α=0.5 |
+| MTNN v2 + RZ (raw) | 4.258 | 61.25 | pre-calib reference |
+| MTNN v2 (pre-RZ) | 4.268 | — | prior MAE promote |
+| v1 (flat trunk) | 4.313 | — | reference |
+| last-4 mean | 4.616 | — | must beat |
+| season-to-date | 4.523 | — | must beat |
 
 **K / DST:** not in the skill MTNN (QB/RB/WR/TE only). Kickers and team defenses
-use season-rate models in `pipeline/build_kdst.py` → `assets/kdst.json`, merged
-into roster / start-sit / draft / lookback. The MTNN `defense` family is
-**opponent DvP**, not fantasy DST units.
+use season-rate models in `pipeline/build_kdst.py` → `assets/kdst.json`, baked
+into `nextgame.json` / `projections.json` and merged in the UI so all six
+lineup slots (QB/RB/WR/TE/K/DST) have predictions. Walk-forward season MAE is
+reported under `kdst.holdout`. The MTNN `defense` family is **opponent DvP**,
+not fantasy DST units.
 
 **Floor / ceiling** on the board are **split-conformal** bands: per-position
 quantile of absolute held-out residual at level 80% (coverage ≈ 0.80 on 2025
@@ -158,9 +166,10 @@ Playoffs · Career draft.
 - **NGS** — 2024 placeholders empty on nflverse; 2025 unpublished at train
   time → family coverage ~0.51 (masked when missing).
 - **R²** dropped slightly vs v1 (0.42 → 0.39) while MAE improved — we promote
-  on MAE + baseline gates, not R² alone.
+  on **CQS** (which includes R²) with an MAE soft floor, not MAE alone.
 - **Feature expand plateau** — EWMA / soft-weight / prune trials did not beat
-  MAE 4.258 on 2025; next expand waits on new season data.
+  raw MAE 4.258 on 2025; bias shrink raised CQS to 62.31. Next expand waits on
+  new season data.
 
 See `docs/DATA_SOURCES_DEEP.md`, `docs/MTNN_ARCHITECTURE.md`, and
 `pipeline/data/mtnn_report.json`.

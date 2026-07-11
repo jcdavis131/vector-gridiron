@@ -39,6 +39,9 @@ RZ_FEATURES = True
 # EWMA form spans only (no DvP/snapΔ/WR1) — trial on top of RZ.
 # Held-out 2025 MAE 4.299 vs promoted 4.258 — keep OFF.
 EWMA_FEATURES = False
+# Single-span EWMA (lighter than 3-span bundle) — trial on top of RZ.
+# Held-out 2025 MAE 4.287 vs promoted 4.258 — keep OFF.
+EWMA_SPAN5 = False
 
 # ---------------------------------------------------------------------------
 # Family feature specs (order = column order within family)
@@ -83,7 +86,8 @@ PED_KEYS = ["draft_pick_log", "draft_round", "combine_forty", "combine_vertical"
 
 _FORM_EXTRA = (
     ["ewma_ppr_3", "ewma_ppr_5", "ewma_ppr_8"]
-    if (HILL_CLIMB_FEATURES or EWMA_FEATURES) else []
+    if (HILL_CLIMB_FEATURES or EWMA_FEATURES) else
+    (["ewma_ppr_5"] if EWMA_SPAN5 else [])
 )
 FAMILIES: dict[str, list[str]] = {
     "form": ["f_" + k for k in FORM_KEYS] + ["std_ppr", "games_played", "prior_ppg"] + _FORM_EXTRA,
@@ -514,6 +518,10 @@ def assemble_row(
         vals["ewma_ppr_5"] = ewma_series(ppg_hist, 5)
         vals["ewma_ppr_8"] = ewma_series(ppg_hist, 8)
         mask["ewma_ppr_3"] = mask["ewma_ppr_5"] = mask["ewma_ppr_8"] = 1.0
+    elif EWMA_SPAN5:
+        ppg_hist = [x["fpts_ppr"] for x in hist]
+        vals["ewma_ppr_5"] = ewma_series(ppg_hist, 5)
+        mask["ewma_ppr_5"] = 1.0
 
     # usage
     for k in USAGE_KEYS:

@@ -8,6 +8,10 @@
     {
       "source": "/trends",
       "destination": "/trends.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/dashboard.html"
     }
   ],
   "redirects": [

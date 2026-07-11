@@ -1,7 +1,7 @@
 """Promotion gates for Gridiron MTNN v2.
 
 G1 shapes / NaN · G2 beat baselines · G3 vs v1 MAE · G4 family coverage ·
-G5 artifact keys · G6 Methods honesty (README citations).
+G5 artifact keys · G6 Methods honesty · G7 composite CQS · G8 all 6 positions.
 
 Run:  python pipeline/verify_accuracy.py
 """
@@ -9,12 +9,17 @@ Run:  python pipeline/verify_accuracy.py
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "pipeline" / "data"
 ASSETS = ROOT / "assets"
 V1_MAE = 4.313
+sys.path.insert(0, str(ROOT / "pipeline"))
+import composite_score as cqs  # noqa: E402
+
+ALL_POS = ("QB", "RB", "WR", "TE", "K", "DST")
 
 
 def main() -> int:
@@ -43,6 +48,7 @@ def main() -> int:
     # G2 / G3
     report_path = DATA / "mtnn_report.json"
     check(report_path.exists(), "mtnn_report.json exists")
+    rep = None
     if report_path.exists():
         rep = json.loads(report_path.read_text(encoding="utf-8"))
         check(rep["model_fpts_mae"] < rep["baseline_last4_mae"],
@@ -57,7 +63,6 @@ def main() -> int:
         man = json.loads(man_path.read_text(encoding="utf-8"))
         for fam, cov in man.get("coverage", {}).items():
             if fam == "availability":
-                # may be low if mostly 2025 rows — warn only if exactly 0 and we have pre-2025
                 continue
             check(cov > 0.01, f"family {fam} coverage {cov:.3f} > 0.01")
 
@@ -84,6 +89,43 @@ def main() -> int:
     check("Methods" in readme, "README has Methods honesty section")
     check("residual" in readme.lower() or "Floor / ceiling" in readme,
           "README explains floor/ceiling residual")
+    check("Composite" in readme or "CQS" in readme,
+          "README documents composite CQS promote gate")
+
+    # G7 composite
+    if rep is not None:
+        block = rep.get("composite") or cqs.composite_quality(rep)
+        check("cqs" in block, f"composite.cqs present ({block.get('cqs')})")
+        check(float(block.get("cqs") or 0) >= 50.0,
+              f"CQS {block.get('cqs')} >= 50 (sanity floor)")
+        check(rep.get("promote_metric") == "cqs",
+              f"promote_metric={rep.get('promote_metric')} (want cqs)")
+        for pos in ("QB", "RB", "WR", "TE"):
+            check(pos in (rep.get("per_pos_mae") or {}),
+                  f"per_pos_mae has {pos}")
+
+    # G8 all six fantasy positions on boards + kdst holdout
+    kdst_path = ASSETS / "kdst.json"
+    check(kdst_path.exists(), "assets/kdst.json exists")
+    if kdst_path.exists():
+        kdst = json.loads(kdst_path.read_text(encoding="utf-8"))
+        check(len(kdst.get("kickers") or []) >= 30,
+              f"kickers {len(kdst.get('kickers') or [])} >= 30")
+        check(len(kdst.get("dst") or []) == 32,
+              f"DST {len(kdst.get('dst') or [])} == 32")
+        hold = kdst.get("holdout") or {}
+        check(hold.get("kicker_mae") is not None,
+              f"kdst holdout kicker_mae={hold.get('kicker_mae')}")
+        check(hold.get("dst_mae") is not None,
+              f"kdst holdout dst_mae={hold.get('dst_mae')}")
+    for name in ("nextgame.json", "projections.json"):
+        p = ASSETS / name
+        if not p.exists():
+            continue
+        d = json.loads(p.read_text(encoding="utf-8"))
+        pos_set = {pl.get("pos") for pl in d.get("players") or []}
+        for pos in ALL_POS:
+            check(pos in pos_set, f"{name} includes position {pos}")
 
     print(f"\n{fails} failure(s)")
     return 1 if fails else 0

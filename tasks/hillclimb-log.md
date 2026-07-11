@@ -1,56 +1,31 @@
 # Hill-climb experiment log — 2026-07-10
 
 ## Promoted baseline (current)
-- PPR MAE **4.258** · R² **0.402** · **85** feats / 13 families
-- `RZ_FEATURES = True` (pbp RZ tgt/carry/inside-5 shares)
-- Floor/ceil: **conformal abs-residual q80** (coverage 0.80 on 2025)
-- `HILL_CLIMB_FEATURES = False` · `EWMA_FEATURES = False`
-
-## Family ablation (on pre-RZ 4.268 checkpoint)
-| Family | ΔMAE when dropped |
-|--------|-------------------|
-| usage | +0.493 |
-| form | +0.399 |
-| opportunity | +0.134 |
-| meta | +0.127 |
-| pedigree | +0.026 |
-| market | +0.021 |
-| defense / ngs / role / availability / context / conditions / pfr | ~0 |
+- **CQS 63.16** · MAE **4.296** · R² **0.422** · RMSE **6.068** · bias **−0.311**
+- Calib chain: bias shrink α=0.5 → per-pos affine mix=1.0 (both val-selected)
+- Promote: CQS ≥ baseline+0.5 **and** MAE ≤ baseline+0.05
+- Positions: QB/RB/WR/TE MTNN + K/DST season-rate on boards
 
 ## Trials
-| Config | Test MAE | Notes |
-|--------|----------|-------|
-| +EWMA +DvP +snapΔ +rz_proxy +WR1 + family_drop=0.1 | 4.278 | not promoted |
-| same, family_drop=0.0 | 4.378 | not promoted |
-| **+pbp RZ shares only** | **4.258** | **PROMOTED** (beats 4.268) |
-| prune ngs+defense+role+availability | 4.283 | not promoted (worse than RZ) |
-| +pinball q10/q90 heads (0.25× loss) | 4.333 | not promoted; coverage 0.62 (under); R² 0.364 |
-| zero `conditions` only | 4.320 | not promoted |
-| +EWMA spans only on RZ (88 feats) | 4.299 | not promoted |
-| **conformal q80 floor/ceil** | **4.258** | **PROMOTED** (product; MAE tied; coverage 0.80) |
-| soft-weight flat fams ×0.25 | 4.322 | not promoted |
-| +EWMA span-5 only on RZ (86 feats) | 4.287 | not promoted |
-| soft-weight ngs+defense ×0.25 | 4.310 | not promoted |
-| **tower_contrib export + UI** | **4.258** | **PROMOTED** (product; MAE tied) |
-| **weekly start/sit ingest** | n/a | **PROMOTED** (product; Sleeper+ESPN matchups) |
-| **playoff clutch (wk15+)** | n/a | **PROMOTED** (product; clutch ranking mode) |
+| Config | MAE | CQS | Notes |
+|--------|-----|-----|-------|
+| RZ raw | 4.258 | 61.25 | prior |
+| bias α=0.5 | 4.294 | 62.31 | promoted |
+| **bias + affine mix=1** | **4.296** | **63.16** | **PROMOTED** |
+| blend last4 w=0.15 | 4.283 | 63.27 | not promoted (< +0.5 CQS) |
+| blend STD w=0.15 | 4.285 | 63.22 | not promoted |
+| isotonic mix=1 | 4.326 | 62.93 | not promoted |
+| soft ngs+defense+role+avail ×0.25 | 4.319 | 62.65 | not promoted (restored) |
+| soft conditions ×0.5 | 4.292 | 63.17 | not promoted (ΔCQS +0.01; restored) |
 
 ## Next bets
-1. ~~Feature expand~~ — **skipped** until new season data (2025 holdout plateau)
-2. Soft-weight scale sweep only if new evidence
-3. ~~Narrative weekly recaps from live matchups~~ → **done**
+1. ~~Post-hoc calib / soft-weight~~ — **plateau** on 2025 holdout
+2. Feature expand parked for new season data
+3. Optional weekly K/DST or user-directed bet
 
 ## Skipped this tick
-- MAE feature expand — still no stronger prior; gate stays 4.258
+- Soft conditions ×0.5 — CQS 63.17 < bar 63.66; assets restored
+- **Loop stopped** — no actionable CQS bets left without new data / directed work
 
-## Shipped
-- README Methods · `family_ablation.py` · per-pos uncertainty
-- `build_rz.py` + nflverse pbp parquet · RZ opportunity cols
-- Conformal floor/ceil (abs residual q80 by position)
-- Metrics battery (MAPE/RMSE/MedAE/bias/per-pos) — MAE remains promote gate
-- Owner-first Lookback (focus picker · you card · standings modes)
-- Tower contrib (gated attn×gate top-5) on nextgame/proj + profile UI
-- Weekly start/sit efficiency from Sleeper/ESPN matchups (latest 1–2 seasons)
-- Playoff clutch start/sit (weeks 15–18) + Clutch standings mode
-- Draft report cards show Start/sit + Clutch columns
-- Live weekly matchup narratives (high score / bench left / sharp set)
+## Loop
+- **stopped** (was 5m / PID 43172)

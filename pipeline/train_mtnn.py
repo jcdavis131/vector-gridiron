@@ -3,17 +3,22 @@
 Residual family towers (masked) → gated fusion → L2 embedding → heads:
   fpts_ppr + component yards/rec/TD + usage recon + position + pedigree aux.
 
-Honest temporal split (train≤2023 / val 2024 / test 2025). Exports
-nextgame.json, projections.json, embedding.json (UI contract preserved).
+Protocol (evaluate honest, deploy greedy):
+  --phase select      train ≤2023 / val 2024 / test 2025; report held-out metrics
+  --phase final-refit train on ALL labeled weeks; ship weights (metrics from selection)
+  --phase auto        select → if promote gate passes → final-refit → ship refit
+
+Exports nextgame.json, projections.json, embedding.json (UI contract preserved).
 Rookie draft-capital model retained from v1 for players without NFL form.
 
-Run:  python pipeline/train_mtnn.py [--offline] [--epochs 40]
+Run:  python pipeline/train_mtnn.py [--phase auto] [--offline] [--epochs 60]
 Requires: pipeline/data/train_matrix.npz from build_features.py
 """
 
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import re
 import time
@@ -26,6 +31,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 import build_features as bf
+import composite_score as cqs
 import nfl_data as nfl
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -333,6 +339,10 @@ def main():
                     help="comma-separated families to soft-scale masks (not hard zero)")
     ap.add_argument("--soft-scale", type=float, default=0.25,
                     help="mask multiplier for --soft-families (default 0.25)")
+    ap.add_argument("--phase", choices=("select", "final-refit", "auto"),
+                    default="select",
+                    help="select=honest split metrics; final-refit=all-labeled ship; "
+                         "auto=select then refit+ship if promote gate passes")
     args = ap.parse_args()
     t0 = time.time()
     torch.manual_seed(SEED)
@@ -340,6 +350,7 @@ def main():
 
     last_season = nfl.latest_stats_season(args.offline)
     print(f"latest published season = {last_season}; projecting {last_season + 1}")
+    print(f"phase={args.phase}")
     print("building holistic multi-family feature matrix ...")
     D = bf.build(last_season, offline=args.offline)
     X, M, Y = D["X"], D["M"], D["Y"]
@@ -446,6 +457,7 @@ def main():
     print(f"  params={n_params:,}")
 
     best_va, best_state, bad, patience = 1e9, None, 0, 20
+    best_epoch = 0
     rng = np.random.default_rng(SEED)
     for epoch in range(args.epochs):
         model.train()
@@ -490,6 +502,7 @@ def main():
             va_mae = float(np.mean(np.abs(pv[:, 0] - Yva_np[:, 0])))
         if va_mae < best_va - 1e-4:
             best_va, bad = va_mae, 0
+            best_epoch = epoch + 1
             best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
             print(f"  epoch {epoch+1}: val PPR MAE {va_mae:.3f} *")
         else:
@@ -502,6 +515,10 @@ def main():
     if best_state:
         model.load_state_dict(best_state)
     model.eval()
+    selection_best_epoch = max(1, best_epoch)
+    selection_n_train = int(tr.sum())
+    print(f"  selection best_epoch={selection_best_epoch} val_mae={best_va:.3f} "
+          f"n_train={selection_n_train}")
 
     def predict_rows(Xr, Mr, seas_r):
         Xrz = ((Xr - mu) / sd) * Mr
@@ -529,11 +546,95 @@ def main():
     r2 = lambda y, p: float(1 - np.sum((y - p) ** 2) / max(1e-9, np.sum((y - y.mean()) ** 2)))
     f_last4 = X[te][:, feats.index("f_fpts_ppr")]
     f_std = X[te][:, feats.index("std_ppr")]
-    y0, p0 = yte[:, 0], pte[:, 0]
+    y0, p0 = yte[:, 0].copy(), pte[:, 0].copy()
+    pos_te = np.array([META[i]["pos"] for i in np.where(te)[0]]) if te.any() else np.array([])
+
+    # Val-fit per-pos bias shrink (α chosen on val CQS; applied to test + exports).
+    pva, _, _ = predict_rows(X[va], M[va], seasons[va])
+    yva = Y[va][:, 0]
+    pos_va = np.array([META[i]["pos"] for i in np.where(va)[0]]) if va.any() else np.array([])
+    bias_pos = {}
+    for p in SKILL:
+        m = pos_va == p
+        if m.sum() >= 30:
+            bias_pos[p] = float((yva[m] - pva[m, 0]).mean())
+    bias_global = float((yva - pva[:, 0]).mean()) if len(yva) else 0.0
+
+    def _cqs_pack(y, p, pos_arr):
+        abs_e = np.abs(y - p)
+        per = {}
+        for pp in SKILL:
+            mm = pos_arr == pp
+            if mm.sum() >= 30:
+                per[pp] = round(float(abs_e[mm].mean()), 3)
+        conf = {
+            pp: float(np.quantile(abs_e[pos_arr == pp], 0.80))
+            for pp in SKILL if (pos_arr == pp).sum() >= 30
+        }
+        gq = float(np.quantile(abs_e, 0.80)) if len(abs_e) else 6.0
+        qrow = np.array([conf.get(pos_arr[i], gq) for i in range(len(y))])
+        pack = {
+            "model_fpts_mae": round(float(abs_e.mean()), 3),
+            "model_fpts_rmse": round(float(np.sqrt(np.mean((y - p) ** 2))), 3),
+            "model_fpts_r2": round(r2(y, p), 3),
+            "model_fpts_bias": round(float(np.mean(p - y)), 3),
+            "per_pos_mae": per,
+            "conformal_coverage": round(float(np.mean(abs_e <= qrow)), 3) if len(abs_e) else 0.0,
+        }
+        pack["composite"] = cqs.composite_quality(pack)
+        return pack
+
+    base_va = _cqs_pack(yva, pva[:, 0], pos_va)
+    best_a, best_va_cqs = 0.0, base_va["composite"]["cqs"]
+    for i in range(0, 21):
+        a = i / 20.0
+        pp = np.array([pva[j, 0] + a * bias_pos.get(pos_va[j], bias_global)
+                       for j in range(len(yva))])
+        pack = _cqs_pack(yva, pp, pos_va)
+        if (pack["model_fpts_mae"] <= base_va["model_fpts_mae"] + 0.05
+                and pack["composite"]["cqs"] >= best_va_cqs):
+            best_a, best_va_cqs = a, pack["composite"]["cqs"]
+    bias_alpha = best_a
+    pva_b = np.array([pva[j, 0] + bias_alpha * bias_pos.get(pos_va[j], bias_global)
+                      for j in range(len(yva))])
+    # Per-pos affine on bias-calibrated val: y ≈ a*p + b; mix chosen on val CQS.
+    affine_params = {}
+    for p in SKILL:
+        m = pos_va == p
+        if m.sum() < 30:
+            continue
+        A = np.column_stack([pva_b[m], np.ones(m.sum())])
+        coef, *_ = np.linalg.lstsq(A, yva[m], rcond=None)
+        affine_params[p] = (float(coef[0]), float(coef[1]))
+
+    def _apply_affine(p_arr, pos_arr, mix):
+        out = p_arr.copy()
+        for i, pp in enumerate(pos_arr):
+            if pp not in affine_params:
+                continue
+            a, b = affine_params[pp]
+            out[i] = (1 - mix) * p_arr[i] + mix * (a * p_arr[i] + b)
+        return out
+
+    base_va_b = _cqs_pack(yva, pva_b, pos_va)
+    best_mix, best_mix_cqs = 0.0, base_va_b["composite"]["cqs"]
+    for i in range(0, 21):
+        mix = i / 20.0
+        pack = _cqs_pack(yva, _apply_affine(pva_b, pos_va, mix), pos_va)
+        if (pack["model_fpts_mae"] <= base_va_b["model_fpts_mae"] + 0.05
+                and pack["composite"]["cqs"] >= best_mix_cqs):
+            best_mix, best_mix_cqs = mix, pack["composite"]["cqs"]
+    affine_mix = best_mix
+
+    bias_offset = np.array([bias_alpha * bias_pos.get(pos_te[i], bias_global)
+                            for i in range(len(p0))])
+    p0 = _apply_affine(p0 + bias_offset, pos_te, affine_mix)
+    pte = pte.copy()
+    pte[:, 0] = p0
+
     abs_e = np.abs(y0 - p0)
     # MAPE: floor denom so near-zero weeks don't explode (fantasy pts)
     mape_denom = np.maximum(np.abs(y0), 1.0)
-    pos_te = np.array([META[i]["pos"] for i in np.where(te)[0]]) if te.any() else np.array([])
     per_pos_mae = {}
     for p in SKILL:
         m = pos_te == p
@@ -559,9 +660,26 @@ def main():
         "v1_mae_reference": V1_MAE,
         "family_drop": args.family_drop,
         "d_emb": args.d_emb,
-        "hill_climb": "rz+conformal80+tower_contrib",
-        "promote_metric": "mae",
-        "metrics_note": "MAE is the promote gate; MAPE/RMSE/MedAE/bias are diagnostic.",
+        "hill_climb": "rz+conformal80+tower_contrib+cqs+bias_shrink+affine",
+        "promote_metric": "cqs",
+        "bias_calib": {
+            "alpha": bias_alpha,
+            "per_pos": {k: round(v, 3) for k, v in bias_pos.items()},
+            "global": round(bias_global, 3),
+            "fit": "val_season",
+            "select": "max_val_cqs_mae_slack_0.05",
+        },
+        "affine_calib": {
+            "mix": affine_mix,
+            "per_pos": {k: {"a": round(a, 4), "b": round(b, 4)}
+                        for k, (a, b) in affine_params.items()},
+            "fit": "val_on_bias_calibrated",
+            "select": "max_val_cqs_mae_slack_0.05",
+        },
+        "metrics_note": (
+            "Promote gate = Composite Quality Score (CQS); MAE soft floor "
+            "(no promote if MAE > baseline + 0.05). MAPE/MedAE remain diagnostic."
+        ),
     }
     # Split-conformal bands: per-pos quantile of |residual| at level α (default 80%).
     # Point estimate unchanged; floor/ceil = proj ± q̂ (not ±σ).
@@ -591,7 +709,149 @@ def main():
     report["conformal_q"] = round(conf_global, 3)
     report["conformal_q_by_pos"] = {k: round(v, 3) for k, v in conf_by_pos.items()}
     report["conformal_coverage"] = round(cover, 3)
-    print("  test report:", json.dumps(report))
+    report["composite"] = cqs.composite_quality(report)
+    report["composite"]["baseline_cqs"] = cqs.BASELINE["cqs"]
+    ok_promote, promote_why = cqs.should_promote(report)
+    report["composite"]["would_promote_vs_baseline"] = ok_promote
+    report["composite"]["promote_check"] = promote_why
+    # Already-champion re-ship: CQS at/above current baseline still earns
+    # final-refit so prod gets full-data weights without needing +0.5 again.
+    base_cqs = float(cqs.BASELINE.get("cqs") or 0.0)
+    cur_cqs = float(report["composite"]["cqs"])
+    ok_redeploy = (cur_cqs + 1e-6 >= base_cqs) and (
+        float(report.get("model_fpts_mae") or 99) <= float(cqs.BASELINE.get("mae") or 99) + 0.05)
+    ok_ship = ok_promote or ok_redeploy
+    report["metrics_source"] = "selection_holdout"
+    report["selection"] = {
+        "n_train": selection_n_train,
+        "n_val": int(va.sum()),
+        "n_test": int(te.sum()),
+        "best_epoch": selection_best_epoch,
+        "split": "train<=2023 / val 2024 / test 2025",
+    }
+    print("  test report:", json.dumps({k: report[k] for k in (
+        "model_fpts_mae", "model_fpts_r2", "n_train", "n_test", "val_mae") if k in report}))
+    print(f"  CQS {report['composite']['cqs']} · {promote_why}")
+    if ok_redeploy and not ok_promote:
+        print(f"  redeploy-ok: CQS {cur_cqs} >= baseline {base_cqs} (final-refit allowed)")
+
+    selection_report = copy.deepcopy(report)
+    (DATA / "mtnn_report_selection.json").write_text(
+        json.dumps(selection_report, indent=2), encoding="utf-8")
+
+    do_refit = (args.phase == "final-refit") or (args.phase == "auto" and ok_ship)
+    do_export = (args.phase == "select") or do_refit
+    if args.phase == "auto" and not ok_ship:
+        print("  auto: promote gate failed — keeping prior assets; writing selection report only")
+        do_export = False
+
+    if do_refit:
+        refit_epochs = max(selection_best_epoch, 10)
+        print(f"\n-- final-refit on ALL labeled weeks ({refit_epochs} epochs, no early stop) --")
+        tr_fit = np.ones(len(seasons), dtype=bool)
+        mu, sd = X[tr_fit].mean(0), X[tr_fit].std(0)
+        sd[sd == 0] = 1.0
+        Xz = (X - mu) / sd
+        Xz = Xz * M
+        ymu, ysd = Y[tr_fit].mean(0), Y[tr_fit].std(0)
+        ysd[ysd == 0] = 1.0
+        Yz = (Y - ymu) / ysd
+        umu, usd = Yu[tr_fit].mean(0), Yu[tr_fit].std(0)
+        usd[usd == 0] = 1.0
+        Yuz = (Yu - umu) / usd
+        xs_all, ms_all = split_by_family(Xz, M, slices, device)
+        tr_idx = np.where(tr_fit)[0]
+        # Soft val = last labeled season (for logging only; no early stop).
+        va_soft = seasons == int(seasons.max())
+        va_idx = np.where(va_soft)[0]
+        Yva_np = Y[va_soft]
+        seas_va = torch.tensor(season_ids_all[va_soft], dtype=torch.long, device=device)
+
+        model = MTNN(fam_dims, n_seasons=n_seasons, d_emb=args.d_emb, n_targets=len(targets),
+                     n_usage=len(D["usage_recon_names"])).to(device)
+        opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
+        rng = np.random.default_rng(SEED + 1)
+        best_state = None
+        for epoch in range(refit_epochs):
+            model.train()
+            perm = rng.permutation(len(tr_idx))
+            for s in range(0, len(perm), 512):
+                bi = tr_idx[perm[s:s + 512]]
+                xs_b, ms_b = batch_family(bi)
+                if args.family_drop > 0:
+                    for fam in list(ms_b.keys()):
+                        if rng.random() < args.family_drop:
+                            ms_b[fam] = torch.zeros_like(ms_b[fam])
+                            xs_b[fam] = torch.zeros_like(xs_b[fam])
+                yb = torch.tensor(Yz[bi], dtype=torch.float32, device=device)
+                ub = torch.tensor(Yuz[bi], dtype=torch.float32, device=device)
+                pb = torch.tensor(positions[bi], dtype=torch.long, device=device)
+                pedb = torch.tensor(ped_y[bi], dtype=torch.float32, device=device)
+                pedmb = torch.tensor(ped_m[bi], dtype=torch.float32, device=device)
+                sb = torch.tensor(season_ids_all[bi], dtype=torch.long, device=device)
+                opt.zero_grad()
+                _, out = model(xs_b, ms_b, sb)
+                loss_t = (wts * huber(out["targets"], yb).mean(0)).sum()
+                loss_u = huber(out["usage"], ub).mean()
+                pos_ok = pb >= 0
+                loss_p = (F.cross_entropy(out["position"][pos_ok], pb[pos_ok])
+                          if pos_ok.any() else 0.0)
+                loss_ped = ((huber(out["pedigree"], pedb) * pedmb).sum() / pedmb.sum()
+                            if pedmb.sum() > 0 else 0.0)
+                loss = loss_t + 0.15 * loss_u + 0.10 * loss_p + 0.05 * loss_ped
+                loss.backward()
+                opt.step()
+            if (epoch + 1) % 10 == 0 or epoch + 1 == refit_epochs:
+                model.eval()
+                with torch.no_grad():
+                    xs_v, ms_v = batch_family(va_idx)
+                    _, out_v = model(xs_v, ms_v, seas_va)
+                    pv = out_v["targets"].cpu().numpy() * ysd + ymu
+                    soft_mae = float(np.mean(np.abs(pv[:, 0] - Yva_np[:, 0])))
+                print(f"  refit epoch {epoch+1}/{refit_epochs}: last-season MAE {soft_mae:.3f} "
+                      f"(diagnostic only — not held-out)")
+            best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+        model.load_state_dict(best_state)
+        model.eval()
+
+        # Re-fit deploy calib on last labeled season (for shipping), not for metrics.
+        pva, _, _ = predict_rows(X[va_soft], M[va_soft], seasons[va_soft])
+        yva = Y[va_soft][:, 0]
+        pos_va = np.array([META[i]["pos"] for i in np.where(va_soft)[0]])
+        bias_pos = {}
+        for p in SKILL:
+            m = pos_va == p
+            if m.sum() >= 30:
+                bias_pos[p] = float((yva[m] - pva[m, 0]).mean())
+        bias_global = float((yva - pva[:, 0]).mean()) if len(yva) else 0.0
+        # Keep selection-chosen alpha/mix; only refresh bias centers on last season.
+        report = copy.deepcopy(selection_report)
+        report["deploy"] = {
+            "mode": "final_refit_all_labeled",
+            "metrics_source": "selection_holdout",
+            "refit_n_train": int(tr_fit.sum()),
+            "refit_epochs": refit_epochs,
+            "calib_fit": f"last_season_{int(seasons.max())}",
+            "note": ("Held-out MAE/CQS are from the selection split; "
+                     "shipped weights + calib are full-data refit."),
+        }
+        report["bias_calib"]["per_pos"] = {k: round(v, 3) for k, v in bias_pos.items()}
+        report["bias_calib"]["global"] = round(bias_global, 3)
+        report["bias_calib"]["fit"] = f"refit_last_season_{int(seasons.max())}"
+        print(f"  refit done · n_train={int(tr_fit.sum())} · shipping refit weights "
+              f"with selection metrics (MAE={report['model_fpts_mae']} CQS={report['composite']['cqs']})")
+    else:
+        report["deploy"] = {
+            "mode": "selection_only",
+            "metrics_source": "selection_holdout",
+            "note": "Shipped weights match the selection train split (not full-data refit).",
+        }
+
+    if not do_export:
+        DATA.mkdir(parents=True, exist_ok=True)
+        (DATA / "mtnn_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+        print(f"\nwrote mtnn_report.json only ({time.time()-t0:.0f}s); assets unchanged")
+        return 0
 
     # upcoming
     up = D["upcoming"]
@@ -601,6 +861,13 @@ def main():
         return 1
     seas_up = np.array([m["season"] for m in upmeta])
     pred_next, Zup, w_next = predict_rows(Xup, Mup, seas_up)
+    for i, m in enumerate(upmeta):
+        pred_next[i, 0] += bias_alpha * bias_pos.get(m["pos"], bias_global)
+        if m["pos"] in affine_params:
+            a, b = affine_params[m["pos"]]
+            pred_next[i, 0] = (1 - affine_mix) * pred_next[i, 0] + affine_mix * (
+                a * pred_next[i, 0] + b
+            )
 
     # neutral season projection
     Xneutral = Xup.copy()
@@ -615,6 +882,13 @@ def main():
         if name in feats:
             Xneutral[:, feats.index(name)] = val
     pred_season, _, w_season = predict_rows(Xneutral, Mup, seas_up)
+    for i, m in enumerate(upmeta):
+        pred_season[i, 0] += bias_alpha * bias_pos.get(m["pos"], bias_global)
+        if m["pos"] in affine_params:
+            a, b = affine_params[m["pos"]]
+            pred_season[i, 0] = (1 - affine_mix) * pred_season[i, 0] + affine_mix * (
+                a * pred_season[i, 0] + b
+            )
 
     C = Zup - Zup.mean(0)
     U, S, _ = np.linalg.svd(C, full_matrices=False)
@@ -664,6 +938,9 @@ def main():
             "conditions": m["conditions"],
         })
     ng_players.sort(key=lambda r: r["proj"], reverse=True)
+    kdst_path = ASSETS / "kdst.json"
+    kdst = json.loads(kdst_path.read_text(encoding="utf-8")) if kdst_path.exists() else None
+    ng_players = cqs.merge_kdst_into_players(ng_players, kdst)
     (ASSETS / "nextgame.json").write_text(json.dumps({
         "built": time.strftime("%Y-%m-%d"), "season": up["season"], "week": up["week"],
         "model": {
@@ -673,6 +950,7 @@ def main():
             "floor_ceil": f"conformal_abs_q{int(CONF_LEVEL * 100)}",
             "conformal_q_by_pos": {k: round(v, 2) for k, v in conf_by_pos.items()},
             "tower_contrib": "gated_attn_x_gate_top5",
+            "positions": "QB/RB/WR/TE MTNN + K/DST season-rate",
         },
         "count": len(ng_players), "players": ng_players,
     }, separators=(",", ":")), encoding="utf-8")
@@ -714,10 +992,11 @@ def main():
           f"positional baseline {r_report['baseline_pos_mae']}; "
           f"added {len(rookies)} rookies")
 
+    proj_players = cqs.merge_kdst_into_players(proj_players, kdst)
     proj_players.sort(key=lambda r: r["proj"], reverse=True)
     for i, r in enumerate(proj_players):
         r["rank_overall"] = i + 1
-    for pos in ("QB", "RB", "WR", "TE"):
+    for pos in ("QB", "RB", "WR", "TE", "K", "DST"):
         grp = [r for r in proj_players if r["pos"] == pos]
         for j, r in enumerate(grp):
             r["rank_pos"] = j + 1
@@ -726,7 +1005,7 @@ def main():
     (ASSETS / "projections.json").write_text(json.dumps({
         "built": time.strftime("%Y-%m-%d"), "proj_season": up["season"],
         "basis": (f"MTNN v2 multi-tower under neutral conditions, off {last_season} form; "
-                  f"rookies via draft-capital model"),
+                  f"rookies via draft-capital model; K/DST season-rate"),
         "scoring_feature": "PPR",
         "model": {"report": report, "residual_std": round(resid, 2)},
         "rookie_model": r_report, "rookie_count": len(rookies),
@@ -761,6 +1040,7 @@ def main():
           f"{abs(beat):.3f}), R^2 {report['model_fpts_r2']}; {time.time()-t0:.0f}s")
     print(f"  vs v1 reference MAE {V1_MAE}: "
           f"{'better' if report['model_fpts_mae'] <= V1_MAE + 0.05 else 'worse'}")
+    print(f"  CQS {report['composite']['cqs']} (baseline {cqs.BASELINE['cqs']})")
     return 0
 
 

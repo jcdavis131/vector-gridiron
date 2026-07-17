@@ -1,6 +1,6 @@
 """
 ExecuTorch Export for dumbmodel MTNN + Tennis DINOv3 — Optional Mobile Wrapper
-Solo personal project, no connection to employer, built with public/free-tier only
+
 
 ExecuTorch is Meta's on-device inference for PyTorch models (iOS/Android, XNNPACK, CoreML, Vulkan)
 Target: export MTNN router/critic small heads + tennis ConvNeXt-Tiny serve coach to .pte
@@ -163,4 +163,4 @@ if __name__ == "__main__":
     else:
         export_tennis_convnext(out_path, args.backend)
     
-    print("Solo disclaimer: Solo personal project, no connection to employer, built with public/free-tier only")
+    print("")

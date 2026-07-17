@@ -1,8 +1,4 @@
-/* Vector Gridiron — NFL fantasy cockpit (fleet-aligned neobrutalism).
-   Deep field green-black + chalk-yardline white ink, 2px ink borders, hard
-   offset block shadows, bold uppercase labels, mono numerals. Sibling of
-   Vector Hoops / Vector Pitch. Color is reserved for DATA:
-   position hues (QB/RB/WR/TE), start=green / sit=red, brand orange accent. */
+/* Vector Gridiron — NFL fantasy cockpit */
 
 :root{
   --paper:#0a130d;

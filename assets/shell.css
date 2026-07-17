@@ -1,11 +1,5 @@
-/* Vector Hoops — assets/shell.css
- * Shared site chrome (nav + footer) and the three non-game pages
- * (landing, wiki, methods). Loaded AFTER assets/hoops.css on every page
- * so it inherits the same :root tokens (--paper/--ink/--data-orange/...,
- * --shadow-block, --radius, --mono/--sans) and the neobrutalist card/
- * button primitives (.vh-card, .vh-btn, .vh-btn--primary, .vh-link-btn)
- * defined there. assets/responsive.css loads last for fluid layout.
- */
+/* Site chrome */
+
 
 /* ---------- shared top nav ---------- */
 

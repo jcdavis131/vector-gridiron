@@ -1,6 +1,6 @@
 """
 ONNX Export for dumbmodel MTNN — Hill-Climb 4
-Solo personal project, no connection to employer, built with public/free-tier only
+
 
 Exports MTNN v5/v6 to ONNX for WASM inference (onnxruntime-web)
 Target: <300KB gz bundle, 48-d L2 embedding
@@ -137,4 +137,4 @@ if __name__ == "__main__":
     else:
         export_mock_onnx(out_path, config)
         check_bundle_size()
-        print("Solo disclaimer: Solo personal project, no connection to employer, built with public/free-tier only")
+        print("")

@@ -1,6 +1,6 @@
 """
 RealMLP Robust Preprocessing for dumbmodel MTNN — Hill-Climb 4
-Solo personal project, no connection to employer, built with public/free-tier only
+
 
 Implements RealMLP (Holzmüller et al 2024) robust scaling + PL embeddings:
 - Robust scaling: (x - median) / (IQR + eps) with clipping to [-3, 3] + smooth clipping

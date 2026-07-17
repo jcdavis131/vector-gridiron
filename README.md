@@ -1,6 +1,5 @@
 # Vector Gridiron — your fantasy football cockpit
 
-Solo personal project, no connection to employer, built with public/free-tier only
 
 MTNN next-game MAE 4.268 (R² 0.39) · 2025 nflverse data · holistic features (usage · snaps · age · weather · Vegas · rest · def-vs-pos) · no tracking.
 

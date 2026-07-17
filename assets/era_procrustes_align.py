@@ -1,6 +1,6 @@
 """
 Procrustes Era Alignment for Vector Hoops — Hill-Climb 4 SOTA
-Solo personal project, no connection to employer, built with public/free-tier only
+
 
 Implements era-honest alignment using assets/drift.json chainedToRoot.
 

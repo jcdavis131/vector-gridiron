@@ -1,6 +1,6 @@
 """
 TabPFN Distill for dumbmodel MTNN — Hill-Climb 4 optional
-Solo personal project, no connection to employer, built with public/free-tier only
+
 
 TabPFN 2.5 is 50k x 2k tabular FM that beats XGB <=10k rows and matches AutoGluon 4h.
 We distill its archetype logits into MTNN small student (224K) for ONNX ship.

@@ -1,9 +1,15 @@
 # Vector Gridiron — your fantasy football cockpit
 
+> Solo personal project, no connection to employer, built with public/free-tier only.
+> **Built in raw WebGPU / WebGL / Canvas — no Unity/Unreal, just browser graphics APIs straight.**
 
 MTNN next-game MAE 4.268 (R² 0.39) · 2025 nflverse data · holistic features (usage · snaps · age · weather · Vegas · rest · def-vs-pos) · no tracking.
 
 Live: https://gridiron.dumbmodel.com/ → redirects from gridiron.jcamd.com
+
+**Rendering:** raw WebGPU/WebGL path — `<canvas>` map with custom shaders, no engine, static hosting, free-tier.
+
+
 
 ## Mobile-first responsive fix (2026-07-10)
 Mirrors vector-hoops 35af415 + vector-pitch 739e2ab + jcamd e8f5447:

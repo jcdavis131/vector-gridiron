@@ -154,6 +154,19 @@ Bayesian CI — treat as a calibrated spread hint. Residual σ remains in
 (`python pipeline/family_ablation.py`) shows **usage** and **form** dominate
 held-out MAE; NGS/defense/role are near-flat on 2025.
 
+**Walk-forward rank backtest** (`pipeline/build_backtest.py` →
+`assets/eval_backtest.json`, shown on the Next Game tab): per-week Spearman
+rank correlation between the projected PPR ordering and actual outcomes on
+held-out 2025 (weeks 2–18; week 1 has no prior-week form). Frozen
+selection-split weights (≤2023) + val-2024 calibration score each week from
+features built strictly from prior weeks — the METHOD is backtested, not an
+archive of published projections (the site only ever ships the upcoming week,
+so no timestamped publish history exists). Mean weekly Spearman: QB **0.43** ·
+RB **0.73** · WR **0.66** · TE **0.64** · overall **0.69** — beats the last-4
+(0.65) and season-to-date (0.66) rank baselines at every position. K/DST
+excluded (season-rate models, see `kdst.holdout`). The build refuses to run
+against final-refit weights (they saw the test season).
+
 **Lookback manager grades** (when a league is connected): draft VOR letter
 grades, **start/sit efficiency** (actual starter pts ÷ optimal from that week's
 roster, platform scoring, latest 1–2 seasons), and **clutch** (same metric for
@@ -176,7 +189,8 @@ See `docs/DATA_SOURCES_DEEP.md`, `docs/MTNN_ARCHITECTURE.md`, and
 
 ## Verify
 ```
-python pipeline/verify_accuracy.py   # MTNN v2 promotion gates
+python pipeline/build_backtest.py    # walk-forward rank backtest -> assets/eval_backtest.json
+python pipeline/verify_accuracy.py   # MTNN v2 promotion gates (incl. G9 backtest)
 node pipeline/verify_logic.mjs       # artifact sanity + UI logic
 ```
 The UI is additionally exercised headlessly with jsdom (NUX, connect flow,

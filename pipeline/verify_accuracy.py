@@ -1,7 +1,8 @@
 """Promotion gates for Gridiron MTNN v2.
 
 G1 shapes / NaN · G2 beat baselines · G3 vs v1 MAE · G4 family coverage ·
-G5 artifact keys · G6 Methods honesty · G7 composite CQS · G8 all 6 positions.
+G5 artifact keys · G6 Methods honesty · G7 composite CQS · G8 all 6 positions ·
+G9 walk-forward rank backtest.
 
 Run:  python pipeline/verify_accuracy.py
 """
@@ -126,6 +127,31 @@ def main() -> int:
         pos_set = {pl.get("pos") for pl in d.get("players") or []}
         for pos in ALL_POS:
             check(pos in pos_set, f"{name} includes position {pos}")
+
+    # G9 walk-forward rank backtest (build_backtest.py)
+    bt_path = ASSETS / "eval_backtest.json"
+    check(bt_path.exists(), "assets/eval_backtest.json exists")
+    if bt_path.exists() and rep is not None:
+        bt = json.loads(bt_path.read_text(encoding="utf-8"))
+        check(bt.get("season") == rep.get("test_season"),
+              f"backtest season {bt.get('season')} == held-out test season")
+        check(len(bt.get("weeks") or []) >= 10,
+              f"backtest covers {len(bt.get('weeks') or [])} weeks (>=10)")
+        rows = dict(bt.get("positions") or {})
+        rows["ALL"] = bt.get("overall") or {}
+        for g in ("QB", "RB", "WR", "TE", "ALL"):
+            r = rows.get(g) or {}
+            rho = r.get("spearman")
+            check(rho is not None and -1.0 <= rho <= 1.0,
+                  f"backtest {g} spearman={rho} in [-1,1]")
+            check((rho or 0) > 0.0, f"backtest {g} spearman {rho} > 0 (beats random)")
+            check((r.get("weeks") or 0) >= 10, f"backtest {g} weeks {r.get('weeks')} >= 10")
+        check((rows["ALL"].get("spearman") or 0) >= 0.30,
+              f"backtest overall spearman {rows['ALL'].get('spearman')} >= 0.30 sanity floor")
+        check("METHOD" in " ".join(bt.get("caveats") or []),
+              "backtest caveats state it scores the method (no publish archive)")
+        check((bt.get("model") or {}).get("checkpoint_mode") == "selection_only",
+              "backtest used selection-split weights (no test-season leakage)")
 
     print(f"\n{fails} failure(s)")
     return 1 if fails else 0

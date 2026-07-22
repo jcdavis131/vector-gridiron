@@ -22,6 +22,7 @@ const ESPN_TEAM = {
 
 const STATE = {
   vectors: null, proj: null, next: null, adp: null, lookback: null, kdst: null,
+  backtest: null,                  // walk-forward rank-quality check (eval_backtest.json)
   projByKey: new Map(), vecByKey: new Map(), nextByKey: new Map(), adpByKey: new Map(),
   lookbackBySeason: new Map(),
   lookbackSeed: null,              // pristine seeded mock DB (restored when league disconnects)
@@ -91,13 +92,14 @@ const projFor = (name, pos) => STATE.projByKey.get(normKey(name, pos)) || null;
 /* ---------- boot ---------- */
 async function boot() {
   try {
-    const [vec, proj, next, adp, look, kdst] = await Promise.all([
+    const [vec, proj, next, adp, look, kdst, backtest] = await Promise.all([
       fetch('assets/vectors.json').then(r => r.json()),
       fetch('assets/projections.json').then(r => r.json()),
       fetch('assets/nextgame.json').then(r => r.json()).catch(() => null),
       fetch('assets/adp.json').then(r => r.json()).catch(() => null),
       fetch('assets/lookback_seasons.json').then(r => r.json()).catch(() => null),
       fetch('assets/kdst.json').then(r => r.json()).catch(() => null),
+      fetch('assets/eval_backtest.json').then(r => r.json()).catch(() => null),
     ]);
     STATE.vectors = vec;
     STATE.proj = proj;
@@ -106,6 +108,7 @@ async function boot() {
     STATE.lookback = look;
     STATE.lookbackSeed = look;
     STATE.kdst = kdst;
+    STATE.backtest = backtest;
     if (look) for (const s of look.seasons) STATE.lookbackBySeason.set(s.season, s);
     // K/DST get real projections everywhere (roster, start/sit, waivers) — they
     // live in kdst.json (nflverse zeroes kicker points), merged as proj + nextgame.
@@ -2368,8 +2371,24 @@ function renderNextGame() {
     + `<p class="vg-note" style="margin-top:8px">Multi-task MTNN for ${STATE.next.season} Week ${STATE.next.week}:
        ${STATE.latestSeason} form × each team's real opponent, roof/weather, and Vegas implied total.
        Floor–ceiling = per-pos conformal |residual| q80 (~80% held-out coverage). K/DST use season-rate projections.
-       Re-run the pipeline weekly to roll forward.</p>`;
+       Re-run the pipeline weekly to roll forward.</p>`
+    + backtestNote();
   bindNameLinks();
+}
+
+// Walk-forward rank-quality readout (eval_backtest.json) — honest caption:
+// no publish archive exists, so this scores the METHOD as-of each week.
+function backtestNote() {
+  const bt = STATE.backtest;
+  if (!bt || !bt.overall) return '';
+  const f = r => (r && r.spearman != null) ? r.spearman.toFixed(2) : '—';
+  const p = bt.positions || {};
+  return `<p class="vg-note" style="margin-top:4px">Rank check — held-out ${bt.season}, weeks ${bt.weeks[0]}–${bt.weeks.at(-1)},
+     walk-forward (frozen pre-${bt.season} weights, features from prior weeks only): Spearman proj→actual
+     <span class="vg-pos QB">QB</span> ${f(p.QB)} · <span class="vg-pos RB">RB</span> ${f(p.RB)} ·
+     <span class="vg-pos WR">WR</span> ${f(p.WR)} · <span class="vg-pos TE">TE</span> ${f(p.TE)} ·
+     overall ${f(bt.overall)} (last-4 baseline ${bt.overall.baseline_last4 != null ? bt.overall.baseline_last4.toFixed(2) : '—'}).
+     Scores the projection method, not archived publishes — the site keeps no projection history. Week 1 unscored (no prior form).</p>`;
 }
 
 /* ================================================================

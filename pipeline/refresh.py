@@ -81,6 +81,12 @@ def run() -> None:
     build_vectors.main()
     log("training MTNN v2 (multi-tower) + rookie model ...")
     train_mtnn.main()
+    log("walk-forward rank backtest ...")
+    try:
+        import build_backtest
+        build_backtest.main()
+    except Exception as e:
+        log(f"backtest failed (non-fatal, prior artifact kept): {e}")
     log("pulling consensus ADP ...")
     try:
         build_adp.main()

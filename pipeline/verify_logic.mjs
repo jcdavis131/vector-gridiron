@@ -55,6 +55,17 @@ if (fs.existsSync('assets/adp.json')) {
   check(edges.some(e => e >= 8) && edges.some(e => e <= -8), `value edges span VALUE and REACH (max +${Math.max(...edges)}, min ${Math.min(...edges)})`);
 }
 
+// walk-forward rank backtest: method scored per week, honest provenance
+if (fs.existsSync('assets/eval_backtest.json')) {
+  const bt = JSON.parse(fs.readFileSync('assets/eval_backtest.json', 'utf8'));
+  check(bt.weeks.length >= 10 && bt.season >= 2024, `backtest: ${bt.season} weeks ${bt.weeks[0]}–${bt.weeks.at(-1)}`);
+  const rows = { ...bt.positions, ALL: bt.overall };
+  check(['QB', 'RB', 'WR', 'TE', 'ALL'].every(g => rows[g] && rows[g].spearman > 0 && rows[g].spearman <= 1),
+    `backtest spearman per pos: QB ${rows.QB?.spearman} RB ${rows.RB?.spearman} WR ${rows.WR?.spearman} TE ${rows.TE?.spearman} ALL ${rows.ALL?.spearman}`);
+  check(bt.model.checkpoint_mode === 'selection_only' && bt.caveats.some(c => c.includes('METHOD')),
+    'backtest provenance honest: selection-split weights + method-backtest caveat');
+}
+
 // 2) skill projections carry comps (learned embedding) + a stat line
 //    K/DST are season-rate (source=kdst) — no embedding comps / vector join.
 const skill = proj.players.filter(p => p.source !== 'kdst' && p.pos !== 'K' && p.pos !== 'DST');

@@ -1,37 +1,28 @@
-# Vector Gridiron — your fantasy football cockpit
+# Vector Gridiron
+
+A fantasy-football cockpit: a static site that ranks weekly lineups using next-game fantasy-point predictions from a multi-tower neural net trained on nflverse data (usage, snaps, age, weather, Vegas lines, rest, defense-vs-position — no player tracking).
+
+Live: https://gridiron.dumbmodel.com/ (gridiron.jcamd.com redirects there)
 
 > Solo personal project, no connection to employer, built with public/free-tier only.
-> **Built in raw WebGPU / WebGL / Canvas — no Unity/Unreal, just browser graphics APIs straight.**
 
-MTNN next-game MAE 4.268 (R² 0.39) · 2025 nflverse data · holistic features (usage · snaps · age · weather · Vegas · rest · def-vs-pos) · no tracking.
+## What's here
 
-Live: https://gridiron.dumbmodel.com/ → redirects from gridiron.jcamd.com
+- `index.html` + `assets/app.js` — the cockpit UI: canvas map with custom shaders (plain WebGL/canvas, no engine), lineup board, share cards. Mobile-first responsive (`assets/responsive.css`).
+- `dashboard.html` — the model-lab view; it reads model metrics (MAE / R²) from the data files it is served with rather than hardcoding them.
+- `scripts/` — model export utilities (`export_onnx.py`, `export_executorch.py`, `tabpfn_distill.py`).
+- `assets/era_procrustes_align.py`, `assets/realmlp_preproc.py` — preprocessing/alignment code used by the training pipeline.
 
-**Rendering:** raw WebGPU/WebGL path — `<canvas>` map with custom shaders, no engine, static hosting, free-tier.
+Model status, stated plainly: training happens offline and the training pipeline is not in this repo. The most recent offline run reported next-game MAE 4.268 (R² 0.39); treat that as a claimed number — the eval that produced it is not reproducible from this repo alone (the `pyproject.toml` description says "claimed" for the same reason).
 
+## League share flow
 
-
-## Mobile-first responsive fix (2026-07-10)
-Mirrors vector-hoops 35af415 + vector-pitch 739e2ab + jcamd e8f5447:
-
-- `assets/responsive.css` loads AFTER `gridiron.css + shell.css + nux.css`
-- fluid `--page-gutter: clamp(12px,4vw,20px)` + `env(safe-area-inset-*)`
-- `--touch-min:44px`, inputs 16px to avoid iOS zoom
-- tabs `.vg-tabs` horizontal rail with mask fade + momentum scroll
-- canvas `.vg-mapwrap` + `canvas#dr-map` fluid `aspect-ratio:1`, `max-height:min(70vh,600px)`, `touch-action:none`
-- tables `.vg-tablewrap` momentum scroll
-- dialogs `.vg-dialog` 92vw safe-area
-- scoped only — no blanket svg/canvas rules
-
-Ultimate target: Everything responsive with mobile friendly UX.
-
-## Share flow (fantasy Wordle)
-- URL `?l=BOOZEBOIS` league code stored in `vectorGridiron.v1` + `vectorGridiron.league.<CODE>.board`
-- Result card copy/paste + Web Share API
-- OG SVG 1200x630 dark gridiron
-- Zero backend, device-only board
+- `?l=<CODE>` league codes stored client-side (`vectorGridiron.v1` localStorage keys)
+- Result-card copy/paste + Web Share API, OG image for links
+- No backend; boards are device-only
 
 ## Deploy
-Vercel: `cleanUrls:true` + redirect gridiron.jcamd.com → gridiron.dumbmodel.com
 
-Link new repo in Vercel dashboard if current deploy is not from GitHub.
+Vercel static (`cleanUrls: true`), redirect gridiron.jcamd.com -> gridiron.dumbmodel.com via `vercel.json`.
+
+MIT. Solo personal project, no connection to employer, built with public/free-tier only.

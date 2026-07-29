@@ -1,0 +1,101 @@
+/* Vector family — motion layer.
+ *
+ * Personality: Corporate / rigid material. This design language is
+ * neobrutalist: 2px ink borders and hard offset block shadows with no blur.
+ * Motion is therefore decisive and lands flat — zero overshoot. Elastic or
+ * bouncy easing would read as a softer material than the borders imply.
+ *
+ * Three layers:
+ *   primary   — the element rises and fades into place.
+ *   secondary — the block shadow lifts on hover and presses in on click.
+ *               That is physically coherent with a hard offset shadow: the
+ *               surface is moving over the page, so its shadow moves too.
+ *   ambient   — deliberately absent. A data cockpit should not shimmer;
+ *               ambient motion would compete with the numbers.
+ *
+ * Colour, type and layout are untouched by this file. It is loaded last so
+ * its easing wins ties against the bare `.06s` transitions in gridiron.css.
+ */
+
+:root{
+  /* Signature curves. One standard, one emphasized, one exit. */
+  --ease-standard:   cubic-bezier(.2, 0, 0, 1);   /* interaction, on-screen */
+  --ease-emphasized: cubic-bezier(.16, 1, .3, 1); /* expo.out — entrances */
+  --ease-exit:       cubic-bezier(.3, 0, 1, 1);   /* accelerate — dismissal */
+
+  /* Duration palette. */
+  --dur-quick: 90ms;   /* hover + press, under the 100ms feedback floor */
+  --dur-base:  260ms;  /* cards and panels */
+  --dur-slow:  420ms;  /* modals and page-level reveals */
+
+  /* Choreography. */
+  --vx-stagger: 50ms;  /* 6 steps = 300ms, inside the 500ms budget */
+  --vx-rise:    12px;  /* entrance travel */
+  --vx-lift:     2px;  /* hover displacement */
+}
+
+/* ---------- primary: entrance ----------
+ * Opacity is never the only channel; position carries the change too. */
+@keyframes vx-rise{
+  from{ opacity:0; transform:translateY(var(--vx-rise)); }
+  to  { opacity:1; transform:none; }
+}
+
+.vx-rise{ animation: vx-rise var(--dur-base) var(--ease-emphasized) both; }
+
+/* Cascade. Capped at six steps so the tail never outruns the budget. */
+[data-vx-stagger] > *{
+  animation: vx-rise var(--dur-base) var(--ease-emphasized) both;
+}
+[data-vx-stagger] > :nth-child(1){ animation-delay: 0ms; }
+[data-vx-stagger] > :nth-child(2){ animation-delay: calc(var(--vx-stagger) * 1); }
+[data-vx-stagger] > :nth-child(3){ animation-delay: calc(var(--vx-stagger) * 2); }
+[data-vx-stagger] > :nth-child(4){ animation-delay: calc(var(--vx-stagger) * 3); }
+[data-vx-stagger] > :nth-child(5){ animation-delay: calc(var(--vx-stagger) * 4); }
+[data-vx-stagger] > :nth-child(n+6){ animation-delay: calc(var(--vx-stagger) * 5); }
+
+/* ---------- secondary: lift and press ----------
+ * gridiron.css already had the lift/press shape on .vg-btn at a bare `.06s`
+ * with the default `ease`. This re-times it onto the signature curve and
+ * extends the same treatment to the card surfaces, which had none. */
+.vg-btn,
+.vg-card,
+.vg-dr-mapcard,
+.vg-super__card{
+  transition: transform  var(--dur-quick) var(--ease-standard),
+              box-shadow var(--dur-quick) var(--ease-standard);
+}
+
+/* Colour-only changes get a colour-only transition. */
+.vg-bookmarklet,
+.vg-tbl tbody tr,
+.vg-suggest li,
+.vg-nux__skip{
+  transition: background-color var(--dur-quick) var(--ease-standard),
+              color            var(--dur-quick) var(--ease-standard);
+}
+
+/* The view swap and the NUX slide are entrances: re-time them off the
+ * default `ease` onto the emphasized curve. */
+.vg-view.is-active{ animation: fade var(--dur-base) var(--ease-emphasized); }
+.vg-nux__slide{ animation: nuxIn var(--dur-base) var(--ease-emphasized); }
+
+/* Focus rings must not ease in — a keyboard user needs the ring immediately. */
+a:focus-visible,
+button:focus-visible{ transition: none; }
+
+/* ---------- reduced motion ----------
+ * gridiron.css shipped three keyframe animations with no gate at all,
+ * including `pulse`, an infinite 1 -> 1.22 scale loop. That is a vestibular
+ * trigger and it ran unconditionally. This block stops it and covers any
+ * animation added later without a gate of its own. */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .vx-rise,
+  [data-vx-stagger] > *{ opacity:1; transform:none; }
+}

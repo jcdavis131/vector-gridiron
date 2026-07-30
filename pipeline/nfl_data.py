@@ -5,7 +5,10 @@ Cached, resumable, stdlib. All feeds land under pipeline/cache/.
 Feeds:
   weekly_stats / snaps / games / players / injuries  — baseline (v1)
   depth_charts(year)   — role / starter depth (week-keyed through 2024)
-  ngs(stat, year)      — Next Gen Stats weekly (passing|receiving|rushing), 2016+
+  ngs(stat, year)      — Next Gen Stats weekly (passing|receiving|rushing), 2016-2024
+    only — nflverse's nextgen_stats release has no 2025 assets as of 2026-07-30
+    (confirmed via the GitHub releases API, not just a stale local cache); "ngs"
+    family must be masked for 2025+ same as injuries/depth_charts, not a bug
   pfr_adv(stat, year)  — PFR advanced weekly (pass|rec|rush), ~2018+
   ep_weekly(year)      — ffopportunity expected fantasy points (CC-BY-SA)
   draft_picks() / combine() — pedigree for rookies / aux head

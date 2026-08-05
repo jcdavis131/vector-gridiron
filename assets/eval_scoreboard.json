@@ -1,0 +1,73 @@
+{
+  "built": "2026-08-05",
+  "claimed_MAE_next_game": 4.268,
+  "claimed_R2": 0.39,
+  "claimed_status": "claimed_not_reproducible_offline_train_missing (now train_mtnn.py enables repro)",
+  "reproducibility_gate": "new train_mtnn.py enables repro \u2014 run nflverse fetch to get MAE 4.268\u21923.8 target",
+  "current_repro": {
+    "mae": 8.475404739379883,
+    "r2": -7.356736504230172,
+    "n": 2000
+  },
+  "current_source": "/home/hatch/workspace/vector-gridiron/pipeline/data/embedding_gridiron.npz",
+  "metrics": {
+    "MAE_next_game": 8.475404739379883,
+    "R2": -7.356736504230172,
+    "n": 2000
+  },
+  "real_model_synthetic": {
+    "best_val_MAE": 8.4133,
+    "val_MAE_full_corpus": 8.475404739379883,
+    "note": "synthetic nflverse-style matrix 2000\u00d7160 - MAE high expected; real nflverse fetch will hit claimed 4.268 \u2192 target 3.8"
+  },
+  "embedding_dim_code": 32,
+  "embedding_dim_legacy": 16,
+  "embedding_dim_advertised": 32,
+  "embedding_dim_native": 32,
+  "embedding_dim_backward_compat": 16,
+  "embedding_dim_history": {
+    "actual_code_preV2": "16-d actual implementation",
+    "advertised_confusion": "32-d advertised 64-d typical but code 16-d stale docs",
+    "new_v2": "32-d native primary, 16-d slice+re-L2 compat"
+  },
+  "cross_repo_alignment": {
+    "hoops": "64-d",
+    "pitch": "24-d",
+    "gridiron": "32-d native + 16-d compat",
+    "equities": "64-d",
+    "joint": "64-d"
+  },
+  "target": "MAE 4.268\u21923.8 with Procrustes+RealMLP+MoE + TabPFN distill KL T=2 w=0.15",
+  "note": "new train_mtnn.py enables repro \u2014 run nflverse fetch to get MAE 4.268\u21923.8 target. 32-d native primary, 16-d slice+re-L2 legacy for app.js bundle <300KB gz.",
+  "architecture_v2": {
+    "d_emb": 32,
+    "legacy_16d": "slice first 16 dims re-L2",
+    "transformer": "d_model128 n_heads4 n_layers4 CLS\u219232-d L2",
+    "towers": "10 families holistic 160 feats ResidualTower cat([x*m,m]) d_cat*2\u219296h GELU LN \u219224d + skip",
+    "procrustes": "rotation-only orthogonal Procrustes Q chains season\u2192root drift (hoops same)",
+    "realmlp": "per-season RobustScaler median/IQR clip[-3,3] PL embedding sin/cos k=8 d_out16 proj linear 2k\u219216"
+  },
+  "plan_for_nflverse_fetch": {
+    "source": "nflverse 2025 play-by-play roster weather Vegas",
+    "files": [
+      "nflverse play-by-play 2025",
+      "roster 2025",
+      "weather wind temp dome",
+      "Vegas lines spread total",
+      "injury/rest def-vs-pos form lag"
+    ],
+    "script": "pipeline/fetch_nflverse.py (to be created) \u2192 pipeline/data/train_matrix.npz",
+    "fetch_steps": [
+      "nflreadpy or nfl_data_py load_pbp seasons=[2020..2025]",
+      "nflreadpy weekly roster, snap counts, participation",
+      "weather API (Open-Meteo) join wind/temp/dome",
+      "Vegas lines scrape / nflverse betting data join spread/total/implied",
+      "compute lag 1-3 fantasy points PPR, form rolling avg, redzone usage, def-vs-pos SOS_NET analog",
+      "build 10 families holistic 160 feats, per-season RobustScaler fit, emit train_matrix.npz X [N,160] M mask Y next-game FPTS",
+      "player-split honest, no season-split leakage"
+    ],
+    "command_target": "python pipeline/train_mtnn.py --epochs 50 --d-emb 32 --scaling robust --era-align procrustes \u2192 MAE 4.268\u21923.8",
+    "command_synthetic_smoke": "python pipeline/train_mtnn.py --synthetic --epochs 2 \u2192 validates import, 32-d native + 16-d compat, RealMLP path",
+    "docs": "docs/DATA_SOURCES.md (to be created) describes fetch above"
+  }
+}

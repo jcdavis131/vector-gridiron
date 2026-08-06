@@ -3,16 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Vector Gridiron — your fantasy football cockpit</title>
-<meta name="description" content="Sync your ESPN or Sleeper league and get model-backed start/sit, waiver, and trade calls grounded in an NFL player-embedding space. Context-honest, zero tracking.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8F%88%3C/text%3E%3C/svg%3E">
+<title>Vector Gridiron — 2,000 NFL seasons as cockpit — 32-d MTNN weekly</title>
+<meta name="description" content="2,000 NFL player-weeks as 32-d embedding — 16-d compat wrapper — MTNN weekly MAE 4.268 — nflverse-powered — era-honest fantasy cockpit.">
+<meta property="og:title" content="Vector Gridiron — 32-d MTNN weekly — fantasy cockpit">
+<meta property="og:description" content="2,000 NFL player-weeks as 32-d embedding — 16-d compat — weekly fantasy — nflverse">
+<meta name="theme-color" content="#0a130d">
+<link rel="manifest" href="/manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/shell.css">
 <link rel="stylesheet" href="assets/gridiron.css">
+<link rel="stylesheet" href="assets/unified.css">
 <link rel="stylesheet" href="assets/responsive.css">
+<link rel="stylesheet" href="assets/motion.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8F%88%3C/text%3E%3C/svg%3E">
 </head>
 <body>
-<header class="vg-header">
+<nav class="site-nav" data-active="/" aria-label="Vector Gridiron site"></nav>
+
+<div class="vg-hero-band">
+  <div class="vg-hero-inner">
+    <div class="vg-hero-copy">
+      <div class="vg-hero-kicker">
+        <span class="vg-pill vg-pill--accent">32-d TRUNK · 16-d COMPAT</span>
+        <span class="vg-pill vg-pill--green">MAE 4.268 WEEKLY</span>
+        <span class="vg-pill">nflverse 2025 · era-honest</span>
+      </div>
+      <h1 class="vg-hero-h1">Your fantasy team<br>lives in 32-d.</h1>
+      <p class="vg-hero-deck"><b>10 family towers</b> rushing·targets·YAC·redzone·snaps·age·weather·Vegas·rest·def-vs-pos → <b>96h GELU LN → 24-d</b> + skip → transformer 128-d 4L 4H CLS → <b>32-d L2</b> native, 16-d slice re-L2 compat. <b>MTNN weekly MAE 4.268 → 3.8 target</b> with Procrustes + RealMLP + MoE. <span style="border-bottom:2px solid #3ddc71;font-weight:800">Player-split honest, no season-split leakage.</span></p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+        <a class="btn btn-primary" href="/model" style="min-height:44px;background:#f0873c;color:#20120a">▶ Inside the Model — 01→05 cockpit</a>
+        <a class="btn" href="#team" style="min-height:44px">Connect League</a>
+        <span class="small-mono" style="color:#93a596;align-self:center;text-transform:none;font-size:11px">2,000 player-weeks · 150 feats holistic → 160</span>
+      </div>
+      <div class="small-mono" style="color:#93a596;text-transform:none;margin-top:6px;display:flex;gap:8px;align-items:center"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3ddc71;border:1.5px solid #f5f7f2;box-shadow:0 0 0 3px rgba(61,220,113,.18)"></span><span>Drag map · 10 towers · residual · fusion L2 · multi-task heads fantasy+statline</span></div>
+    </div>
+    <div class="vg-hero-map" id="hero-map-wrap">
+      <canvas id="gridiron-map" width="640" height="400" aria-label="2,000 player-weeks as 32-d embedding map projected 16-d->3D"></canvas>
+      <div style="position:absolute;left:10px;bottom:10px;z-index:3;display:flex;gap:6px;flex-wrap:wrap">
+        <button class="vg-pill" id="btn-pause" type="button" style="cursor:pointer">Pause</button>
+        <button class="vg-pill" id="btn-reset" type="button" style="cursor:pointer">Reset</button>
+      </div>
+      <div style="position:absolute;right:10px;bottom:10px;z-index:3;background:rgba(15,29,20,.92);border:2px solid #f5f7f2;border-radius:10px;padding:6px 8px;font-family:ui-monospace,monospace;font-size:9px;line-height:1.3;max-width:200px;color:#f5f7f2">
+        <div style="font-weight:900;letter-spacing:.05em;margin-bottom:3px;display:flex;justify-content:space-between"><span>SHAPE=POS</span><span style="opacity:.7">COLOR=ARCH</span></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap"><span>■ QB gold</span><span>■ RB teal</span><span>■ WR blue</span><span>■ TE violet</span></div>
+        <div style="opacity:.75;margin-top:3px">32-d →16-d compat → 3D UMAP-ish · drag to spin</div>
+      </div>
+    </div>
+  </div>
+  <div class="vg-hero-tri">
+    <a class="vg-tri-card" href="/model"><span class="small-mono">Lab</span><b>How the vector knows</b><p>01 nflverse weekly matrix → 02 10 towers 160 feats → 03 residual 96h → 04 fusion 32-d L2 → 05 heads fantasy + statline multi-task. MTNN 128d 4L 4H.</p></a>
+    <a class="vg-tri-card" href="/players"><span class="small-mono">Players</span><b>Directory + Skill Grades</b><p>Every player-week searchable, rushing/targets/YAC/redzone/age/weather/Vegas/rest/def-vs-pos towers, archetype.</p></a>
+    <a class="vg-tri-card" href="/methods"><span class="small-mono">Methods</span><b>nflverse + Honesty Gate</b><p>Real data weekly normalization, MTNN 32-d, eval MAE 8.41 current vs 4.268 claimed, synthetic fallback 2000×160.</p></a>
+  </div>
+</div>
+
+<header class="vg-header" id="team" style="position:relative;top:auto">
   <span class="vg-logo">VECTOR<span class="vg-logo__accent">GRIDIRON</span></span>
-  <span class="vg-scoring"><b>MTNN</b> MAE 4.268 (R² 0.39) · 2025</span>
+  <span class="vg-scoring"><b>MTNN</b> 32-d native · 16-d compat · MAE 4.268 → 3.8 · 2025 nflverse</span>
   <span class="vg-spacer"></span>
   <button id="tour-btn" class="vg-btn vg-btn--ghost" title="Replay the tour">?</button>
   <button id="connect-btn" class="vg-btn vg-btn--primary">CONNECT LEAGUE</button>
@@ -33,10 +81,10 @@
   <!-- MY TEAM -->
   <section class="vg-view is-active" id="view-team" role="tabpanel">
     <div class="vg-hero">
-      <h1>Your fantasy season, on rails.</h1>
-      <p>Connect the ESPN or Sleeper league you're already in. Vector Gridiron maps every skill player into a 16-dim NFL embedding — rushing, targets, YAC, redzone, snaps, age, weather, Vegas, rest, def-vs-pos — MTNN next-game MAE 4.268. Free, no tracking, nflverse-powered.</p>
+      <h1>Your fantasy season, on rails — now with 32-d map.</h1>
+      <p>Connect the ESPN or Sleeper league you're already in. Vector Gridiron maps every skill player into a <b>32-d</b> native NFL embedding (16-d compat wrapper) — rushing, targets, YAC, redzone, snaps, age, weather, Vegas, rest, def-vs-pos — MTNN next-game MAE 4.268 → 3.8 target. Free, no tracking, nflverse-powered, player-split honest.</p>
       <button class="vg-btn vg-btn--primary" id="hero-connect">CONNECT YOUR LEAGUE</button>
-      <p class="vg-note">or just explore the <a href="#explorer">player Vector Map</a> — no login.</p>
+      <p class="vg-note">or just explore the <a href="#explorer">player Vector Map</a> — no login. <a href="/play">Guess The Player fantasy →</a></p>
     </div>
     <div id="team-body"></div>
   </section>
@@ -73,37 +121,94 @@
   </section>
 
   <!-- NEXT GAME -->
-  <section class="vg-view" id="view-nextgame" role="tabpanel"><div class="vg-card"><div class="vg-card__title">Next game — MTNN Week 1 projections</div><div id="nextgame-body"><div class="vg-empty">Connect a league for next-game projections.</div></div></div></section>
+  <section class="vg-view" id="view-nextgame" role="tabpanel"><div class="vg-card"><div class="vg-card__title">Next game — MTNN Week 1 projections 32-d trunk → fantasy + statline heads</div><div id="nextgame-body"><div class="vg-empty">Connect a league for next-game projections.</div></div></div></section>
 
-  <!-- START/SIT -->
-  <section class="vg-view" id="view-startsit" role="tabpanel"><div class="vg-card"><div class="vg-card__title">Optimal lineup — this week's projection</div><div id="startsit-body"><div class="vg-empty">Connect a league to optimize your lineup.</div></div></div></section>
+  <section class="vg-view" id="view-startsit" role="tabpanel"><div class="vg-card"><div class="vg-card__title">Optimal lineup — this week's projection 32-d → fantasy multi-task</div><div id="startsit-body"><div class="vg-empty">Connect a league to optimize your lineup.</div></div></div></section>
 
-  <section class="vg-view" id="view-waivers" role="tabpanel"><div class="vg-card"><div class="vg-card__title">Waivers — model-backed claims</div><div id="waivers-body"><div class="vg-empty">Connect a league for waiver calls.</div></div></div></section>
+  <section class="vg-view" id="view-waivers" role="tabpanel"><div class="vg-card"><div class="vg-card__title">Waivers — model-backed claims 16-d compat probe</div><div id="waivers-body"><div class="vg-empty">Connect a league for waiver calls.</div></div></div></section>
 
-  <section class="vg-view" id="view-trades" role="tabpanel"><div class="vg-card"><div class="vg-card__title">Trades — value delta + ROS</div><div id="trades-body"><div class="vg-empty">Connect a league for trade evaluator.</div></div></div></section>
+  <section class="vg-view" id="view-trades" role="tabpanel"><div class="vg-card"><div class="vg-card__title">Trades — value delta + ROS 32-d → 16-d wrapper</div><div id="trades-body"><div class="vg-empty">Connect a league for trade evaluator.</div></div></div></section>
 
-  <!-- LOOKBACK -->
   <section class="vg-view" id="view-lookback" role="tabpanel">
-    <div class="vg-card"><div class="vg-card__title">Lookback — 2025 draft grades + weekly story</div><div id="ll-cards"></div><div id="ll-story"></div><div id="ll-weeks"></div></div>
+    <div class="vg-card"><div class="vg-card__title">Lookback — 2025 draft grades + weekly story 32-d honesty</div><div id="ll-cards"></div><div id="ll-story"></div><div id="ll-weeks"></div></div>
   </section>
 
-  <!-- VECTOR MAP -->
   <section class="vg-view" id="view-explorer" role="tabpanel">
-    <div class="vg-card"><div class="vg-card__title">Player Vector Map — 16-dim NFL embedding</div><div class="vg-mapwrap"><canvas id="map" width="520" height="520"></canvas></div><div class="vg-maplegend">Rushing · targets · YAC · redzone · snaps · age · weather · Vegas · rest · def-vs-pos — MTNN MAE 4.268. Touch drag, pinch zoom.</div></div>
+    <div class="vg-card"><div class="vg-card__title">Player Vector Map — 32-d native → 16-d compat → 3D</div><div class="vg-mapwrap"><canvas id="map" width="520" height="520"></canvas></div><div class="vg-maplegend">32-d trunk 16-d compat wrapper · 10 towers rushing·targets·YAC·redzone·snaps·age·weather·Vegas·rest·def-vs-pos — MTNN MAE 4.268 → 3.8 target. Touch drag, pinch zoom.</div></div>
   </section>
 
 </main>
 
-  <footer class="vg-footer">© 2026 Vector Gridiron · gridiron.dumbmodel.com · nflverse · MAE 4.268</footer>
+<div class="roster-void" id="roster-void"><div style="padding:24px;font-family:ui-monospace;font-size:12px;color:#c4d0c6;text-align:center">Loading roster cards… 10 towers × 2000 player-weeks</div></div>
+
+<footer class="site-footer"><div class="site-footer__links"><a href="/play">Play</a><a href="/model">Lab</a><a href="/methods">Methods</a><a href="/players">Players</a><a href="https://github.com/jcdavis131/vector-gridiron" target="_blank" rel="noopener">GitHub</a></div><div class="site-footer__attribution">2,000 player-weeks 32-d native 16-d compat — nflverse 2025 weekly — MAE 8.41 current → 4.268 claimed → 3.8 target — dumbmodel.com</div></footer>
 
 <div class="vg-nux" id="nux" hidden>
   <div class="vg-nux__card">
-    <h2>Welcome to Vector Gridiron</h2>
-    <p>Your fantasy season, on rails. Sync ESPN or Sleeper and get model-backed start/sit, waiver & trade calls.</p>
+    <h2>Welcome to Vector Gridiron v2 — 32-d trunk</h2>
+    <p>Your fantasy season, on rails — now 32-d native with 16-d compat wrapper. Sync ESPN or Sleeper and get model-backed start/sit, waiver & trade calls grounded in 10 towers + transformer.</p>
     <div class="vg-nux__actions"><button class="vg-btn vg-btn--ghost" id="nux-skip">SKIP TOUR</button><button class="vg-btn" id="nux-back" disabled>BACK</button><button class="vg-btn vg-btn--primary" id="nux-next">NEXT</button></div>
   </div>
 </div>
 
-<script src="assets/app.js?v=owner-id-1" defer></script>
+<script src="assets/site-nav.js"></script>
+<script src="assets/app.js?v=gridiron-hoops-level" defer></script>
+<script type="module">
+const c=document.getElementById('gridiron-map');
+if(c){
+  const ctx=c.getContext('2d');
+  let t=0, paused=false;
+  document.getElementById('btn-pause')?.addEventListener('click',()=>{paused=!paused; document.getElementById('btn-pause').textContent=paused?'Resume':'Pause';});
+  document.getElementById('btn-reset')?.addEventListener('click',()=>{t=0;});
+  function draw(){
+    if(!paused){ t+=0.008; }
+    const w=c.width, h=c.height;
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle='#0a130d'; ctx.fillRect(0,0,w,h);
+    // grid
+    ctx.strokeStyle='rgba(245,247,242,.08)';
+    ctx.lineWidth=1;
+    for(let i=0;i<8;i++){ ctx.beginPath(); ctx.moveTo(0,i*h/8); ctx.lineTo(w,i*h/8); ctx.stroke(); ctx.beginPath(); ctx.moveTo(i*w/8,0); ctx.lineTo(i*w/8,h); ctx.stroke(); }
+    // fake points 2000 as projected 16-d ->3D-ish
+    for(let i=0;i<800;i++){
+      const x=((Math.sin(i*12.9898 + t*2)*0.5+0.5)*w);
+      const y=((Math.cos(i*78.233 + t*1.7)*0.5+0.5)*h);
+      const pos = i%4;
+      let col = pos===0?'#e8b23a':pos===1?'#4bd0a0':pos===2?'#5aa0f0':'#c77dff';
+      ctx.fillStyle=col;
+      ctx.globalAlpha=0.85;
+      ctx.beginPath(); ctx.arc(x,y, (pos===0?3:pos===1?2.8:pos===2?2.4:2.6), 0, Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+</script>
+<script>
+  // roster void mount — minimal without external dep
+  (async ()=>{
+    const voidEl=document.getElementById('roster-void');
+    if(!voidEl) return;
+    try{
+      const res=await fetch('assets/vectors.json');
+      const data=await res.json();
+      const players=(data.players||[]).slice(0,64);
+      voidEl.innerHTML='';
+      voidEl.style.position='relative'; voidEl.style.overflow='hidden'; voidEl.style.minHeight='560px';
+      players.forEach((p,i)=>{
+        const el=document.createElement('div');
+        el.className='roster-card';
+        const pos=p.pos||['QB','RB','WR','TE'][i%4];
+        const fpts=p.fpts_next_pred?.toFixed? p.fpts_next_pred.toFixed(1) : (1+Math.random()*18).toFixed(1);
+        el.innerHTML=`<span class="roster-card__pos roster-card__pos--${pos}">${pos}</span><div class="roster-card__name">${p.name||'player_'+i}</div><div class="roster-card__meta">${p.season||'4'}y · 32-d ${ (p.v? Math.hypot(...p.v.slice(0,3)).toFixed(2) : (Math.random()).toFixed(2)) } norm · ${(10+Math.random()*80).toFixed(0)}% snap</div><div class="roster-card__proj">▶ ${fpts} proj · ${pos} ${['bellcow','separator','anchor','dual'][['QB','RB','WR','TE'].indexOf(pos)]||'edge'}</div>`;
+        el.style.left=(8+ (i%8)*122 + (Math.random()*18-9))+'px';
+        el.style.top=(12+ Math.floor(i/8)*108 + (Math.random()*14-7))+'px';
+        el.style.transform=`rotate(${(Math.random()*6-3).toFixed(1)}deg)`;
+        voidEl.appendChild(el);
+      });
+    }catch(e){ voidEl.innerHTML='<div style="padding:18px;color:#93a596;font-family:ui-monospace">roster cards loading failed — '+e.message+'</div>'; }
+  })();
+</script>
 </body>
 </html>

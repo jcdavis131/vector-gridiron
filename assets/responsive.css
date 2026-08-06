@@ -1,136 +1,106 @@
-/* Vector Gridiron — responsive layer */
-
+/* Vector Gridiron — responsive.css v2 — hoops-level parity, mobile-first */
 :root{
   --page-gutter: clamp(12px, 4vw, 20px);
-  --layout-max: 720px;
-  --layout-wide: 1280px;
-  --touch-min: 44px;
-  --header-h: 56px;
+  --layout-max: 820px;
+  --layout-wide: 1180px;
+  --touch-min:44px;
+  --header-h:56px;
+}
+html,body{overflow-x:hidden;max-width:100%}
+*,*::before,*::after{box-sizing:border-box}
+html{ -webkit-text-size-adjust:100% }
+img{max-width:100%;height:auto}
+svg,canvas{max-width:100%}
+
+/* shells */
+.site-nav,.site-footer,.vg-hero-band,.landing-main,.play-main{width:100%;box-sizing:border-box;min-width:0}
+.landing-main,.play-main{overflow-x:clip}
+
+/* touch anti-zoom */
+button,.vg-input,input,select,textarea{font-size:16px}
+.vg-input,.vg-btn,.site-nav__link{ min-height:44px }
+
+.site-nav{ padding-inline: var(--page-gutter) }
+.site-footer{ padding-inline: var(--page-gutter) }
+
+@media(max-width:639px){
+  .site-nav{ flex-wrap:nowrap; gap:8px; overflow-x:hidden }
+  .site-nav__brand{ flex:0 0 auto; max-width:38%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+  .site-nav__links{ flex:1 1 auto; flex-wrap:nowrap; justify-content:flex-start; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; min-width:0; -webkit-mask-image:linear-gradient(to right, transparent, black 8px, black calc(100% - 8px), transparent); mask-image:linear-gradient(to right, transparent, black 8px, black calc(100% - 8px), transparent) }
+  .site-nav__links::-webkit-scrollbar{display:none}
+  .site-nav__link{ flex:0 0 auto; white-space:nowrap }
 }
 
-.vg-header{
-  padding: 10px max(var(--page-gutter), env(safe-area-inset-left)) 10px max(var(--page-gutter), env(safe-area-inset-right));
-  padding-top: max(10px, env(safe-area-inset-top));
+/* page shells */
+.research-main,.wiki-main,.methods-main,.leaderboard-main,.drift-main,.landing-main,.play-main{
+  width:min(100%, var(--layout-wide));
+  max-width:var(--layout-wide);
+  min-width:0;
+  box-sizing:border-box;
+  margin-inline:auto;
 }
-.vg-main, main{
-  padding-inline: max(var(--page-gutter), env(safe-area-inset-left));
+.research-main,.wiki-main,.methods-main,.drift-main{
+  padding: clamp(16px,3vw,24px) var(--page-gutter) clamp(40px,6vw,56px);
 }
 
-.vg-card{
-  padding: clamp(12px, 2.5vw, 18px) clamp(12px, 3vw, 18px);
-}
+/* vg tabs cockpit — keep horizontal scroll */
+.vg-tabs{ -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; }
+.vg-tab{ min-height:48px }
 
 .vg-mapwrap{
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 8px;
-  background: rgba(0,0,0,0.2);
+  position:relative;
+  width:100%;
+  overflow:hidden;
+  border-radius:10px;
+  background:rgba(0,0,0,.2);
 }
-.vg-mapwrap canvas, #dr-map, #explorer-map, #map{
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1;
-  max-width: 100%;
-  max-height: min(70vh, 600px);
-  touch-action: none;
+.vg-mapwrap canvas, #dr-map, #map, #gridiron-map{
+  display:block;
+  width:100%;
+  height:auto;
+  aspect-ratio:1;
+  max-width:100%;
+  max-height:min(70vh, 600px);
+  touch-action:none;
 }
-.vg-maplegend{
-  flex-wrap: wrap;
-  gap: 8px 12px;
-  padding: 8px var(--page-gutter);
-  font-size: 12px;
+.vg-posfilter{ display:flex; flex-wrap:nowrap; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:4px }
+.vg-posfilter::-webkit-scrollbar{display:none}
+.vg-posfilter button{ flex:0 0 auto; min-height:36px; padding:0 12px; white-space:nowrap }
+
+.vg-tablewrap, .vg-tblwrap{ width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; border-radius:6px }
+.vg-tbl, .vg-table{ width:max(680px,100%); min-width:100% }
+@media(min-width:720px){ .vg-tbl, .vg-table{ width:100% } }
+.vg-tbl th, .vg-table th, .vg-tbl td, .vg-table td{ padding:8px 8px; font-size:12.5px; white-space:nowrap }
+
+/* cards tri */
+.vg-hero-tri .vg-tri-card{ min-width:0; width:100%; box-sizing:border-box }
+
+/* roster void cards */
+.roster-void canvas{ display:block; width:100%; height:100% }
+
+@media(max-width:479px){
+  .vg-hero-inner{ padding:14px 12px 12px }
+  .vg-hero-h1{ font-size:26px }
+  .vg-hero-map{ min-height:68vh }
+  .vg-hero-tri{ padding:0 10px 10px }
+  .vh-header{ row-gap:8px }
+  .vh-header__brand{ flex:1 1 100%; min-width:0; overflow:hidden }
+  .stats-strip,.cqs-strip{ margin:0 calc(var(--page-gutter) * -1); padding-inline:var(--page-gutter) }
 }
 
-.vg-posfilter{
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 6px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding-bottom: 4px;
-}
-.vg-posfilter::-webkit-scrollbar{ display:none; }
-.vg-posfilter button{
-  flex: 0 0 auto;
-  min-height: 36px;
-  padding: 0 12px;
-  white-space: nowrap;
-}
+.vg-footer, footer{ padding:12px var(--page-gutter); padding-bottom:max(12px, env(safe-area-inset-bottom)); font-size:12px; line-height:1.4; text-align:center }
 
-.vg-tablewrap, .vg-tblwrap{
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-  border-radius: 6px;
+@media(max-width:360px){
+  :root{ --page-gutter:10px }
+  .vg-card{ padding:10px }
+  .vg-tbl th,.vg-tbl td{ padding:6px 6px; font-size:11.5px }
 }
-.vg-tbl, .vg-table{
-  width: max(680px, 100%);
-  min-width: 100%;
-}
-@media (min-width: 720px){
-  .vg-tbl, .vg-table{ width: 100%; }
-}
-.vg-tbl th, .vg-table th, .vg-tbl td, .vg-table td{
-  padding: 8px 8px;
-  font-size: 12.5px;
-  white-space: nowrap;
-}
+html,body{ overflow-x:clip }
 
-.vg-playername{
-  min-width: 0;
-  gap: 8px;
-}
-.vg-headshot{
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
-}
-
-.vg-dialog, dialog#nux, #nux-dialog{
-  width: min(92vw, 480px);
-  max-width: calc(100vw - 2 * var(--page-gutter));
-  max-height: min(86vh, 640px);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: clamp(14px, 4vw, 22px);
-  margin: auto;
-  box-sizing: border-box;
-  inset: 0;
-}
-.vg-dialog::backdrop, dialog#nux::backdrop{
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
-}
-@media (max-width: 480px){
-  .vg-dialog, dialog#nux{
-    width: calc(100vw - 16px);
-    max-height: 92vh;
-    margin: 8px auto auto;
-  }
-}
-
-.vg-footer, footer{
-  padding: 12px var(--page-gutter);
-  padding-bottom: max(12px, env(safe-area-inset-bottom));
-  font-size: 12px;
-  line-height: 1.4;
-  text-align: center;
-}
-
-@media (max-width: 360px){
-  :root{ --page-gutter: 10px; }
-  .vg-card{ padding: 10px; }
-  .vg-tbl th, .vg-tbl td{ padding: 6px 6px; font-size: 11.5px; }
-}
-
-@media (min-width: 1280px){
-  :root{ --layout-wide: 1200px; }
-}
-
-html, body{ overflow-x: clip; }
-.vg-tabs{ -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
-.vg-tablewrap{ -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+/* network flow hoops-level */
+.network-flow-host{min-height:260px}
+.network-flow-host svg{width:100%;height:auto;display:block}
+.network-controls{display:flex;flex-direction:column;gap:10px}
+.search-row{display:flex;gap:8px;flex-wrap:wrap}
+.wiki-search.network-search{flex:1 1 220px;min-width:0;border:2.2px solid var(--ink);border-radius:12px;padding:12px 14px;font-size:16px;min-height:48px;background:var(--surface);color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
+.network-player-tag{font-family:var(--mono);font-size:11px;background:var(--surface);border:1.5px solid var(--ink);border-radius:999px;padding:5px 10px;box-shadow:1px 1px 0 var(--ink)}

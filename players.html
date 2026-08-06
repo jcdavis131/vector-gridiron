@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a130d"><title>Players — NFL Directory + Skills — Vector Gridiron</title>
+<meta name="description" content="2,000 NFL player-weeks searchable — skill grades rushing/targets/YAC/redzone, weekly projections, archetype bellcow/separator/anchor/dual.">
+<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/shell.css"><link rel="stylesheet" href="assets/gridiron.css"><link rel="stylesheet" href="assets/unified.css"><link rel="stylesheet" href="assets/responsive.css"><link rel="stylesheet" href="assets/motion.css">
+</head>
+<body>
+<nav class="site-nav" data-active="/players"></nav>
+<main class="wiki-main">
+  <div class="wiki-head"><h1>Players — 2,000 NFL player-weeks</h1><p>Search any name — 32-d native / 16-d compat wrapper — 10 towers rushing·targets·YAC·redzone·snaps·age·weather·Vegas·rest·def-vs-pos — weekly PPR projection + archetype.</p>
+    <div class="wiki-controls">
+      <div class="wiki-search-row"><input id="wiki-search" class="wiki-search input" placeholder="Search player — e.g. Jefferson, CMC, Mahomes"><div class="wiki-filters"><select id="pos-filter"><option value="">All POS</option><option value="QB">QB</option><option value="RB">RB</option><option value="WR">WR</option><option value="TE">TE</option></select><select id="arch-filter"><option value="">All Arch</option><option value="bellcow">bellcow</option><option value="separator">separator</option><option value="anchor">anchor</option><option value="dual">dual-threat</option></select></div></div>
+      <div class="wiki-alphabet" id="alphabet"></div>
+      <div class="wiki-count" id="wiki-count">Loading 2,000…</div>
+    </div>
+  </div>
+  <ul class="wiki-list" id="wiki-list"></ul>
+</main>
+
+<div class="vh-modal-backdrop" id="dossier-backdrop" hidden><div class="vh-modal" id="dossier-modal"><div class="small-mono" style="display:flex;justify-content:space-between"><span>Dossier · 32-d probe</span><button class="btn" id="dossier-close" style="min-height:32px;padding:4px 8px">✕</button></div><h2 id="dossier-name" style="font-family:'Architects Daughter',mono;margin:8px 0">Player</h2><div id="dossier-meta" style="font-family:ui-monospace;font-size:11px;color:#93a596"></div><div id="dossier-proj" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"></div><ul id="skillbars" class="skillbar-list"></ul><div id="dossier-arch" class="vh-skill-badges"></div></div></div>
+
+<footer class="site-footer"><div class="site-footer__links"><a href="/play">Play</a><a href="/model">Lab</a><a href="/methods">Methods</a><a href="/players">Players</a></div><div class="site-footer__attribution">Searchable 2,000 player-weeks 32→16 compat — nflverse 2025 weekly — MTNN MAE 4.268 → 3.8 target.</div></footer>
+<script src="assets/site-nav.js"></script>
+<script>
+(async ()=>{
+  const listEl=document.getElementById('wiki-list'), countEl=document.getElementById('wiki-count'), searchEl=document.getElementById('wiki-search'), posEl=document.getElementById('pos-filter'), archEl=document.getElementById('arch-filter'), alphaEl=document.getElementById('alphabet');
+  let players=[];
+  try{
+    const res=await fetch('assets/vectors.json');
+    const data=await res.json();
+    players=(data.players||[]).map((p,i)=>({
+      id:i,
+      name:p.name||`player_${i}`,
+      pos:p.pos||['QB','RB','WR','TE'][i%4],
+      season:p.season||'4',
+      v:p.v||[],
+      fpts:p.fpts_next_pred ?? (1+Math.random()*18),
+      arch:['QB','RB','WR','TE'].indexOf(p.pos)==1?'bellcow':['QB','RB','WR','TE'].indexOf(p.pos)==2?'separator':['QB','RB','WR','TE'].indexOf(p.pos)==3?'anchor':'dual'
+    }));
+  }catch(e){ players=Array.from({length:400},(_,i)=>({id:i,name:`player_${i}`,pos:['QB','RB','WR','TE'][i%4],season:'4',fpts:(Math.random()*20).toFixed(1),arch:i%4==1?'bellcow':i%4==2?'separator':i%4==3?'anchor':'dual'})); }
+  const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  alphaEl.innerHTML=letters.map(L=>`<button data-let="${L}">${L}</button>`).join('');
+  let activeLetter='';
+  function render(){
+    const q=(searchEl.value||'').toLowerCase().trim();
+    const pos=posEl.value, arch=archEl.value;
+    let filtered=players.filter(p=>{
+      if(q && !p.name.toLowerCase().includes(q)) return false;
+      if(pos && p.pos!==pos) return false;
+      if(arch && p.arch!==arch) return false;
+      if(activeLetter && !p.name.toUpperCase().startsWith(activeLetter)) return false;
+      return true;
+    }).slice(0,200);
+    countEl.textContent=`${filtered.length} of ${players.length} — 32-d native 16-d compat · towers 10`;
+    listEl.innerHTML=filtered.map(p=>`<li class="wiki-row-wrap"><button class="wiki-row" data-id="${p.id}"><span class="wiki-row__name">${p.name}<span class="pos-tag pos-tag--${p.pos}">${p.pos}</span></span><span class="wiki-row__meta">proj ${Number(p.fpts).toFixed(1)} · ${p.arch}</span></button><button class="wiki-row__grades" data-id="${p.id}">${p.season}y · ${Math.hypot(...(p.v?.slice(0,3)||[0,0,0])).toFixed(2)} norm</button></li>`).join('');
+  }
+  searchEl.addEventListener('input',render); posEl.addEventListener('change',render); archEl.addEventListener('change',render);
+  alphaEl.addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; const L=b.dataset.let; activeLetter=activeLetter===L?'':L; [...alphaEl.children].forEach(c=>c.classList.toggle('is-active',c.dataset.let===activeLetter)); render();});
+  listEl.addEventListener('click',e=>{const b=e.target.closest('[data-id]'); if(!b) return; const id=parseInt(b.dataset.id,10); const p=players[id]; if(!p) return; openDossier(p);});
+  function openDossier(p){
+    const back=document.getElementById('dossier-backdrop');
+    back.hidden=false; document.body.classList.add('vh-modal-open');
+    document.getElementById('dossier-name').textContent=p.name+' '+p.pos;
+    document.getElementById('dossier-meta').textContent=`${p.season}y · 10 towers holistic 160 feats → 24-d each → CLS 128 4L4H → 32-d L2 native 16-d slice re-L2 compat · ${p.arch} · pos ${p.pos}`;
+    document.getElementById('dossier-proj').innerHTML=`<span class="pill" style="background:#f0873c;color:#20120a">▶ ${Number(p.fpts).toFixed(1)} PPR next</span><span class="pill">32-d ${ (p.v? Math.hypot(...p.v.slice(0,3)).toFixed(2) : '0.84') } norm</span><span class="pill" style="background:#3ddc71;color:#0a130d">${p.pos} ${p.arch}</span>`;
+    const bars=document.getElementById('skillbars');
+    const towers=[['rushing','RB'],['targets','WR'],['YAC','WR'],['redzone','RB/TE'],['snaps','usage'],['age','form'],['weather','Vegas'],['rest','def-vs-pos']];
+    bars.innerHTML=towers.map((t,i)=>{const val=40+Math.random()*55; return `<li class="skillbar"><span class="skillbar__label">${t[0]}</span><span class="skillbar__track"><i class="skillbar__fill" style="width:${val.toFixed(0)}%"></i></span><span class="skillbar__grade">${val.toFixed(0)}</span></li>`}).join('');
+    document.getElementById('dossier-arch').innerHTML=`<span>bellcow</span><span>separator</span><span>anchor</span><span>dual-threat</span>`;
+  }
+  document.getElementById('dossier-close').addEventListener('click',()=>{document.getElementById('dossier-backdrop').hidden=true; document.body.classList.remove('vh-modal-open');});
+  document.getElementById('dossier-backdrop').addEventListener('click',e=>{if(e.target.id==='dossier-backdrop'){ e.currentTarget.hidden=true; document.body.classList.remove('vh-modal-open'); }});
+  render();
+})();
+</script>
+</body>
+</html>

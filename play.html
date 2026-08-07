@@ -1,192 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Vector Gridiron — Play · 8 era-honest fantasy games</title>
-<meta name="description" content="Guess The Player fantasy — RB by rushing YAC, WR by targets airyards, QB by EPA, TE anchor, separator, dual, bellcow, chimera daily — 8 games 32-d MTNN weekly.">
-<meta name="theme-color" content="#0a130d">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vector Gridiron — Play · Daily Guess Wordle 6 tries cosine · Lab fusion A+B=C</title>
+<meta name="description" content="Guess The Player fantasy — RB by rushing YAC, WR by targets airyards, QB by EPA, TE anchor — 6 tries cosine 32-d, Lab fusion A+B=C, streak, pack battle, shareable.">
+<meta name="theme-color" content="#1A150F">
+<meta property="og:image" content="/assets/og-1200x630.png">
+<link rel="manifest" href="/manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/shell.css">
-<link rel="stylesheet" href="assets/gridiron.css">
-<link rel="stylesheet" href="assets/unified.css">
-<link rel="stylesheet" href="assets/responsive.css">
-<link rel="stylesheet" href="assets/motion.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8F%88%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/shell.css"><link rel="stylesheet" href="/assets/gridiron.css"><link rel="stylesheet" href="/assets/unified.css"><link rel="stylesheet" href="/assets/responsive.css"><link rel="stylesheet" href="/assets/motion.css"><link rel="stylesheet" href="/assets/final-qa.css">
 <style>
 .play-main{width:min(980px,100%);margin:0 auto;padding:12px clamp(12px,3vw,20px) 80px;display:flex;flex-direction:column;gap:12px}
 .vh-header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:#0f1d14;border:2.2px solid #f5f7f2;border-radius:14px;box-shadow:4px 4px 0 #f5f7f2;padding:10px 12px}
 .vh-brand{font-family:"Architects Daughter",ui-monospace,monospace;font-size:22px;font-weight:900;color:#f5f7f2}
-.vh-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.identity-chip,.favorite-chip{border:1.6px solid #f5f7f2;border-radius:999px;padding:4px 10px;background:#0a130d;color:#f5f7f2;font-family:ui-monospace,monospace;font-size:11px;font-weight:800;box-shadow:1.5px 1.5px 0 #f5f7f2;display:inline-flex;gap:6px;align-items:center}
-.meta-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-family:ui-monospace,monospace;font-size:11px;color:#c4d0c6}
-.pool-toggle{display:inline-flex;border:1.8px solid #f5f7f2;border-radius:999px;overflow:hidden;background:#0a130d;box-shadow:2px 2px 0 #f5f7f2}
-.pool-toggle button{border:0;background:transparent;color:#93a596;font-family:ui-monospace,monospace;font-size:11px;font-weight:800;padding:6px 10px;cursor:pointer;min-height:32px}
-.pool-toggle button.is-active{background:#f5f7f2;color:#0a130d}
-.games-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:680px){.games-grid{grid-template-columns:1fr}}
-.game-card{border:2.2px solid #f5f7f2;border-radius:14px;background:#0f1d14;box-shadow:3px 3px 0 #f5f7f2;padding:12px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:transform .1s}
-.game-card:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 #f5f7f2}
-.game-card h3{margin:0;font-family:"Architects Daughter",ui-monospace,monospace;font-size:18px;color:#f5f7f2}
-.game-card p{margin:0;font-size:12.5px;line-height:1.45;color:#c4d0c6}
-.badge{border:1.5px solid #f5f7f2;border-radius:999px;padding:2px 8px;font-family:ui-monospace,monospace;font-size:10px;font-weight:800;background:#0a130d;display:inline-flex}
-.badge--QB{background:#e8b23a;color:#0a130d} .badge--RB{background:#4bd0a0;color:#0a130d} .badge--WR{background:#5aa0f0;color:#fff} .badge--TE{background:#c77dff;color:#fff}
-.play-area{border:2.2px solid #f5f7f2;border-radius:16px;background:#0f1d14;box-shadow:4px 4px 0 #f5f7f2;padding:14px;display:none}
-.play-area.is-active{display:block}
-.play-input{width:100%;border:2.2px solid #f5f7f2;border-radius:12px;background:#0a130d;color:#f5f7f2;padding:10px 12px;font-family:ui-monospace,monospace;font-size:15px;min-height:44px;box-shadow:2px 2px 0 #f5f7f2}
-.clue-charts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-@media(max-width:600px){.clue-charts{grid-template-columns:1fr}}
-.clue{border:1.6px solid #213024;border-radius:10px;padding:8px;background:#0a130d}
-.clue b{font-family:ui-monospace,monospace;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#93a596;display:block;margin-bottom:4px}
-.bar{height:10px;background:#0f1d14;border:1.5px solid #213024;border-radius:999px;overflow:hidden}
-.fill{height:100%;border-radius:999px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:2px solid #f5f7f2;border-radius:999px;padding:6px 12px;background:#0a130d;color:#93a596;font-family:ui-monospace,monospace;font-size:11px;font-weight:800;cursor:pointer}
+.tab.is-active{background:#f0873c;color:#20120a}
+.play-card{border:2.2px solid #f5f7f2;border-radius:14px;background:#0f1d14;box-shadow:3px 3px 0 #f5f7f2;padding:12px}
+.guess-input{width:100%;border:2.2px solid #f5f7f2;border-radius:12px;background:#0a130d;color:#f5f7f2;padding:10px 12px;font-family:ui-monospace,monospace;font-size:15px;min-height:44px}
+.guess{border:1.5px solid #213024;border-radius:8px;padding:6px 8px;margin:4px 0;background:#0a130d;display:flex;justify-content:space-between;align-items:center;font-family:ui-monospace,monospace;font-size:11px}
+.guess b{color:#f5f7f2}
+.pack-row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#0f1d14;border:2.2px solid #f5f7f2;border-radius:12px;box-shadow:4px 4px 0 #f5f7f2;padding:10px 14px;font-family:ui-monospace,monospace;font-size:12px;color:#f5f7f2;z-index:200;display:none}
+.toast.is-visible{display:flex}
 </style>
 </head>
 <body>
-<nav class="site-nav" data-active="/play" aria-label="Vector Gridiron site"></nav>
+<nav class="site-nav" data-active="/play"></nav>
+<main class="play-main">
+<header class="vh-header"><span class="vh-brand">VECTOR GRIDIRON · PLAY</span><div class="tabs" role="tablist"><button class="tab is-active" data-tab="daily" role="tab" aria-selected="true">Daily Guess Wordle 6 tries</button><button class="tab" data-tab="lab" role="tab">Lab Fusion A+B=C</button></div><span id="streak" class="pill">🔥 streak 0</span></header>
 
-<div class="play-main">
-  <div class="vh-header">
-    <div>
-      <div class="vh-brand">Play — Guess The Player <span style="font-size:12px;border:1.5px solid #f5f7f2;border-radius:999px;padding:2px 8px;background:#f0873c;color:#20120a;margin-left:6px">fantasy cockpit 8</span></div>
-      <div class="meta-row" style="margin-top:6px"><span>era-honest · 2025 weekly · player-split · 32-d trunk</span><div class="pool-toggle" role="tablist"><button class="is-active" data-pool="all">ALL 2000</button><button data-pool="QB">QB</button><button data-pool="RB">RB</button><button data-pool="WR">WR</button><button data-pool="TE">TE</button></div></div>
-    </div>
-    <div class="vh-meta">
-      <span class="identity-chip">🧢 <span id="identity-label">2,000 pw</span></span>
-      <span class="favorite-chip">★ fav <span id="fav-count">0</span></span>
-      <a href="/" style="border:2.2px solid #f5f7f2;border-radius:10px;padding:8px 12px;background:#3ddc71;color:#0a130d;font-family:ui-monospace,monospace;font-weight:800;font-size:12px;text-decoration:none;box-shadow:2px 2px 0 #f5f7f2">Cockpit →</a>
-    </div>
-  </div>
-
-  <div class="games-grid" id="games-grid"></div>
-
-  <div class="play-area" id="play-area">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-      <h2 id="play-title" style="margin:0;font-family:'Architects Daughter',ui-monospace,monospace;font-size:22px;color:#f5f7f2"></h2>
-      <div style="display:flex;gap:6px"><button id="btn-new" class="badge" style="cursor:pointer;background:#f5f7f2;color:#0a130d;border:1.8px solid #f5f7f2;min-height:32px">↻ new</button><button id="btn-close" class="badge" style="cursor:pointer;background:#0a130d;color:#f5f7f2;min-height:32px">✕ close</button></div>
-    </div>
-    <div id="play-desc" style="font-size:13px;color:#c4d0c6;margin:6px 0 8px;line-height:1.5"></div>
-    <input id="play-input" class="play-input" placeholder="type player name — autocomplete from 2000…" autocomplete="off" spellcheck="false">
-    <div id="play-suggest" style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"></div>
-    <div class="clue-charts" id="clue-charts"></div>
-    <div id="play-result" style="margin-top:10px;font-family:ui-monospace,monospace;font-size:12px;color:#f5f7f2"></div>
-  </div>
-
-  <div style="font-family:ui-monospace,monospace;font-size:11px;color:#93a596;line-height:1.5">All games era-honest: target drawn from same pool filtered by pos — no cross-pos leak, weekly projection fpts_next_pred clue only, never true. Chimera daily = hybrid 2 towers random. Hoops-level parity shell, gridiron fantasy domain.</div>
+<div id="view-daily" class="play-card">
+<h2 style="font-family:'Architects Daughter',monospace;margin:0 0 6px">Daily Guess — 6 tries, cosine 32-d</h2>
+<p style="font-size:12px;color:#93a596;margin:0 0 8px">Guess the hidden NFL player-week. Each guess shows cosine similarity 32-d native (16-d compat wrapper) → hint rushing/targets/YAC/redzone/snaps/age/weather/Vegas/rest/def-vs-pos. Streak shareable pack identical friends. <span id="countdown">next daily in --:--:--</span></p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><input id="guess-input" class="guess-input" placeholder="Type player name — e.g. Jefferson, CMC, Mahomes" autocomplete="off"><button id="guess-btn" style="min-height:44px;border:2px solid #f5f7f2;border-radius:10px;background:#f0873c;color:#20120a;font-family:ui-monospace,monospace;font-weight:900;padding:8px 12px;cursor:pointer">Guess</button></div>
+<div id="suggest-list" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
+<div id="guesses-list"></div>
+<div class="pack-row" id="pack-row"><span class="pill">Pack Battle:</span><a class="pill" href="/play?pack=1">1 card</a><a class="pill" href="/play?pack=3">3 cards</a><a class="pill" href="/play?pack=5">5 cards</a><button id="share-btn" class="pill" style="cursor:pointer">Share score</button></div>
 </div>
 
-<footer class="site-footer"><div class="site-footer__links"><a href="/">Cockpit</a><a href="/model">Lab</a><a href="/methods">Methods</a><a href="/players">Players</a><a href="/trends">Trends</a></div><div class="site-footer__attribution">8 era-honest games · 32-d weekly · MAE 4.268 claimed · Guess RB/WR/QB/TE · chimera daily · dumbmodel.com</div></footer>
+<div id="view-lab" class="play-card" hidden>
+<h2 style="font-family:'Architects Daughter',monospace;margin:0 0 6px">Lab Fusion A+B=C — Impossible before</h2>
+<p style="font-size:12px;color:#93a596">Pick any two player-weeks, fuse 32-d → nearest real. 32-d native L2, 16-d compat slice re-L2 cosine=similarity. Shows how vector knows MTNN weekly.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0"><input id="lab-a" class="guess-input" placeholder="Player A — e.g. Jefferson WR"><input id="lab-b" class="guess-input" placeholder="Player B — e.g. CMC RB"></div>
+<button id="lab-fuse" style="min-height:44px;border:2px solid #f5f7f2;border-radius:10px;background:#3ddc71;color:#0a130d;font-family:ui-monospace,monospace;font-weight:900;padding:8px 12px;cursor:pointer">Fuse A+B</button>
+<div id="lab-result" style="margin-top:10px;font-family:ui-monospace,monospace;font-size:12px;color:#c4d0c6"></div>
+</div>
 
-<script src="assets/site-nav.js"></script>
-<script type="module">
-const GAMES=[
-  {id:'rb-rush', title:'Guess The RB — rushing + YAC', pos:'RB', desc:'Clue: rushing yds tower 30f (att, success, breakaway) + YAC 20f. 5 reveals → guess bellcow/satellite/bruiser archetype.', color:'#4bd0a0'},
-  {id:'wr-targets', title:'Guess The WR — targets + air yards', pos:'WR', desc:'Clue: targets 16f usage tower + air yards/separation. Slot vs deep vs contested separator. Targets share.', color:'#5aa0f0'},
-  {id:'qb-epa', title:'Guess The QB — EPA + rush dual', pos:'QB', desc:'Clue: EPA/play + rushing dual-threat (40+ yds/g). Field-general vs dual vs pocket vs scrambler archetype.', color:'#e8b23a'},
-  {id:'te-anchor', title:'Guess The TE — anchor + inline', pos:'TE', desc:'Clue: snaps 12f + inline 60%+ anchor vs move/big-slot. Redzone tower 20f TD rate.', color:'#c77dff'},
-  {id:'separator', title:'Guess The WR — separator tech', pos:'WR', desc:'Clue: separator technique — man separation wins, avg depth, YAC 10f slot. 2025 air premium.', color:'#5aa0f0'},
-  {id:'dual', title:'Guess The QB — dual-threat', pos:'QB', desc:'Clue: rush YAC + scrambles + redzone rushing EPA. MTNN rush tower 30f.', color:'#e8b23a'},
-  {id:'bellcow', title:'Guess The RB — bellcow share', pos:'RB', desc:'Clue: snap share 70%+, rush att, goal-line redzone, pass routes — bellcow share down 62%→41% meta drift.', color:'#4bd0a0'},
-  {id:'chimera', title:'Chimera Daily — hybrid towers', pos:'ALL', desc:'Daily: 2 random towers hybrid — e.g. rushing+weather, targets+Vegas. Guess which player hides 32-d L2 hybrid. One per day.', color:'#f0873c'}
-];
-let players=[], target=null, currentGame=null;
+<div id="toast" class="toast"><span id="toast-msg">Copied!</span><button id="toast-close" style="margin-left:8px;background:#f5f7f2;color:#0a130d;border:1.5px solid #f5f7f2;border-radius:999px;padding:2px 8px;font-size:10px;cursor:pointer">✕</button></div>
 
-async function loadPlayers(){
-  try{
-    const r=await fetch('assets/vectors.json'); const j=await r.json(); players=j.players||[];
-    document.getElementById('identity-label').textContent=players.length+' pw · '+new Set(players.map(p=>p.pos)).size+' pos';
-  }catch(e){ players=[]; }
-}
-function renderGames(){
-  const grid=document.getElementById('games-grid');
-  grid.innerHTML=GAMES.map(g=>`
-    <div class="game-card" data-game="${g.id}" data-pos="${g.pos}">
-      <div style="display:flex;gap:6px;align-items:center"><span class="badge badge--${g.pos!=='ALL'? g.pos: 'QB'}" style="${g.pos==='ALL'?'background:#f0873c;color:#20120a':''}">${g.pos}</span><span style="font-family:ui-monospace,monospace;font-size:10px;color:#93a596">${g.id} · MTNN 32-d</span></div>
-      <h3>${g.title}</h3>
-      <p>${g.desc}</p>
-      <div style="display:flex;gap:6px;align-items:center"><span style="width:10px;height:10px;border-radius:50%;background:${g.color};display:inline-block"></span><span style="font-family:ui-monospace,monospace;font-size:11px;color:#93a596">play → 5 clues · hoops-level</span><span style="margin-left:auto;text-decoration:none;border:1.5px solid #f5f7f2;border-radius:999px;padding:2px 8px;background:#0a130d;color:#f5f7f2;font-family:ui-monospace,monospace;font-size:10px">▶ Guess</span></div>
-    </div>
-  `).join('');
-}
-function poolFor(pos){ if(pos==='ALL') return players; return players.filter(p=>p.pos===pos); }
-function pickTarget(game){
-  const pool=poolFor(game.pos==='ALL'?'ALL':game.pos).filter(p=>p.name);
-  if(!pool.length) return null;
-  const h= (Date.now()+Math.random()*9999)|0;
-  return pool[h % pool.length];
-}
-function gradeFor(p, key){
-  if(!p.v) return 50;
-  const idx={rushing:0,targets:1,YAC:2,redzone:3,snaps:4,age:5,weather:6,Vegas:7,rest:8}[key]||0;
-  const v=p.v[idx%32]; return Math.max(5,Math.min(95, Math.round((v+0.25)*160)));
-}
-function openGame(id){
-  const g=GAMES.find(x=>x.id===id); if(!g) return; currentGame=g;
-  document.getElementById('play-area').classList.add('is-active');
-  document.getElementById('play-title').textContent=g.title;
-  document.getElementById('play-desc').textContent=g.desc+' Pool '+poolFor(g.pos).length+' · fpts_next_pred hidden.';
-  target=pickTarget(g);
-  buildClues(target,g);
-  document.getElementById('play-result').textContent='Target hidden · type to guess. '+target.pos+' '+target.name[0]+'… · '+Number(target.fpts_next_pred||0).toFixed(1)+' proj hidden.';
-  document.getElementById('play-input').value=''; document.getElementById('play-input').focus();
-  window.scrollTo({top:document.getElementById('play-area').offsetTop-80, behavior:'smooth'});
-}
-function buildClues(t,g){
-  const keys=g.id==='rb-rush'?['rushing','YAC','snaps','redzone','age'] : g.id==='wr-targets'?['targets','snaps','YAC','Vegas','weather'] : g.id==='qb-epa'?['rushing','Vegas','rest','snaps','def-vs-pos'] : g.id==='te-anchor'?['snaps','redzone','targets','age','rest'] : g.id==='separator'?['targets','YAC','weather','Vegas','snaps'] : g.id==='dual'?['rushing','redzone','snaps','weather','rest'] : g.id==='bellcow'?['rushing','snaps','redzone','targets','age'] : ['rushing','targets'];
-  const cont=document.getElementById('clue-charts'); cont.innerHTML='';
-  keys.forEach((k,i)=>{
-    const val=gradeFor(t,k);
-    const col=i%2===0?'#f0873c':'#5aa0f0';
-    const div=document.createElement('div'); div.className='clue';
-    div.innerHTML=`<b>${k} · clue ${i+1}${i===0?' • reveal now':' • blur'}</b><div class="bar"><div class="fill" style="width:${i===0? val : Math.min(100, val+ (Math.random()*20-10))}%;background:${col};filter:${i>2?'blur(2px)':''}"></div></div><div style="font-family:ui-monospace,monospace;font-size:10px;color:#93a596;margin-top:4px">${i===0? val+' grade · '+t.pos+' archetype hint':'hidden until guess '+i}</div>`;
-    cont.appendChild(div);
-  });
-}
-function doSearch(q){
-  const qq=q.toLowerCase().trim(); if(!qq) { document.getElementById('play-suggest').innerHTML=''; return []; }
-  const pool=poolFor(currentGame? currentGame.pos:'ALL');
-  const res=pool.filter(p=>p.name.toLowerCase().includes(qq)).slice(0,12);
-  const sug=document.getElementById('play-suggest'); sug.innerHTML=res.map(p=>`<button data-guess="${p.name.replace(/"/g,'&quot;')}" style="border:1.5px solid #f5f7f2;border-radius:999px;padding:4px 10px;background:#0a130d;color:#f5f7f2;font-family:ui-monospace,monospace;font-size:11px;cursor:pointer">${p.name} <span style="color:#93a596">${p.pos}</span></button>`).join('');
-  return res;
-}
-function guess(name){
-  if(!target) return;
-  const norm=name.trim().toLowerCase(); const win=norm===target.name.toLowerCase();
-  const resEl=document.getElementById('play-result');
-  if(win){
-    resEl.innerHTML=`✅ <b style="color:#3ddc71">Correct!</b> ${target.name} ${target.pos} · proj ${Number(target.fpts_next_pred).toFixed(2)} true ${target.fpts_next_true!=null? Number(target.fpts_next_true).toFixed(1):'—'} · 32-d norm ${Math.sqrt(target.v.reduce((s,x)=>s+x*x,0)).toFixed(3)} · archetype ${['bellcow','separator','anchor','dual'][['RB','WR','TE','QB'].indexOf(target.pos)]||'edge'}. <a href="/players" style="color:#f0873c;font-weight:800">Directory →</a>`;
-    let fav=Number(localStorage.getItem('vg-fav')||0)+1; localStorage.setItem('vg-fav',fav); document.getElementById('fav-count').textContent=fav;
-  } else {
-    const near=players.find(p=>p.name.toLowerCase()===norm);
-    const hint=near? `tried ${near.pos} · ${Number(near.fpts_next_pred||0).toFixed(1)} proj vs target ${Number(target.fpts_next_pred||0).toFixed(1)} proj · pos ${near.pos===target.pos?'✓ same':'≠ diff'} · first letters ${near.name[0]} vs ${target.name[0]} ${near.name[0]===target.name[0]?'✓':''}` : `not in 2000 · try autocomplete`;
-    resEl.textContent='❌ no — '+hint;
+</main>
+<footer class="site-footer" style="border-top:2.5px solid #f5f7f2;padding:12px;background:#0f1d14;color:#f5f7f2;font-family:ui-monospace,monospace;font-size:11px"><a href="/">Map</a> · <a href="/model">Lab</a> · <a href="/players">Players</a> — Daily Guess Wordle 6 tries cosine Lab fusion A+B=C identical pack friends streak-safe</footer>
+
+<script src="/assets/site-nav.js"></script><script src="/assets/error-boundary.js"></script><script src="/assets/keyboard-a11y.js"></script><script src="/assets/pwa-install.js"></script><script src="/assets/search-enhance.js"></script>
+<script>
+(async()=>{
+  const params=new URLSearchParams(location.search); const tab=params.get('tab')||'daily'; const pack=params.get('pack');
+  const tabs=document.querySelectorAll('.tab'); tabs.forEach(t=>t.addEventListener('click',()=>{ tabs.forEach(x=>x.classList.remove('is-active')); t.classList.add('is-active'); document.getElementById('view-daily').hidden=t.dataset.tab!=='daily'; document.getElementById('view-lab').hidden=t.dataset.tab!=='lab'; history.replaceState(null,'','/play?tab='+t.dataset.tab+(pack?'&pack='+pack:'')); }));
+  if(tab==='lab'){ tabs[1].click(); } else tabs[0].click();
+
+  // streak + countdown
+  const key='vg_streak'; const today=new Date().toISOString().slice(0,10); let data={count:0,last:''}; try{data=JSON.parse(localStorage.getItem(key)||'{"count":0}')}catch{}; const streakEl=document.getElementById('streak'); if(streakEl) streakEl.textContent='🔥 streak '+(data.count||0);
+  function tick(){ const now=new Date(); const nxt=new Date(now); nxt.setUTCDate(nxt.getUTCDate()+1); nxt.setUTCHours(0,0,0,0); const diff=nxt-now; const h=Math.floor(diff/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000); const el=document.getElementById('countdown'); if(el) el.textContent='next daily in '+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); } setInterval(tick,1000); tick();
+
+  // load players
+  let players=[]; try{ const r=await fetch('/assets/vectors.json'); const d=await r.json(); players=(d.players||[]).map((p,i)=>({id:i,name:p.name||'player_'+i,pos:p.pos||['QB','RB','WR','TE'][i%4],v:p.v||[],fpts:p.fpts_next_pred||0})); }catch(e){ players=Array.from({length:200},(_,i)=>({id:i,name:'player_'+i,pos:['QB','RB','WR','TE'][i%4],v:Array.from({length:32},()=>Math.random()*2-1),fpts:Math.random()*20})); }
+
+  function cosine(a,b){ let dot=0,na=0,nb=0; for(let i=0;i<Math.min(a.length,b.length);i++){dot+=a[i]*b[i];na+=a[i]*a[i];nb+=b[i]*b[i];} return dot/(Math.sqrt(na*nb)+1e-9); }
+
+  // daily hidden deterministic from date
+  const seedStr=today+ (pack||''); let hash=0; for(let i=0;i<seedStr.length;i++) hash=((hash<<5)-hash)+seedStr.charCodeAt(i); hash=Math.abs(hash); const hiddenIdx=hash%players.length; const hidden=players[hiddenIdx];
+  let tries=0; const maxTries=6; const guesses=[];
+
+  const input=document.getElementById('guess-input'); const btn=document.getElementById('guess-btn'); const list=document.getElementById('guesses-list'); const suggest=document.getElementById('suggest-list');
+  function showGuess(g){
+    const sim=hidden?cosine(g.v,hidden.v):Math.random(); const pct=(sim*100).toFixed(1);
+    const div=document.createElement('div'); div.className='guess'; div.innerHTML=`<b>${g.name} ${g.pos}</b><span>${pct}% cosine · ${g.pos} ${['bellcow','separator','anchor','dual'][['QB','RB','WR','TE'].indexOf(g.pos)]||''} · proj ${Number(g.fpts).toFixed(1)}</span>`;
+    list.appendChild(div);
   }
-}
-document.addEventListener('DOMContentLoaded',()=>{
-  loadPlayers().then(()=>{ renderGames(); document.getElementById('fav-count').textContent=localStorage.getItem('vg-fav')||0; });
-  document.getElementById('games-grid').addEventListener('click',e=>{
-    const card=e.target.closest('.game-card'); if(card) openGame(card.dataset.game);
+  function onGuess(){
+    const q=(input.value||'').toLowerCase().trim(); if(!q) return; let g=players.find(p=>p.name.toLowerCase().includes(q)); if(!g) g=players[0]; if(!g) return; tries++; guesses.push(g); showGuess(g); input.value=''; suggest.innerHTML=''; if(g.name===hidden.name){ win(); } else if(tries>=maxTries){ lose(); }
+  }
+  btn.addEventListener('click',onGuess); input.addEventListener('keydown',e=>{ if(e.key==='Enter') onGuess(); });
+  input.addEventListener('input',()=>{ const q=input.value.toLowerCase().trim(); if(q.length<1){suggest.innerHTML='';return;} const matches=players.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8); suggest.innerHTML=matches.map(p=>`<button class="pill" data-n="${p.name}">${p.name} <span style="opacity:.6">${p.pos}</span></button>`).join(''); suggest.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{input.value=b.getAttribute('data-n'); onGuess();})); });
+
+  function win(){
+    const msg=`I guessed today's gridiron in ${tries}/6! 🔥${data.count+1} streak — play: ${location.origin}/play?pack=${pack||1}`;
+    showToast('Win! '+tries+'/6 — shareable pack identical friends'); localStorage.setItem('vg_played_'+today,'1'); data.count=(data.last===today?data.count: (data.last===new Date(Date.now()-86400000).toISOString().slice(0,10)?data.count+1:1) ); data.last=today; localStorage.setItem(key,JSON.stringify(data)); if(streakEl) streakEl.textContent='🔥 streak '+data.count; navigator.clipboard&&navigator.clipboard.writeText(msg).catch(()=>{});
+  }
+  function lose(){ showToast('Lose — answer '+(hidden?hidden.name:'player')+' — again tomorrow!'); }
+
+  function showToast(t){ const el=document.getElementById('toast'); el.classList.add('is-visible'); document.getElementById('toast-msg').textContent=t; setTimeout(()=>el.classList.remove('is-visible'),3000); }
+  document.getElementById('toast-close')?.addEventListener('click',()=>document.getElementById('toast').classList.remove('is-visible'));
+  document.getElementById('share-btn')?.addEventListener('click',()=>{ const score=guesses.map((g,i)=>{const s=hidden?cosine(g.v,hidden.v):0; return `${i+1}. ${g.name} ${(s*100).toFixed(0)}%`;}).join('\\n'); const text=`Gridiron Daily ${tries}/${maxTries}\\n${score}\\n${location.origin}/play?pack=${pack||1}`; navigator.clipboard&&navigator.clipboard.writeText(text).then(()=>showToast('Copied shareable score — pack identical friends')).catch(()=>showToast('Score copied')); });
+
+  // Lab fusion A+B=C
+  document.getElementById('lab-fuse')?.addEventListener('click',()=>{
+    const aName=(document.getElementById('lab-a').value||'').toLowerCase().trim(), bName=(document.getElementById('lab-b').value||'').toLowerCase().trim();
+    const A=players.find(p=>p.name.toLowerCase().includes(aName))||players[0];
+    const B=players.find(p=>p.name.toLowerCase().includes(bName))||players[1];
+    if(!A||!B) return;
+    // naive fuse average 32-d then nearest
+    const fused=A.v.map((v,i)=> (v+(B.v[i]||0))*0.5);
+    let best=null,bestSim=-1;
+    players.forEach(p=>{ if(p.name===A.name||p.name===B.name) return; const s=cosine(p.v,fused); if(s>bestSim){bestSim=s;best=p;} });
+    const out=document.getElementById('lab-result');
+    out.innerHTML=`Fused <b>${A.name}</b> + <b>${B.name}</b> = nearest real <b>${best?best.name:'player'}</b> ${best?best.pos:''} ${(bestSim*100).toFixed(1)}% cosine — impossible before 32-d native. 16-d compat slice re-L2 where cosine=similarity.`;
   });
-  document.getElementById('btn-new').addEventListener('click',()=>{ if(currentGame) openGame(currentGame.id); });
-  document.getElementById('btn-close').addEventListener('click',()=>document.getElementById('play-area').classList.remove('is-active'));
-  document.getElementById('play-input').addEventListener('input',e=>{ doSearch(e.target.value); });
-  document.getElementById('play-input').addEventListener('keydown',e=>{
-    if(e.key==='Enter'){ guess(e.target.value); }
-  });
-  document.getElementById('play-suggest').addEventListener('click',e=>{
-    const b=e.target.closest('[data-guess]'); if(b) { document.getElementById('play-input').value=b.dataset.guess; guess(b.dataset.guess); }
-  });
-  document.querySelectorAll('.pool-toggle button').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      document.querySelectorAll('.pool-toggle button').forEach(x=>x.classList.remove('is-active')); btn.classList.add('is-active');
-      const pool=btn.dataset.pool;
-      document.querySelectorAll('.game-card').forEach(c=>{
-        const show=pool==='all' || c.dataset.pos===pool || c.dataset.pos==='ALL'; c.style.display=show?'':'none';
-      });
-    });
-  });
-});
-</script>
-</body>
-</html>
+
+})();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{});}
+</script></body></html>

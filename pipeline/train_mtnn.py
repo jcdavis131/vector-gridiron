@@ -339,6 +339,10 @@ def main():
                     help="comma-separated families to soft-scale masks (not hard zero)")
     ap.add_argument("--soft-scale", type=float, default=0.25,
                     help="mask multiplier for --soft-families (default 0.25)")
+    ap.add_argument("--write-artifacts", action="store_true",
+                    help="permit export to assets/ and pipeline/data/. Off by "
+                         "default since 2026-08-06, when a 1-epoch smoke run "
+                         "overwrote all eight deploy assets with a worse model.")
     ap.add_argument("--phase", choices=("select", "final-refit", "auto"),
                     default="select",
                     help="select=honest split metrics; final-refit=all-labeled ship; "
@@ -748,10 +752,22 @@ def main():
         json.dumps(selection_report, indent=2), encoding="utf-8")
 
     do_refit = (args.phase == "final-refit") or (args.phase == "auto" and ok_ship)
-    do_export = (args.phase == "select") or do_refit
+    # `--phase select` used to export. select is the MEASURING phase AND the
+    # default, so any invocation shipped assets/ -- including a smoke run. On
+    # 2026-08-06 a `--epochs 1 --skip-build` smoke overwrote all eight deploy
+    # assets with a model at MAE 4.471 / R2 0.388, replacing the 4.296 / 0.423
+    # in HEAD. The tree sat that way until an audit caught it, and a deploy
+    # would have published the worse model: assets/app.js:164 reads the live
+    # footer straight out of projections.json.
+    #
+    # A measuring run must not ship.
+    do_export = bool(getattr(args, "write_artifacts", False)) or do_refit
     if args.phase == "auto" and not ok_ship:
         print("  auto: promote gate failed — keeping prior assets; writing selection report only")
         do_export = False
+    if not do_export:
+        print(f"  phase={args.phase}: metrics only, assets/ NOT written "
+              f"(pass --write-artifacts, or --phase final-refit, to export)")
 
     if do_refit:
         refit_epochs = max(selection_best_epoch, 10)

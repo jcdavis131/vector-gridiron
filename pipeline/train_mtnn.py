@@ -45,14 +45,23 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
+# preproc + audit now come from the shared vector-core library (parity-proven, 0.0 diff)
+from vector_core import RealMLPPreprocessor, audit_current_scaling
+
+# PLEmbedding is torch-gated in vector-core (lazily exposed only when torch is
+# installed). torch is a hard dependency of this module (imported above), so this
+# guard is defensive and mirrors vector-core's own gating.
+try:
+    from vector_core import PLEmbedding
+except ImportError:  # pragma: no cover - torch always present in training env
+    PLEmbedding = None
+
 # local imports — model lives in same package
 try:
     from .model import DEFAULT_FAM_DIMS, MTNN, count_params, param_report
-    from .realmlp_preproc import PLEmbedding, RealMLPPreprocessor, audit_current_scaling
 except ImportError:
     # when run as python pipeline/train_mtnn.py
     from model import DEFAULT_FAM_DIMS, MTNN, count_params, param_report
-    from realmlp_preproc import PLEmbedding, RealMLPPreprocessor, audit_current_scaling
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "pipeline" / "data"
@@ -276,9 +285,11 @@ def train_mtnn(args):
     # optional era_procrustes alignment (if drift.json + chains exists)
     if args.era_align == "procrustes":
         try:
-            from assets.era_procrustes_align import align_batch, load_alignment
+            from vector_core import align_batch, load_alignment
 
-            align_data = load_alignment()
+            # vector-core's load_alignment takes an explicit drift.json path
+            # (no hardcoded asset path), so pass gridiron's location here.
+            align_data = load_alignment(ASSETS / "drift.json")
             chains = align_data["chains"]
             X = align_batch(X, seasons, chains)
             print(f"  era-align procrustes applied {len(chains)} chains")

@@ -11,6 +11,9 @@ dependencies = [
   "pandas>=2.0",
   "scikit-learn>=1.3",
   "torch>=2.0",
+  # Shared fleet utilities: RealMLP preproc + audit, PLEmbedding (torch-gated),
+  # Procrustes era alignment. Replaces the repo-local duplicates (parity-proven, 0.0 diff).
+  "vector-core[torch] @ git+https://github.com/jcdavis131/vector-hub.git#subdirectory=packages/vector-core",
 ]
 
 [project.optional-dependencies]

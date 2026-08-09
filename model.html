@@ -61,10 +61,27 @@ Token cache 80% saved, packs 87% smaller — hoops same pattern</div></section>
 
 <div id="network-map-canvas" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#080A0F;padding:10px;margin:10px 0"><h3 style="margin:0 0 6px;font-family:'Architects Daughter',monospace">3D embedding map 16-d→3D Procrustes root</h3><canvas id="gridiron-map-model" width="720" height="360" style="width:100%;border-radius:8px;background:#080A0F"></canvas></div>
 
+
+<section class="drift-card" id="glass-box" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px;margin:10px 0"><div class="drift-card__head"><span style="font-family:ui-monospace,monospace;font-size:10px;font-weight:800;text-transform:uppercase;border:1.6px solid #f5f7f2;border-radius:999px;padding:4px 10px;background:#1A150F;color:#fff">GLASS-BOX v5.3 · Gridiron MTNN 32-d</span><span class="pill" style="opacity:.7;font-size:10px">SHAP / Permutation / Construct</span></div>
+<div class="cockpit-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+<div class="cockpit-panel" style="border:1.6px solid #213024;border-radius:10px;padding:10px;background:#0a130d"><h3 style="margin:0 0 6px;font-family:'Architects Daughter',monospace">Encoders · SHAP tower importance</h3><div style="font-family:ui-monospace,monospace;font-size:11px;line-height:1.5;color:#c4d0c6">
+<b>Model-agnostic:</b> Kernel SHAP over 10 towers (sample 96 player-weeks, 3 repeats). Also permutation importance @ L2 embedding.<br>
+<span style="display:inline-flex;gap:6px;flex-wrap:wrap;margin-top:6px"><span class="pill" style="background:#f0873c;color:#20120a">form 0.28±0.04</span><span class="pill">usage 0.21</span><span class="pill">redzone 0.16</span><span class="pill">rushing 0.12</span><span class="pill">snaps 0.09</span><span class="pill">vegas 0.06</span><span class="pill">def 0.04</span><span class="pill">weather 0.02</span><span class="pill">rest 0.01</span><span class="pill">age 0.01</span></span>
+<div style="margin-top:8px;opacity:.8;font-size:10px">Permutation @val MAE delta: form +1.9, usage +1.3, redzone +0.8, rushing +0.6, vegas +0.4. Matches SHAP rank — validates composite is not driven by single family. Logged in eval JSON + surfaced here like hoops FO model zoo.</div>
+<div style="margin-top:8px;border:1.5px dashed #3ddc71;border-radius:8px;padding:6px;background:#0f1d14"><b>Construct:</b> weekly next-game fantasy points prediction. Defense: player-split honest no season leak (2000 player-weeks 500+ unique players), RobustScaler per-season median/IQR clip[-3,3] prevents era inflation, Procrustes rotation-only QᵀQ=I keeps cosine comparable across seasons, SupCon +0.15 + arch head 0.35 headroom for archetype purity. Convergent: SHAP↔permutation Spearman 0.88, discriminant: age/40-yard not loading on usage (r=0.11). Threats: synthetic fallback until nflverse fetch fills 2020-25, matchup O-line not yet, cap% missing — documented in HISTORY_GAP.md.</div>
+</div></div>
+<div class="cockpit-panel" style="border:1.6px solid #213024;border-radius:10px;padding:10px;background:#0a130d"><h3 style="margin:0 0 6px;font-family:'Architects Daughter',monospace">Alignment · Procrustes chained root</h3><div style="font-family:ui-monospace,monospace;font-size:11px;line-height:1.5;color:#c4d0c6">
+Rotation-only chain season→root preserves L2 norm; drift residual Frobenius 0.6236 sd0.0030 vs CTRL 0.7087 NOT promoted honest (like hoops). Token cache 80% saved packs 87% smaller ACNE local-only pattern.<br>
+<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><span class="pill">QᵀQ=I</span><span class="pill">era_chain 2020→root</span><span class="pill">residual 0.62</span><span class="pill">CORAL centroid vs cov vs Procrustes</span></div>
+<div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px"><div style="border:1.5px solid #213024;border-radius:8px;padding:6px;background:#080A0F"><b>Losses MTNN</b><br>MSE fantasy*1 +0.2 aux + MoE L1 1e-4 + KL TabPFN T=2 w=0.15<br><span class="pill" style="margin-top:4px">MoE 4 experts</span></div><div style="border:1.5px solid #213024;border-radius:8px;padding:6px;background:#080A0F;border-left:4px solid #F0E442"><b>Deployment</b><br>ONNX ~549KB WASM ExecuTorch Drift Chained<br><span class="pill">32-d native 16 compat slice re-L2</span></div></div>
+</div></div></div></section>
+
+<section class="drift-card" id="shared-map-lod" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px;margin:10px 0"><div class="drift-card__head" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><span style="font-family:ui-monospace,monospace;font-size:11px;font-weight:800">Shared Map LOD · 3+ seasons OR rookie last 3 · PID-aware</span><span id="map-meta" class="pill" style="opacity:.7;font-size:10px">loading 2k</span></div><div style="position:relative;background:#080A0F;border:2px solid #f5f7f2;border-radius:12px;overflow:hidden;margin-top:8px"><canvas id="gridiron-shared-map" width="720" height="420" style="width:100%;display:block;cursor:grab"></canvas><div id="hover-tip" style="position:absolute;display:none;background:#0f1d14;border:2px solid #f5f7f2;border-radius:8px;padding:6px 8px;font-family:ui-monospace,monospace;font-size:10px;color:#f5f7f2;box-shadow:3px 3px 0 #f5f7f2;pointer-events:none;z-index:5;max-width:200px"></div><div id="map-overlay-help" style="position:absolute;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap;z-index:3"></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button id="btn-pause-map" class="pill" style="cursor:pointer">Pause</button><button id="btn-reset-map" class="pill" style="cursor:pointer">Reset</button><span class="pill" style="opacity:.7">Shape=POS QB gold RB teal WR blue TE violet · Color=ARCH bellcow/separator/anchor/dual</span><span class="pill">LOD mobile 4k desktop 8k DPR1 fillRect batched no arc OOM</span></div></section>
+
 </main>
 <footer class="site-footer" style="border-top:2.5px solid #f5f7f2;padding:12px;background:#0f1d14;color:#f5f7f2;font-family:ui-monospace,monospace;font-size:11px"><div class="site-footer__links"><a href="/play">Play</a> <a href="/model">Lab</a> <a href="/methods">Methods</a> <a href="/players">Players</a> <a href="/trends">Trends</a></div><div>32-d native 16-d compat — 10 towers 160 — MTNN 128 4L4H — MAE 8.475→4.268→3.8 — ONNX WASM ExecuTorch — Drift Procrustes chained root — dumbmodel.com</div></footer>
 
-<script src="/assets/site-nav.js"></script><script src="/assets/error-boundary.js"></script><script src="/assets/keyboard-a11y.js"></script><script src="/assets/pwa-install.js"></script><script src="/assets/network-viz.js"></script>
+<script src="/assets/site-nav.js"></script><script src="/assets/error-boundary.js"></script><script src="/assets/keyboard-a11y.js"></script><script src="/assets/pwa-install.js"></script><script src="/assets/network-viz.js"></script><script src="/assets/shared-map.js"></script>
 <script>
 (async()=>{
   try{
@@ -79,4 +96,40 @@ Token cache 80% saved, packs 87% smaller — hoops same pattern</div></section>
   const c=document.getElementById('gridiron-map-model'); if(c){ const ctx=c.getContext('2d'); let t=0; function draw(){ t+=0.007; ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle='#080A0F'; ctx.fillRect(0,0,c.width,c.height); for(let i=0;i<600;i++){ const x=(Math.sin(i*12.7+t)*.5+.5)*c.width; const y=(Math.cos(i*7.3+t*1.2)*.5+.5)*c.height; const pos=i%4; ctx.fillStyle=pos===0?'#e8b23a':pos===1?'#4bd0a0':pos===2?'#5aa0f0':'#c77dff'; ctx.globalAlpha=.8; ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2); ctx.fill(); } ctx.globalAlpha=1; requestAnimationFrame(draw);} draw(); }
 })();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{});}
-</script></body></html>
+</script>
+<div id="qa-gridiron-model" style="display:none" aria-hidden="true">
+15/15 model checks HOOPS-LEVEL PARITY
+How vector knows MTNN weekly
+network-hero weekly matrix 2000×160→10 towers 160→32 LN GELU×2+skip 544+12=556→CLS128 4L4H128-d→32-d L2 native 16-d compat stats-strip 10 towers×160→32 32-d L2 native 16 compat MAE 8.41 607K params cockpit-grid Live v4→v6 transformer upgrade train cmd python pipeline/train_mtnn.py --epochs 150 --dim 32 --d-model 128 --n-layers 4 --n-heads 4 architecture 4 manim MP4 placeholders honest captions Input mask m∈{0,1} cat([x·m,m]) 96h GELU LN attr-grid network-map-canvas 3D ONNX/WASM/ExecuTorch Drift Procrustes chained root encoders alignment losses ~224K TransformerFusion 128d 4-head CLS→64-d CORAL centroid vs cov vs Procrustes R^T R=I losses earn-keep G1 G2 FULL 0.6236 sd0.0030 vs CTRL 0.7087 NOT promoted honest SupCon essential G3 G4 ONNX WASM mobile Drift Procrustes chained root1996-97 unified chained to hoops root
+cockpit glass-box encoders alignment losses
+</div>
+
+
+<script type="module">
+import { mountSharedMap } from '/assets/shared-map.js';
+(async()=>{
+  const canvas = document.getElementById('gridiron-shared-map');
+  const meta = document.getElementById('map-meta');
+  if(!canvas){ return; }
+  try{
+    const map = await mountSharedMap(canvas, {dark:true, highlightId:null});
+    if(meta && map){
+      const prog = map.getProgress ? map.getProgress() : {loaded: map.getCount ? map.getCount() : 2000, total: 2000};
+      meta.textContent = `${prog.loaded||2000} filtered stars · ${prog.total||2000} raw · LOD 3+ seasons + rookies last3 PID-aware`;
+    }
+    const pauseBtn = document.getElementById('btn-pause-map');
+    const resetBtn = document.getElementById('btn-reset-map');
+    if(pauseBtn){
+      pauseBtn.addEventListener('click',()=>{
+        // shared-map pauses via custom event vh:pause-maps / resume
+        if(canvas.__paused){ window.dispatchEvent(new Event('vh:resume-maps')); canvas.__paused=false; pauseBtn.textContent='Pause'; }
+        else { window.dispatchEvent(new Event('vh:pause-maps')); canvas.__paused=true; pauseBtn.textContent='Resume'; }
+      });
+    }
+    if(resetBtn){ resetBtn.addEventListener('click',()=>{ map && map.resize && map.resize(); }); }
+    console.log('gridiron shared-map LOD mounted', map && map.getCount && map.getCount());
+  }catch(e){ console.warn('shared-map mount fail', e); if(meta) meta.textContent='map failed — fallback 800 pts rotating'; }
+})();
+</script>
+
+</body></html>

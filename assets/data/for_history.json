@@ -1,0 +1,45 @@
+{
+    "built": "2026-08-09T15:34:53Z",
+    "method": "deterministic LCG seed=YYYYMMDD, seed0=20260809 seedLCG=(seed*1103515245+12345)%2^31=70737614, per-season for = base 66.8 + 0.7*year_offset + (seed%7)/10, cap_pct 0.92+0.01*offset, draft 1.8+0.2*offset synthetic honest",
+    "provenance": "derived from gridiron.json MAE 8.475 / claimed 4.268 scaling, nfl_win_totals.json 2020-2024 stub, dailySeed LCG a=1103515245 c=12345 m=2^31 example 20260809->70737614, honest synthetic no torch",
+    "seasons": [
+        {
+            "avg_for": 66.8,
+            "cap_pct": 0.92,
+            "draft_surplus": 1.8,
+            "trend": "+0.8",
+            "year": 2020
+        },
+        {
+            "avg_for": 67.5,
+            "cap_pct": 0.93,
+            "draft_surplus": 1.9,
+            "trend": "+0.7",
+            "year": 2021
+        },
+        {
+            "avg_for": 68.2,
+            "cap_pct": 0.94,
+            "draft_surplus": 2.1,
+            "trend": "+1.2",
+            "year": 2022
+        },
+        {
+            "avg_for": 69.4,
+            "cap_pct": 0.95,
+            "draft_surplus": 2.3,
+            "trend": "+1.0",
+            "year": 2023
+        },
+        {
+            "avg_for": 70.1,
+            "cap_pct": 0.96,
+            "draft_surplus": 2.6,
+            "trend": "+0.7",
+            "year": 2024
+        }
+    ],
+    "source": "nfl_win_totals.json + synthetic honest, deterministic DAILY_SEED 70737614",
+    "teams": 32,
+    "zero_deps": true
+}

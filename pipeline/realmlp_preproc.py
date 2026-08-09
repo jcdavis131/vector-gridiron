@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import numpy as np
 import torch
@@ -29,10 +28,10 @@ class RobustScaler:
     def __init__(self, clip: float = 3.0, eps: float = 1e-6):
         self.clip = clip
         self.eps = eps
-        self.median_: Optional[np.ndarray] = None
-        self.iqr_: Optional[np.ndarray] = None
+        self.median_: np.ndarray | None = None
+        self.iqr_: np.ndarray | None = None
 
-    def fit(self, Z: np.ndarray, mask: Optional[np.ndarray] = None):
+    def fit(self, Z: np.ndarray, mask: np.ndarray | None = None):
         """
         Z: [N, D] float32
         mask: [N, D] 0/1 valid indicator (era-missing families)
@@ -60,7 +59,7 @@ class RobustScaler:
         Z_scaled = np.clip(Z_scaled, -self.clip, self.clip)
         return Z_scaled.astype(np.float32)
 
-    def fit_transform(self, Z: np.ndarray, mask: Optional[np.ndarray] = None):
+    def fit_transform(self, Z: np.ndarray, mask: np.ndarray | None = None):
         return self.fit(Z, mask).transform(Z)
 
 
@@ -104,11 +103,11 @@ class RealMLPPreprocessor:
       Z_val = preproc.transform(Z_val, seasons_val)
     """
 
-    def __init__(self, feature_names: List[str], mode: str = "robust", clip: float = 3.0):
+    def __init__(self, feature_names: list[str], mode: str = "robust", clip: float = 3.0):
         self.feature_names = feature_names
         self.mode = mode
         self.clip = clip
-        self.scalers: Dict[str, RobustScaler] = {}
+        self.scalers: dict[str, RobustScaler] = {}
         self.global_scaler = RobustScaler(clip=clip)
 
     @classmethod
@@ -119,8 +118,8 @@ class RealMLPPreprocessor:
     def fit(
         self,
         Z: np.ndarray,
-        seasons: List[str],
-        mask: Optional[np.ndarray] = None,
+        seasons: list[str],
+        mask: np.ndarray | None = None,
         by_season: bool = True,
     ):
         """Fit scaler per season (era-honest) or globally."""
@@ -139,7 +138,7 @@ class RealMLPPreprocessor:
         self.global_scaler.fit(Z, mask)
         return self
 
-    def transform(self, Z: np.ndarray, seasons: Optional[List[str]] = None) -> np.ndarray:
+    def transform(self, Z: np.ndarray, seasons: list[str] | None = None) -> np.ndarray:
         if seasons is None:
             return self.global_scaler.transform(Z)
         Z_out = np.zeros_like(Z, dtype=np.float32)
@@ -152,8 +151,8 @@ class RealMLPPreprocessor:
     def fit_transform(
         self,
         Z: np.ndarray,
-        seasons: List[str],
-        mask: Optional[np.ndarray] = None,
+        seasons: list[str],
+        mask: np.ndarray | None = None,
         by_season: bool = True,
     ):
         return self.fit(Z, seasons, mask, by_season=by_season).transform(Z, seasons)
@@ -195,7 +194,7 @@ class RealMLPPreprocessor:
         return obj
 
 
-def audit_current_scaling(Z: np.ndarray, manifest: Dict) -> Dict:
+def audit_current_scaling(Z: np.ndarray, manifest: dict) -> dict:
     """Audit current per-100 z vs robust: outlier rate."""
     outlier = (np.abs(Z) > 3).mean(axis=0)
     top = np.argsort(-outlier)[:10]
@@ -205,8 +204,7 @@ def audit_current_scaling(Z: np.ndarray, manifest: Dict) -> Dict:
         "outlier_rate_gt3": float((np.abs(Z) > 3).mean()),
         "outlier_rate_gt4": float((np.abs(Z) > 4).mean()),
         "worst_features": [
-            {"feature": features[i] if i < len(features) else f"f{i}", "outlier_gt3": float(outlier[i])}
-            for i in top
+            {"feature": features[i] if i < len(features) else f"f{i}", "outlier_gt3": float(outlier[i])} for i in top
         ],
     }
 

@@ -39,9 +39,7 @@ MOBILE_DIR = ROOT / "mobile"
 MOBILE_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def export_mtnn_executorch(
-    out_path: Path, backend: str = "xnnpack", quantize: str = "int8"
-):
+def export_mtnn_executorch(out_path: Path, backend: str = "xnnpack", quantize: str = "int8"):
     print(f"Exporting MTNN to ExecuTorch .pte — backend={backend} quantize={quantize}")
     try:
         import torch
@@ -94,9 +92,7 @@ def export_mtnn_executorch(
                     ms[fam] = torch.ones_like(xs[fam])
                     idx += d
                 season = torch.zeros(x_flat.shape[0], dtype=torch.long)
-                parts = torch.stack(
-                    [self.mtnn.towers[f](xs[f], ms[f]) for f in self.families], dim=1
-                )
+                parts = torch.stack([self.mtnn.towers[f](xs[f], ms[f]) for f in self.families], dim=1)
                 emb = self.mtnn.fusion(parts, season)
                 return emb
 
@@ -132,9 +128,7 @@ def export_mtnn_executorch(
     except Exception as e:
         print(f"ExecuTorch export failed: {e} — writing mock")
         out_path.write_bytes(b"EXECUTORCH_PTE_MOCK_FALLBACK")
-        out_path.with_suffix(".pte.json").write_text(
-            json.dumps({"error": str(e), "mock": True}, indent=2)
-        )
+        out_path.with_suffix(".pte.json").write_text(json.dumps({"error": str(e), "mock": True}, indent=2))
 
 
 def export_tennis_convnext(out_path: Path, backend: str = "coreml"):
@@ -144,9 +138,7 @@ def export_tennis_convnext(out_path: Path, backend: str = "coreml"):
         import timm
         import torch
 
-        model = timm.create_model(
-            "convnext_tiny", pretrained=False, num_classes=8
-        )  # 8 serve phases
+        model = timm.create_model("convnext_tiny", pretrained=False, num_classes=8)  # 8 serve phases
         model.eval()
         example = (torch.randn(1, 3, 224, 224),)
         # Try export

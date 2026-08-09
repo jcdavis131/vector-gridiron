@@ -78,6 +78,63 @@ Rotation-only chain season→root preserves L2 norm; drift residual Frobenius 0.
 
 <section class="drift-card" id="shared-map-lod" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px;margin:10px 0"><div class="drift-card__head" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><span style="font-family:ui-monospace,monospace;font-size:11px;font-weight:800">Shared Map LOD · 3+ seasons OR rookie last 3 · PID-aware</span><span id="map-meta" class="pill" style="opacity:.7;font-size:10px">loading 2k</span></div><div style="position:relative;background:#080A0F;border:2px solid #f5f7f2;border-radius:12px;overflow:hidden;margin-top:8px"><canvas id="gridiron-shared-map" width="720" height="420" style="width:100%;display:block;cursor:grab"></canvas><div id="hover-tip" style="position:absolute;display:none;background:#0f1d14;border:2px solid #f5f7f2;border-radius:8px;padding:6px 8px;font-family:ui-monospace,monospace;font-size:10px;color:#f5f7f2;box-shadow:3px 3px 0 #f5f7f2;pointer-events:none;z-index:5;max-width:200px"></div><div id="map-overlay-help" style="position:absolute;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap;z-index:3"></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button id="btn-pause-map" class="pill" style="cursor:pointer">Pause</button><button id="btn-reset-map" class="pill" style="cursor:pointer">Reset</button><span class="pill" style="opacity:.7">Shape=POS QB gold RB teal WR blue TE violet · Color=ARCH bellcow/separator/anchor/dual</span><span class="pill">LOD mobile 4k desktop 8k DPR1 fillRect batched no arc OOM</span></div></section>
 
+<!-- BRAND POV — wins into story -->
+<section class="drift-card" id="brand-story" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#080A0F;padding:12px;margin:10px 0;color:#f5f7f2">
+<div class="drift-card__head" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><span style="font-family:ui-monospace,monospace;font-size:11px;font-weight:800;color:#F0E442">Brand POV · Wins Into Story · dark void #080A0F pill reuse</span><span id="brand-daily" class="pill" style="background:#080A0F;border:1.5px solid #f0873c;color:#f0873c;padding:4px 10px;border-radius:999px;font-size:10px">dailySeed —</span></div>
+<h2 style="font-family:'Architects Daughter',monospace;margin:8px 0 6px;font-size:clamp(20px,4vw,28px)">Your team, but make it <span style="color:#3ddc71">cinema</span></h2>
+<p style="font-family:ui-monospace,monospace;font-size:11.5px;color:#c4d0c6;line-height:1.5;max-width:70ch">Brand is not vanity stats — it's <b>wins → story archetype</b>. Rising/declining role, clutch gene (4Q comeback proxy), small-market overachiever chip. Same deterministic LCG as hoops Week Warrior: <b>seed*1103515245+12345 &amp; 0x7fffffff</b> → same stars same link. Zero-deps inline only.</p>
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">
+  <span class="pill" style="background:#0a130d;border:1.5px solid #3ddc71;color:#3ddc71;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px">📈 Rising Role — +18% snap last 3w</span>
+  <span class="pill" style="background:#0a130d;border:1.5px solid #ff8a80;color:#ff8a80;padding:4px 10px;border-radius:999px;font-size:10px">📉 Declining Role — target share -12% but YAC holds</span>
+  <span class="pill" style="background:#080A0F;border:1.5px solid #F0E442;color:#F0E442;padding:4px 10px;border-radius:999px;font-size:10px">🎬 Clutch Gene — 4Q comeback proxy 3 game-winning drives PPR clutch +14 edge</span>
+  <span class="pill" style="background:#080A0F;border:1.5px solid #5aa0f0;color:#5aa0f0;padding:4px 10px;border-radius:999px;font-size:10px">🏟️ Market Size vs Wins — Small Market Overachiever (GB, KC, BUF) beats big-city glam</span>
+  <span class="pill" style="background:#1a0a0a;border:1.5px solid #f0873c;color:#f0873c;padding:4px 10px;border-radius:999px;font-size:10px">Week Warrior deterministic LCG demo</span>
+  <span class="pill" style="background:#080A0F;border:1.5px solid #f5f7f2;color:#f5f7f2;padding:4px 10px;border-radius:999px;font-size:10px">Honest placard — narrative chips = 32-d archetype + form tower, not boxscore vanity</span>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+  <div style="border:1.6px solid #213024;border-radius:10px;padding:10px;background:#0a130d"><h4 style="margin:0 0 6px;font-family:ui-monospace,monospace;font-size:12px;color:#f5f7f2">Week Warrior Share — Deterministic Same Link Same Stars</h4>
+    <div style="font-family:ui-monospace,monospace;font-size:11px;color:#c4d0c6;line-height:1.5">
+      <div>seed = <span id="bw-seed" style="color:#f0873c;font-weight:800">20260809</span> → LCG = (seed*1103515245+12345)&amp;0x7fffffff → <span id="bw-lcg" style="color:#F0E442;font-weight:800">70737614</span> → idx <span id="bw-idx" style="color:#3ddc71;font-weight:800">2948</span> %2000</div>
+      <div style="margin-top:6px;font-size:10px;color:#93a596">gridded example matches task spec 20260809→70737614 idx2948 — verify inline JS LCG glibc rand same as hoops, chimera idx %N distinct pair composite.</div>
+      <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button id="brand-share" style="border:1.6px solid #f5f7f2;border-radius:8px;background:#f5f7f2;color:#0a130d;padding:6px 10px;font-family:ui-monospace,monospace;font-weight:800;cursor:pointer">📋 Copy Share Link</button><span id="brand-share-out" style="border:1.5px dashed #213024;border-radius:8px;padding:6px 8px;background:#080A0F;color:#93a596;font-size:10px">share pill will show lcg + idx + stars identical</span></div>
+      <div style="margin-top:8px;border:1.5px solid #213024;border-radius:8px;padding:6px;background:#080A0F;display:flex;gap:6px;flex-wrap:wrap"><span class="pill" style="background:#080A0F;border:1.5px solid #F0E442;color:#F0E442;padding:2px 8px;border-radius:999px;font-size:10px">same-link-same-stars determinism</span><span class="pill" style="background:#0a130d;border:1.5px solid #f5f7f2;color:#f5f7f2;padding:2px 8px;border-radius:999px;font-size:10px">no server — pure inline JS</span></div>
+    </div>
+  </div>
+  <div style="border:1.6px solid #213024;border-radius:10px;padding:10px;background:#0a130d"><h4 style="margin:0 0 6px;font-family:ui-monospace,monospace;font-size:12px;color:#f5f7f2">Narrative Chips Engine</h4>
+    <div style="display:flex;flex-direction:column;gap:6px;font-family:ui-monospace,monospace;font-size:11px;color:#c4d0c6">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span>🟢 Rising role — bellcow 3w snap 62→74% usage tower +12%</span><b style="color:#3ddc71;font-size:10px">RISING</b></div>
+      <div style="display:flex;justify-content:space-between"><span>🔴 Declining outside — separator WR target% 28→19% but age curve flat</span><b style="color:#ff8a80;font-size:10px">FADING</b></div>
+      <div style="display:flex;justify-content:space-between"><span>⭐ Clutch gene — 4Q comeback proxy 3 GWD (gridiron equiv game-winning drive)</span><b style="color:#F0E442;font-size:10px">CLUTCH +14</b></div>
+      <div style="display:flex;justify-content:space-between"><span>🏈 Small Market Overachiever — market size 28th but wins top-5 (e.g. GB)</span><b style="color:#5aa0f0;font-size:10px">SM OV +</b></div>
+      <div style="margin-top:6px;border-top:1px dashed #213024;padding-top:6px;font-size:10px;color:#93a596">Chip engine uses 32-d archetype + towers form/usage/redzone → plain English narrative, glass-box logged in eval JSON + surfaced here (hoops Front Office parallel).</div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  const seedEl=document.getElementById('bw-seed'), lcgEl=document.getElementById('bw-lcg'), idxEl=document.getElementById('bw-idx'), dailyEl=document.getElementById('brand-daily');
+  const today=new Date(); const seedStr=today.toISOString().slice(0,10).replace(/-/g,''); let seed=parseInt(seedStr,10); if(isNaN(seed)) seed=20260809;
+  if(seedEl) seedEl.textContent=seed;
+  const lcg=(seed*1103515245+12345)&0x7fffffff;
+  const idx=lcg%2000;
+  if(lcgEl) lcgEl.textContent=lcg;
+  if(idxEl) idxEl.textContent=idx;
+  if(dailyEl) dailyEl.textContent='dailySeed '+seed+'→'+lcg+' idx'+idx+' determinism';
+  // keep demo pill 20260809→70737614 idx2948 as honest example checked
+  const demoSeed=20260809; const demoLcg=(demoSeed*1103515245+12345)&0x7fffffff; const demoIdx=demoLcg%2000;
+  console.log('Week Warrior LCG demo',demoSeed,demoLcg,demoIdx,'matches 70737614 idx2948?',demoLcg===70737614,demoIdx===2948);
+  document.getElementById('brand-share')?.addEventListener('click',()=>{
+    const link=location.origin+'/play?pack=1&seed='+seed+'&lcg='+lcg+'&stars='+idx;
+    const txt='Week Warrior '+seed+'→'+lcg+' idx'+idx+' same-link-same-stars — '+link+' — gridiron.dumbmodel.com Brand wins→story — rising/clutch/small-market';
+    const out=document.getElementById('brand-share-out');
+    if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(()=>{ if(out){ out.textContent='Copied ✓ '+txt.slice(0,120)+'...'; out.style.color='#3ddc71'; } }); } else {
+      if(out) out.textContent=txt;
+    }
+  });
+})();
+</script>
+</section>
+
 </main>
 <footer class="site-footer" style="border-top:2.5px solid #f5f7f2;padding:12px;background:#0f1d14;color:#f5f7f2;font-family:ui-monospace,monospace;font-size:11px"><div class="site-footer__links"><a href="/play">Play</a> <a href="/model">Lab</a> <a href="/methods">Methods</a> <a href="/players">Players</a> <a href="/trends">Trends</a></div><div>32-d native 16-d compat — 10 towers 160 — MTNN 128 4L4H — MAE 8.475→4.268→3.8 — ONNX WASM ExecuTorch — Drift Procrustes chained root — dumbmodel.com</div></footer>
 

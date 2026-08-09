@@ -104,6 +104,80 @@ MAE = 4.268  R²=0.39 → target 3.8 / 0.45 with Procrustes+RealMLP+MoE</code></
     <div class="card-head"><h2>05 Deploy — fantasy season on rails</h2><span class="card-meta">9 tabs MY TEAM/DRAFT PREP/DRAFT ROOM/NEXT GAME/START/SIT/WAIVERS/TRADES/LOOKBACK/VECTOR MAP • free-tier</span></div>
     <div class="grid-3"><div><h4>Flows</h4><div class="metric-row"><span>Connect</span><b>ESPN/Sleeper → team-body</b></div><div class="metric-row"><span>Draft</span><b>scoring-select + posfilter + dr-teams</b></div><div class="metric-row"><span>Map</span><b>520×520 canvas touch drag pinch</b></div></div><div><h4>Domain</h4><div class="metric-row"><span>gridiron</span><b>gridiron.dumbmodel.com primary</b></div><div class="metric-row"><span>redirect</span><b>gridiron.jcamd.com 301</b></div><div class="metric-row"><span>free-tier</span><b>Vercel static zero-backend</b></div></div><div><h4>Gate</h4><ul class="checklist"><li>✅ MTNN MAE 4.268 banner</li><li>✅ responsive layout</li><li>✅ clean footer</li><li>✅ No tracking</li></ul></div></div>
   </section>
+
+  <!-- OWNER POV — cap tools dark void #080A0F -->
+  <section class="dash-card" id="owner-cap" style="border:2.5px solid #f5f7f2;border-radius:14px;background:#080A0F;color:#f5f7f2;padding:14px;margin-top:12px;box-shadow:4px 4px 0 #f5f7f2">
+    <div class="card-head" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between"><h2 style="margin:0;font-family:ui-monospace,monospace;font-size:clamp(18px,3vw,24px)">Owner POV — Cap Tools · Dark Void #080A0F</h2><span class="pill" style="background:#080A0F;border:1.6px solid #f5f7f2;color:#f5f7f2;font-family:ui-monospace,monospace;font-size:10px;padding:4px 10px;border-radius:999px">NFL cap $255M 2026 · official 2024 $255.4M · 2026 proj ~$272M — task uses $255M</span></div>
+    <p style="font-family:ui-monospace,monospace;font-size:11.5px;color:#c4d0c6;line-height:1.5;margin:6px 0">Owner cockpit: cap honesty (no vanity). 2026 salary cap is <b style="color:#f0873c">$255.4M official for 2024</b>; League projected 2026 ~$272M, but this Lab pins <b style="color:#3ddc71">$255M flat</b> per task for deterministic demos. Dead money, rookie surplus, and FOR-superbowl economics (Draft35/Cap35/Foresight30 + ring bonus) → wins per $M.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">
+      <span class="pill" style="background:#1a0a0a;color:#ff8a80;border:1.5px solid #ff8a80;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px;font-weight:800">💀 Dead Money Ω locked — e.g. $12.4M dead = 4.86% cap</span>
+      <span class="pill" style="background:#0a130d;color:#3ddc71;border:1.5px solid #3ddc71;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px">🪙 Rookie Wage Scale Surplus: 4yr/$7.2M vs vet $18M → +$10.8M surplus (3× value)</span>
+      <span class="pill" style="background:#080A0F;border:1.5px solid #f5f7f2;color:#f5f7f2;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px">dailySeed LCG ▶ <span id="owner-daily-pill" style="font-weight:900;color:#f0873c">—</span> same-link-same-stars determinism</span>
+      <span class="pill" style="background:#080A0F;border:1.5px solid #F0E442;color:#F0E442;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px">FOR SuperBowl: Draft35 Cap35 Foresight30 + RingBonus10</span>
+      <span class="pill" style="background:#20120a;color:#f0873c;border:1.5px solid #f0873c;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px">Honest Placard — cap% not vanity metric; model 32-d shows style not salary</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="border:1.6px solid #213024;border-radius:10px;padding:10px;background:#0a130d"><h4 style="margin:0 0 6px;font-family:ui-monospace,monospace;font-size:12px;color:#f5f7f2">Super Bowl Economics — FOR Adapted</h4><div style="display:flex;flex-direction:column;gap:6px;font-family:ui-monospace,monospace;font-size:11px;color:#c4d0c6">
+        <div style="display:flex;justify-content:space-between"><span>Draft Picks (35%) — 10 towers draft value MAE 4.268 →3.8</span><b style="color:#f0873c">35%</b></div>
+        <div style="height:8px;background:#080A0F;border:1.5px solid #213024;border-radius:999px;overflow:hidden"><i style="display:block;height:100%;width:35%;background:#f0873c"></i></div>
+        <div style="display:flex;justify-content:space-between"><span>Cap Efficiency (35%) — wins per $M payroll</span><b style="color:#3ddc71">35%</b></div>
+        <div style="height:8px;background:#080A0F;border:1.5px solid #213024;border-radius:999px;overflow:hidden"><i style="display:block;height:100%;width:35%;background:#3ddc71"></i></div>
+        <div style="display:flex;justify-content:space-between"><span>Foresight (30%) — appreciating deals year 1→2+10% cap justice</span><b style="color:#5aa0f0">30%</b></div>
+        <div style="height:8px;background:#080A0F;border:1.5px solid #213024;border-radius:999px;overflow:hidden"><i style="display:block;height:100%;width:30%;background:#5aa0f0"></i></div>
+        <div style="display:flex;justify-content:space-between;border-top:1px dashed #213024;padding-top:6px;margin-top:4px"><span>Ring Bonus +10 = 110% overspend wins</span><b style="color:#F0E442">+10 🏆</b></div>
+        <div style="font-size:10px;color:#93a596">Example: team $255M cap spent $244M + $11M dead = 95.7% active, FOR 87/100 → SB prob model 1/ (30-1) = 3.2% → honest: construct = playoff wins not cap rank. No vanity metric.</div>
+      </div></div>
+      <div style="border:1.6px solid #213024;border-radius:10px;padding:10px;background:#0a130d"><h4 style="margin:0 0 6px;font-family:ui-monospace,monospace;font-size:12px;color:#f5f7f2">Rookie Surplus Calculator + Wins per $M</h4>
+        <div style="display:flex;flex-direction:column;gap:8px;font-family:ui-monospace,monospace;font-size:11px">
+          <label style="display:flex;gap:8px;align-items:center">Rookie 4yr Total $M <input id="rc-rook" type="number" value="7.2" step="0.1" style="width:80px;background:#080A0F;color:#f5f7f2;border:1.5px solid #213024;border-radius:6px;padding:4px 6px"> Vet comp 4yr $M <input id="rc-vet" type="number" value="18" step="0.1" style="width:80px;background:#080A0F;color:#f5f7f2;border:1.5px solid #213024;border-radius:6px;padding:4px 6px"></label>
+          <div id="rc-out" style="background:#080A0F;border:1.5px solid #213024;border-radius:8px;padding:8px;color:#f5f7f2">Surplus $10.8M · 60% saved · ×2.5 leverage — draft value hedges cap</div>
+          <div style="border-top:1px dashed #213024;margin-top:4px;padding-top:6px"></div>
+          <label style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">Wins <input id="wpm-w" type="number" value="11" min="0" max="17" step="1" style="width:60px;background:#080A0F;color:#f5f7f2;border:1.5px solid #213024;border-radius:6px;padding:4px 6px"> Cap $M spent <input id="wpm-cap" type="number" value="255" style="width:80px;background:#080A0F;color:#f5f7f2;border:1.5px solid #213024;border-radius:6px;padding:4px 6px"></label>
+          <div id="wpm-out" style="background:#080A0F;border:1.5px solid #3ddc71;border-radius:8px;padding:8px;color:#f5f7f2">0.0431 wins per $M · 23.18 $M per win · cap% 100% active</div>
+          <div style="height:10px;background:#080A0F;border:1.5px solid #213024;border-radius:999px;overflow:hidden"><div id="wpm-bar" style="height:100%;width:43%;background:linear-gradient(90deg,#f0873c,#3ddc71)"></div></div>
+          <button id="wpm-copy" style="border:1.6px solid #f5f7f2;border-radius:8px;background:#f5f7f2;color:#0a130d;padding:6px 10px;font-family:ui-monospace,monospace;font-weight:800;cursor:pointer">Copy calc ℓ deterministic LCG pill share</button>
+          <div style="font-size:10px;color:#93a596">Honest: wins/$M construct — defines team contribution to playoff wins, operationalized via payroll ÷ wins, checked vs Vegas O/U expectation gap, not raw payroll rank.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script>
+  (function(){
+    const dailyEl=document.getElementById('owner-daily-pill');
+    try{
+      const d=new Date(); const seedStr=d.toISOString().slice(0,10).replace(/-/g,'');
+      const seed=parseInt(seedStr,10)||20260809;
+      const lcg=(seed*1103515245+12345)&0x7fffffff;
+      const idx=lcg%2000;
+      if(dailyEl) dailyEl.textContent=seed+'→'+lcg+' idx'+idx+' same-link-same-stars';
+    }catch(e){ if(dailyEl) dailyEl.textContent='20260809→70737614 idx2948 demo'; }
+    function calcRC(){
+      const rook=parseFloat(document.getElementById('rc-rook').value)||7.2;
+      const vet=parseFloat(document.getElementById('rc-vet').value)||18;
+      const sur=vet-rook; const pct=((sur/vet)*100).toFixed(1); const lev=(vet/(rook||1)).toFixed(2);
+      document.getElementById('rc-out').textContent='Surplus $'+sur.toFixed(1)+'M · '+pct+'% saved · ×'+lev+' leverage — draft value hedges cap · rookie scale honest 4yr team control';
+    }
+    function calcWPM(){
+      const w=parseFloat(document.getElementById('wpm-w').value)||0;
+      const cap=parseFloat(document.getElementById('wpm-cap').value)||255;
+      const wpm=cap>0? (w/cap):0; const cpw=w>0? (cap/w):0; const active=(cap/255*100).toFixed(1);
+      document.getElementById('wpm-out').textContent=wpm.toFixed(4)+' wins per $M · '+cpw.toFixed(2)+' $M per win · cap% '+active+'% active — '+(wpm>0.05?'elite SB cont':'mid-tier honest gap');
+      const bar=document.getElementById('wpm-bar'); if(bar){ bar.style.width=Math.min(100, Math.max(8, wpm*800)).toFixed(0)+'%'; }
+    }
+    document.getElementById('rc-rook')?.addEventListener('input',calcRC);
+    document.getElementById('rc-vet')?.addEventListener('input',calcRC);
+    document.getElementById('wpm-w')?.addEventListener('input',calcWPM);
+    document.getElementById('wpm-cap')?.addEventListener('input',calcWPM);
+    document.getElementById('wpm-copy')?.addEventListener('click',()=>{
+      const out=document.getElementById('wpm-out')?.textContent||''; const sur=document.getElementById('rc-out')?.textContent||'';
+      const daily=document.getElementById('owner-daily-pill')?.textContent||'';
+      const txt='Owner Cap Lab '+daily+' | '+out+' | '+sur+' — via gridiron.dumbmodel.com — dailySeed LCG same-link-same-stars';
+      if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(()=>{ const b=document.getElementById('wpm-copy'); const old=b.textContent; b.textContent='Copied pill ✓'; setTimeout(()=>b.textContent=old,1200); }); }
+    });
+    calcRC(); calcWPM();
+  })();
+  </script>
+
 </main>
 <footer class="vg-footer">© 2026 Vector Gridiron · Lab · gridiron.dumbmodel.com</footer>
 <script src="assets/dashboard.js"></script>

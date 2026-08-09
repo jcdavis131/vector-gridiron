@@ -40,22 +40,19 @@ import argparse
 import json
 import time
 from pathlib import Path
-from collections import defaultdict
-from typing import Dict, List, Tuple
 
 import numpy as np
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 
 # local imports — model lives in same package
 try:
-    from .model import MTNN, DEFAULT_FAM_DIMS, count_params, param_report
-    from .realmlp_preproc import RealMLPPreprocessor, RobustScaler, PLEmbedding, audit_current_scaling
+    from .model import DEFAULT_FAM_DIMS, MTNN, count_params, param_report
+    from .realmlp_preproc import PLEmbedding, RealMLPPreprocessor, audit_current_scaling
 except ImportError:
     # when run as python pipeline/train_mtnn.py
-    from model import MTNN, DEFAULT_FAM_DIMS, count_params, param_report
-    from realmlp_preproc import RealMLPPreprocessor, RobustScaler, PLEmbedding, audit_current_scaling
+    from model import DEFAULT_FAM_DIMS, MTNN, count_params, param_report
+    from realmlp_preproc import PLEmbedding, RealMLPPreprocessor, audit_current_scaling
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "pipeline" / "data"
@@ -63,6 +60,19 @@ ASSETS = ROOT / "assets"
 MANIFEST = DATA_DIR / "feature_manifest.json"
 BEST_CKPT = DATA_DIR / "mtnn.pt"
 VECTORS_JSON = ASSETS / "vectors.json"
+# Provenance stamp written by pipeline/fetch_nflverse.py alongside the real matrix.
+MATRIX_META = DATA_DIR / "train_matrix.meta.json"
+
+
+def matrix_source(matrix_path: Path) -> str:
+    """Report where the on-disk matrix came from: 'nflverse', 'synthetic', or 'unknown'."""
+    if MATRIX_META.exists():
+        try:
+            return str(json.loads(MATRIX_META.read_text()).get("source", "unknown"))
+        except (json.JSONDecodeError, OSError):
+            return "unknown"
+    return "unknown"
+
 
 N_ARCH = 8
 POS_ORDER = {"QB": 0, "RB": 1, "WR": 2, "TE": 3}
@@ -83,7 +93,7 @@ def load_bundle(matrix_path: Path):
     M = npz["M"] if "M" in npz else np.ones_like(X)
     if "season_ids" in npz:
         season_ids = npz["season_ids"]
-        seasons = [str(int(s)) if isinstance(s, (int, np.integer)) else str(s) for s in season_ids]
+        seasons = [str(int(s)) if isinstance(s, int | np.integer) else str(s) for s in season_ids]
     elif "seasons" in npz:
         seasons = [str(s) for s in npz["seasons"]]
         # map string seasons to int ids
@@ -147,7 +157,9 @@ def load_bundle(matrix_path: Path):
     return X, M, y, pos, pids, season_ids, seasons, feats, fam_dims, player_uids
 
 
-def family_slices_from_dims(feats: List[str], fam_dims: Dict[str, int] = None) -> Tuple[Dict[str, List[int]], Dict[str, int]]:
+def family_slices_from_dims(
+    feats: list[str], fam_dims: dict[str, int] | None = None
+) -> tuple[dict[str, list[int]], dict[str, int]]:
     """Build slice lists given feats and fam dims."""
     if fam_dims is None:
         fam_dims = DEFAULT_FAM_DIMS
@@ -199,7 +211,7 @@ def supcon_loss(z, labels, temp=0.08):
     return loss[has_pos].mean()
 
 
-def player_split(player_uids: List[str], seed=13, test_ratio=0.2):
+def player_split(player_uids: list[str], seed=13, test_ratio=0.2):
     """Player-split not season-split honest."""
     rng = np.random.default_rng(seed)
     uniq_players = sorted(set(player_uids))
@@ -214,8 +226,14 @@ def player_split(player_uids: List[str], seed=13, test_ratio=0.2):
 def collate_families(X_t, slices, device):
     xs, ms = {}, {}
     for fam, cols in slices.items():
-        xs[fam] = X_t[:, cols].to(device) if isinstance(X_t, torch.Tensor) else torch.tensor(X_t[:, cols], device=device)
-        ms[fam] = torch.ones(len(cols), device=device).expand(len(X_t), -1) if isinstance(X_t, torch.Tensor) else torch.ones(len(X_t), len(cols), device=device)
+        xs[fam] = (
+            X_t[:, cols].to(device) if isinstance(X_t, torch.Tensor) else torch.tensor(X_t[:, cols], device=device)
+        )
+        ms[fam] = (
+            torch.ones(len(cols), device=device).expand(len(X_t), -1)
+            if isinstance(X_t, torch.Tensor)
+            else torch.ones(len(X_t), len(cols), device=device)
+        )
     return xs, ms
 
 
@@ -227,14 +245,19 @@ def train_mtnn(args):
 
     if not matrix_path.exists():
         print(f"[gridiron] Missing {matrix_path}")
-        print("[gridiron] nflverse 2025 play-by-play roster weather Vegas fetch needed per docs/DATA_SOURCES")
+        print("[gridiron] Real nflverse data fetch available — see docs/DATA_SOURCES.md")
         print("[gridiron] Options:")
-        print("  - python pipeline/fetch_nflverse.py  (planned, not yet in repo)")
-        print("  - python pipeline/train_mtnn.py --synthetic  (quick smoke)")
+        print("  - python pipeline/fetch_nflverse.py --seasons 2021 2022 2023  (real matrix, preferred)")
+        print("  - python pipeline/train_mtnn.py --synthetic                    (synthetic fallback smoke)")
         print("[gridiron] Honest exit 0 — scaffold ready, no fake metrics.")
         return 0
 
-    print(f"[gridiron] Loading {matrix_path}")
+    src = matrix_source(matrix_path)
+    print(f"[gridiron] Loading {matrix_path} (source={src})")
+    if src == "nflverse":
+        print("[gridiron] Using REAL nflverse matrix (preferred over synthetic).")
+    elif src == "synthetic":
+        print("[gridiron] Using SYNTHETIC fallback matrix — run fetch_nflverse.py for real data.")
     X, M, y, pos, pids, season_ids_np, seasons, feats, fam_dims_manifest, player_uids = load_bundle(matrix_path)
     n, F_dim = X.shape
     print(f"  X {X.shape} y mean {float(y.mean()):.2f} pos dist {np.bincount(pos) if len(pos) else 'n/a'}")
@@ -253,7 +276,7 @@ def train_mtnn(args):
     # optional era_procrustes alignment (if drift.json + chains exists)
     if args.era_align == "procrustes":
         try:
-            from assets.era_procrustes_align import load_alignment, align_batch
+            from assets.era_procrustes_align import align_batch, load_alignment
 
             align_data = load_alignment()
             chains = align_data["chains"]
@@ -268,7 +291,10 @@ def train_mtnn(args):
         preproc.fit(X, seasons, M, by_season=True)
         X_scaled = preproc.transform(X, seasons)
         audit = audit_current_scaling(X_scaled, {"features": feats})
-        print(f"  robust per-season median/IQR clip[-3,3] mean_abs {audit['mean_abs_z']:.3f} outlier>3 {audit['outlier_rate_gt3']:.3f}")
+        print(
+            f"  robust per-season median/IQR clip[-3,3] mean_abs {audit['mean_abs_z']:.3f} "
+            f"outlier>3 {audit['outlier_rate_gt3']:.3f}"
+        )
         X = X_scaled
         # save preproc
         preproc.save(DATA_DIR / "realmlp_preproc.json")
@@ -291,14 +317,9 @@ def train_mtnn(args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"  device {device}")
 
-    # torch tensors
-    X_tr_t = torch.tensor(X_tr, dtype=torch.float32, device=device)
+    # torch tensors (validation split; train batches are built per-step below)
     X_val_t = torch.tensor(X_val, dtype=torch.float32, device=device)
-    y_tr_t = torch.tensor(y_tr, dtype=torch.float32, device=device)
     y_val_t = torch.tensor(y_val, dtype=torch.float32, device=device)
-    arch_tr_t = torch.tensor(arch_tr, dtype=torch.long, device=device)
-    pos_tr_t = torch.tensor(pos_tr, dtype=torch.long, device=device)
-    season_tr_t = torch.tensor(seasons_tr, dtype=torch.long, device=device)
     season_val_t = torch.tensor(np.array(season_ids_np)[val_mask], dtype=torch.long, device=device)
 
     # n_seasons = max season id +1
@@ -317,13 +338,15 @@ def train_mtnn(args):
         n_attn_heads=args.n_heads,
         dropout=args.dropout,
     ).to(device)
-    print(f"  MTNN params {count_params(model)} {param_report(model)} d_emb={args.d_emb} legacy={args.legacy_16d} d_model={args.d_model} n_layers={args.n_layers} n_heads={args.n_heads}")
+    print(
+        f"  MTNN params {count_params(model)} {param_report(model)} d_emb={args.d_emb} "
+        f"legacy={args.legacy_16d} d_model={args.d_model} n_layers={args.n_layers} n_heads={args.n_heads}"
+    )
 
     # optional PL embeddings path for numeric towers
-    pl_emb = None
     if args.pl_embeddings:
-        pl_emb_cfg = PLEmbedding(num_features=F_dim, d_out=16, k=8).to(device)
-        pl_emb = pl_emb_cfg
+        # reserved scaffolding: PL embeddings are built but not yet wired into the model
+        pl_emb = PLEmbedding(num_features=F_dim, d_out=16, k=8).to(device)  # noqa: F841
         print(f"  PL embeddings ON: num_features {F_dim} k=8 d_out16")
 
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.wd)
@@ -345,7 +368,7 @@ def train_mtnn(args):
         perm = rng.permutation(len(X_tr))
         epoch_losses = []
         for s in range(0, len(X_tr), args.batch_size):
-            bi = perm[s: s + args.batch_size]
+            bi = perm[s : s + args.batch_size]
             if len(bi) < 4:
                 continue
             X_b = torch.tensor(X_tr[bi], dtype=torch.float32, device=device)
@@ -543,6 +566,11 @@ def synthetic_matrix(n=2000, F_dim=160, seed=13):
         features=np.array(feats),
         player_ids=np.array(pids),
     )
+    # stamp provenance so the trainer can report source and prefer real over synthetic
+    MATRIX_META.write_text(
+        json.dumps({"source": "synthetic", "n_rows": int(X.shape[0]), "n_features": int(X.shape[1])}, indent=2),
+        encoding="utf-8",
+    )
     print(f"[gridiron] synthetic matrix written to {save_path} shape {X.shape}")
 
 
@@ -563,22 +591,50 @@ def main():
     ap.add_argument("--supcon-w", type=float, default=0.2, help="SupCon archetype weight")
     ap.add_argument("--arch-w", type=float, default=0.25)
     ap.add_argument("--pos-w", type=float, default=0.15)
-    ap.add_argument("--scaling", type=str, default="robust", choices=["robust", "z", "none"], help="RealMLP robust per-season median/IQR")
-    ap.add_argument("--era-align", type=str, default="none", choices=["none", "procrustes"], help="Procrustes rotation-only")
+    ap.add_argument(
+        "--scaling",
+        type=str,
+        default="robust",
+        choices=["robust", "z", "none"],
+        help="RealMLP robust per-season median/IQR",
+    )
+    ap.add_argument(
+        "--era-align", type=str, default="none", choices=["none", "procrustes"], help="Procrustes rotation-only"
+    )
     ap.add_argument("--seed", type=int, default=13)
     ap.add_argument("--dropout", type=float, default=0.1)
     ap.add_argument("--patience", type=int, default=10)
     ap.add_argument("--pl-embeddings", action="store_true", help="enable PLEmbedding periodic sin/cos k=8 d_out16")
     ap.add_argument("--synthetic", action="store_true", help="generate synthetic nflverse-style matrix and train")
+    ap.add_argument(
+        "--synthetic-fallback",
+        action="store_true",
+        help="if no real matrix exists, auto-generate a synthetic one (prefers real when present)",
+    )
+    ap.add_argument(
+        "--force-synthetic",
+        action="store_true",
+        help="allow --synthetic to overwrite an existing real nflverse matrix",
+    )
     ap.add_argument("--check-data", action="store_true", help="check if data exists and exit")
 
     args = ap.parse_args()
 
+    mp_resolved = Path(args.matrix)
+    if not mp_resolved.is_absolute():
+        mp_resolved = ROOT / mp_resolved
+
     if args.synthetic:
-        synthetic_matrix()
-        # rewrite args.matrix to synthetic location if needed
-        if not Path(args.matrix).exists() and not Path(ROOT / args.matrix).exists():
+        # Explicit synthetic request — but do not silently clobber a real matrix.
+        if mp_resolved.exists() and matrix_source(mp_resolved) == "nflverse" and not args.force_synthetic:
+            print("[gridiron] Real nflverse matrix present — keeping it (use --force-synthetic to overwrite).")
+        else:
+            synthetic_matrix()
+        if not Path(args.matrix).exists() and not (ROOT / args.matrix).exists():
             args.matrix = "pipeline/data/train_matrix.npz"
+    elif not mp_resolved.exists() and args.synthetic_fallback:
+        print("[gridiron] No real matrix found — generating synthetic fallback (--synthetic-fallback).")
+        synthetic_matrix()
 
     if args.check_data:
         mp = Path(args.matrix)
@@ -588,7 +644,10 @@ def main():
             print(f"[gridiron] data exists {mp}")
             return 0
         else:
-            print(f"[gridiron] missing {mp} — nflverse 2025 play-by-play roster weather Vegas fetch needed per docs/DATA_SOURCES")
+            print(
+                f"[gridiron] missing {mp} — nflverse 2025 play-by-play roster weather "
+                f"Vegas fetch needed per docs/DATA_SOURCES"
+            )
             return 0
 
     return train_mtnn(args)

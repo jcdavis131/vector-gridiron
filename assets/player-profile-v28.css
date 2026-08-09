@@ -1,3 +1,4 @@
+/* player-profile-v28.css gridiron — week 2000 player-weeks, 32-d native 16-d compat slice, positions QB/RB/WR/TE, gold 97+ ELITE 90+ */
 /* Player Profile v28 — collectible card + discovery */
 #players-panel-profile .skills-panel{ gap:0 }
 #players-panel-profile .skills-panel > h2{ display:none } /* hide old title, we render inside profile */

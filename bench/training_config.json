@@ -1,0 +1,29 @@
+{
+  "model": "pipeline/model.py MTNN (GridironMTNN: 10 family ResidualTowers + TransformerFusion)",
+  "heads": "3x nn.Linear(32, 1) on the shared L2 embedding (fpts, yards, tds)",
+  "dims": {
+    "d_emb": 32,
+    "d_model": 64,
+    "n_fusion_layers": 2,
+    "n_attn_heads": 4,
+    "d_tower": 24,
+    "d_tower_hidden": 96,
+    "n_seasons_embedding": 4
+  },
+  "params_total": 172528,
+  "optimizer": "Adam(lr=1e-3, weight_decay=1e-4)",
+  "loss": "mean MSE over 3 z-scored targets (target stats fit on train rows only)",
+  "batch_size": 1024,
+  "max_epochs": 150,
+  "epochs_run": 48,
+  "best_epoch": 33,
+  "best_val_mse_z": 0.462638,
+  "early_stop_patience": 15,
+  "seed": 0,
+  "preprocessing": "vector_core.RobustScaler (median/IQR, clip [-3,3]) fit on train rows over observed (M==1) cells only; masked cells 0. Targets z-scored on train rows; predictions de-standardized back to raw units.",
+  "train_rows": 20672,
+  "val_rows": 5471,
+  "test_rows": 5527,
+  "season_id_clamp": "val/test season ids clamped to max train id (3)",
+  "wall_seconds": 302.8
+}

@@ -60,6 +60,19 @@ ASSETS = ROOT / "assets"
 MANIFEST = DATA_DIR / "feature_manifest.json"
 BEST_CKPT = DATA_DIR / "mtnn.pt"
 VECTORS_JSON = ASSETS / "vectors.json"
+# Provenance stamp written by pipeline/fetch_nflverse.py alongside the real matrix.
+MATRIX_META = DATA_DIR / "train_matrix.meta.json"
+
+
+def matrix_source(matrix_path: Path) -> str:
+    """Report where the on-disk matrix came from: 'nflverse', 'synthetic', or 'unknown'."""
+    if MATRIX_META.exists():
+        try:
+            return str(json.loads(MATRIX_META.read_text()).get("source", "unknown"))
+        except (json.JSONDecodeError, OSError):
+            return "unknown"
+    return "unknown"
+
 
 N_ARCH = 8
 POS_ORDER = {"QB": 0, "RB": 1, "WR": 2, "TE": 3}
@@ -232,14 +245,19 @@ def train_mtnn(args):
 
     if not matrix_path.exists():
         print(f"[gridiron] Missing {matrix_path}")
-        print("[gridiron] nflverse 2025 play-by-play roster weather Vegas fetch needed per docs/DATA_SOURCES")
+        print("[gridiron] Real nflverse data fetch available — see docs/DATA_SOURCES.md")
         print("[gridiron] Options:")
-        print("  - python pipeline/fetch_nflverse.py  (planned, not yet in repo)")
-        print("  - python pipeline/train_mtnn.py --synthetic  (quick smoke)")
+        print("  - python pipeline/fetch_nflverse.py --seasons 2021 2022 2023  (real matrix, preferred)")
+        print("  - python pipeline/train_mtnn.py --synthetic                    (synthetic fallback smoke)")
         print("[gridiron] Honest exit 0 — scaffold ready, no fake metrics.")
         return 0
 
-    print(f"[gridiron] Loading {matrix_path}")
+    src = matrix_source(matrix_path)
+    print(f"[gridiron] Loading {matrix_path} (source={src})")
+    if src == "nflverse":
+        print("[gridiron] Using REAL nflverse matrix (preferred over synthetic).")
+    elif src == "synthetic":
+        print("[gridiron] Using SYNTHETIC fallback matrix — run fetch_nflverse.py for real data.")
     X, M, y, pos, pids, season_ids_np, seasons, feats, fam_dims_manifest, player_uids = load_bundle(matrix_path)
     n, F_dim = X.shape
     print(f"  X {X.shape} y mean {float(y.mean()):.2f} pos dist {np.bincount(pos) if len(pos) else 'n/a'}")
@@ -548,6 +566,11 @@ def synthetic_matrix(n=2000, F_dim=160, seed=13):
         features=np.array(feats),
         player_ids=np.array(pids),
     )
+    # stamp provenance so the trainer can report source and prefer real over synthetic
+    MATRIX_META.write_text(
+        json.dumps({"source": "synthetic", "n_rows": int(X.shape[0]), "n_features": int(X.shape[1])}, indent=2),
+        encoding="utf-8",
+    )
     print(f"[gridiron] synthetic matrix written to {save_path} shape {X.shape}")
 
 
@@ -583,15 +606,35 @@ def main():
     ap.add_argument("--patience", type=int, default=10)
     ap.add_argument("--pl-embeddings", action="store_true", help="enable PLEmbedding periodic sin/cos k=8 d_out16")
     ap.add_argument("--synthetic", action="store_true", help="generate synthetic nflverse-style matrix and train")
+    ap.add_argument(
+        "--synthetic-fallback",
+        action="store_true",
+        help="if no real matrix exists, auto-generate a synthetic one (prefers real when present)",
+    )
+    ap.add_argument(
+        "--force-synthetic",
+        action="store_true",
+        help="allow --synthetic to overwrite an existing real nflverse matrix",
+    )
     ap.add_argument("--check-data", action="store_true", help="check if data exists and exit")
 
     args = ap.parse_args()
 
+    mp_resolved = Path(args.matrix)
+    if not mp_resolved.is_absolute():
+        mp_resolved = ROOT / mp_resolved
+
     if args.synthetic:
-        synthetic_matrix()
-        # rewrite args.matrix to synthetic location if needed
-        if not Path(args.matrix).exists() and not Path(ROOT / args.matrix).exists():
+        # Explicit synthetic request — but do not silently clobber a real matrix.
+        if mp_resolved.exists() and matrix_source(mp_resolved) == "nflverse" and not args.force_synthetic:
+            print("[gridiron] Real nflverse matrix present — keeping it (use --force-synthetic to overwrite).")
+        else:
+            synthetic_matrix()
+        if not Path(args.matrix).exists() and not (ROOT / args.matrix).exists():
             args.matrix = "pipeline/data/train_matrix.npz"
+    elif not mp_resolved.exists() and args.synthetic_fallback:
+        print("[gridiron] No real matrix found — generating synthetic fallback (--synthetic-fallback).")
+        synthetic_matrix()
 
     if args.check_data:
         mp = Path(args.matrix)

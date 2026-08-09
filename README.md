@@ -56,3 +56,4 @@ Vercel static (`cleanUrls: true`), redirect `gridiron.jcamd.com → gridiron.dum
 ## License
 
 MIT — Copyright (c) 2026 J. Cameron Davis. Solo personal project, no connection to employer.
+coherence verified 2026-08-09

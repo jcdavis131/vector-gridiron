@@ -49,11 +49,10 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from typing import Dict, Optional, Tuple
 
 # Gridiron default family dims — realistic nflverse holistic totals
 # If manifest on disk, these are overridden; totals intentionally sum to ~160
-DEFAULT_FAM_DIMS: Dict[str, int] = {
+DEFAULT_FAM_DIMS: dict[str, int] = {
     "usage": 16,
     "snaps": 12,
     "age": 8,
@@ -67,6 +66,7 @@ DEFAULT_FAM_DIMS: Dict[str, int] = {
 }
 # sum = 150, pad extra misc to reach 160 if needed via caller
 # 10 families exactly per audit
+
 
 class _ResBlock(nn.Module):
     """Same-width residual MLP block (d -> hidden -> d)"""
@@ -101,9 +101,7 @@ class ResidualTower(nn.Module):
         self.fc2 = nn.Linear(d_hidden, d_out)
         self.ln2 = nn.LayerNorm(d_out)
         self.skip = nn.Linear(d_cat, d_out) if d_cat != d_out else nn.Identity()
-        self.blocks = nn.ModuleList(
-            [_ResBlock(d_out, d_hidden) for _ in range(max(0, n_blocks - 1))]
-        )
+        self.blocks = nn.ModuleList([_ResBlock(d_out, d_hidden) for _ in range(max(0, n_blocks - 1))])
 
     def forward(self, x: torch.Tensor, m: torch.Tensor) -> torch.Tensor:
         # x,m: [B,D]
@@ -205,7 +203,7 @@ class GridironMTNN(nn.Module):
 
     def __init__(
         self,
-        fam_dims: Dict[str, int],
+        fam_dims: dict[str, int],
         n_seasons: int,
         d_tower: int = 24,
         d_tower_hidden: int = 96,
@@ -277,11 +275,9 @@ class GridironMTNN(nn.Module):
         self.legacy_proj = nn.Linear(d_emb, 16) if legacy_16d else None
 
     def encode(
-        self, xs: Dict[str, torch.Tensor], ms: Dict[str, torch.Tensor], season_ids: torch.Tensor
+        self, xs: dict[str, torch.Tensor], ms: dict[str, torch.Tensor], season_ids: torch.Tensor
     ) -> torch.Tensor:
-        parts = torch.stack(
-            [self.towers[fam](xs[fam], ms[fam]) for fam in self.families], dim=1
-        )  # [B,T,d_tower]
+        parts = torch.stack([self.towers[fam](xs[fam], ms[fam]) for fam in self.families], dim=1)  # [B,T,d_tower]
         emb_native = self.fusion(parts, season_ids)  # [B,32] L2
         if self.legacy_16d:
             # per task: slice first 16 + re-L2 (cheap, no extra training)
@@ -294,9 +290,7 @@ class GridironMTNN(nn.Module):
             return emb
         return emb_native
 
-    def forward(
-        self, xs: Dict[str, torch.Tensor], ms: Dict[str, torch.Tensor], season_ids: torch.Tensor
-    ):
+    def forward(self, xs: dict[str, torch.Tensor], ms: dict[str, torch.Tensor], season_ids: torch.Tensor):
         emb = self.encode(xs, ms, season_ids)
         # For head evaluation, use native 32-d before slice when legacy;
         # recompute native if needed. Simpler: if legacy, encode still called slice in encode;
@@ -309,9 +303,7 @@ class GridironMTNN(nn.Module):
 
         # Recompute native if legacy (cheap)
         if self.legacy_16d:
-            parts = torch.stack(
-                [self.towers[fam](xs[fam], ms[fam]) for fam in self.families], dim=1
-            )
+            parts = torch.stack([self.towers[fam](xs[fam], ms[fam]) for fam in self.families], dim=1)
             emb_native = self.fusion(parts, season_ids)  # [B,32]
             emb_for_heads = emb_native
         else:
@@ -320,9 +312,7 @@ class GridironMTNN(nn.Module):
         fpts = self.fpts_head(emb_for_heads).squeeze(-1)  # [B]
         # MoE mixture
         gate = torch.softmax(self.moe_gate(emb_for_heads), dim=-1)  # [B, E]
-        expert_out = torch.stack(
-            [e(emb_for_heads).squeeze(-1) for e in self.moe_experts_fpts], dim=1
-        )  # [B,E]
+        expert_out = torch.stack([e(emb_for_heads).squeeze(-1) for e in self.moe_experts_fpts], dim=1)  # [B,E]
         fpts_moe = (gate * expert_out).sum(-1)
 
         out = {
@@ -352,7 +342,7 @@ class MTNN(GridironMTNN):
 
     def __init__(
         self,
-        fam_dims: Dict[str, int],
+        fam_dims: dict[str, int],
         n_seasons: int = 30,
         d_tower: int = 24,
         d_tower_hidden: int = 96,
@@ -398,14 +388,12 @@ def count_params(model: nn.Module) -> int:
     return sum(p.numel() for p in model.parameters())
 
 
-def param_report(model: nn.Module) -> Dict:
+def param_report(model: nn.Module) -> dict:
     return {
         "total": count_params(model),
         "towers": sum(count_params(t) for t in model.towers.values()),
         "fusion": count_params(model.fusion),
-        "heads": count_params(model.fpts_head)
-        + count_params(model.pos_head)
-        + count_params(model.archetype_head),
+        "heads": count_params(model.fpts_head) + count_params(model.pos_head) + count_params(model.archetype_head),
     }
 
 

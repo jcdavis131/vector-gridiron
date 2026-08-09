@@ -34,6 +34,7 @@ import argparse
 import json
 import time
 from pathlib import Path
+
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -94,7 +95,7 @@ def eval_from_csv(path: Path):
     import csv
 
     preds, trues = [], []
-    with open(path) as f:
+    with path.open() as f:
         r = csv.DictReader(f)
         for row in r:
             try:
@@ -105,7 +106,7 @@ def eval_from_csv(path: Path):
                     continue
                 preds.append(float(p_col))
                 trues.append(float(t_col))
-            except:
+            except Exception:  # noqa: S112 -- skip malformed CSV rows
                 continue
     if not preds:
         return None
@@ -118,7 +119,7 @@ def write_scoreboard(eval_res, source_path):
     if out_path.exists():
         try:
             existing = json.loads(out_path.read_text())
-        except:
+        except Exception:
             existing = {}
 
     scoreboard = {
@@ -139,14 +140,19 @@ def write_scoreboard(eval_res, source_path):
         "embedding_dim_native": 32,
         "embedding_dim_backward_compat": 16,
         "target": "MAE 4.268→3.8 with Procrustes+RealMLP+MoE + TabPFN distill KL T=2 w=0.15",
-        "note": "new train_mtnn.py enables repro — run nflverse fetch to get MAE 4.268→3.8 target. 32-d native is primary, 16-d slice+re-L2 legacy for app.js bundle <300KB.",
+        "note": (
+            "new train_mtnn.py enables repro — run nflverse fetch to get MAE 4.268→3.8 target. "
+            "32-d native is primary, 16-d slice+re-L2 legacy for app.js bundle <300KB."
+        ),
         "architecture_v2": {
             "d_emb": 32,
             "legacy_16d": "slice first 16 dims re-L2",
             "transformer": "d_model128 n_heads4 n_layers4 CLS→32-d L2",
             "towers": "10 families holistic 160 feats ResidualTower cat([x*m,m]) d_cat*2→96h GELU LN →24d + skip",
             "procrustes": "rotation-only orthogonal Procrustes Q chains season→root drift (hoops same)",
-            "realmlp": "per-season RobustScaler median/IQR clip[-3,3] PL embedding sin/cos k=8 d_out16 proj linear 2k→16",
+            "realmlp": (
+                "per-season RobustScaler median/IQR clip[-3,3] PL embedding " "sin/cos k=8 d_out16 proj linear 2k→16"
+            ),
         },
     }
     # merge existing extra keys we care about (preserve claimed_not_reproducible flag transition)
@@ -164,7 +170,9 @@ def main():
     ap.add_argument("--vectors", type=str, default=str(ASSETS / "vectors.json"), help="vectors.json path")
     ap.add_argument("--npz", type=str, default=str(DATA_DIR / "embedding_gridiron.npz"), help="embedding npz path")
     ap.add_argument("--csv", type=str, default="", help="optional csv predictions")
-    ap.add_argument("--scoreboard-only", action="store_true", help="write scoreboard with claimed only if no eval available")
+    ap.add_argument(
+        "--scoreboard-only", action="store_true", help="write scoreboard with claimed only if no eval available"
+    )
     args = ap.parse_args()
 
     def try_path(fn, path_str):
@@ -193,7 +201,6 @@ def main():
     print("[eval] No repro predictions found (assets/vectors.json / embedding_gridiron.npz / csv missing)")
     print("[eval] Claimed MAE 4.268 R2 0.39 — not yet reproducible until nflverse fetch")
     print("[eval] Run: python pipeline/train_mtnn.py --synthetic for smoke, or real fetch per docs/DATA_SOURCES.md")
-    eval_res_none = None
     # still write scoreboard with claimed
     out_path = ASSETS / "eval_scoreboard.json"
     # if exists keep but mark transition
@@ -201,7 +208,7 @@ def main():
     if out_path.exists():
         try:
             existing = json.loads(out_path.read_text())
-        except:
+        except Exception:  # noqa: S110 -- best-effort read of existing scoreboard
             pass
     scoreboard = {
         "built": time.strftime("%Y-%m-%d"),
@@ -221,14 +228,19 @@ def main():
         "embedding_dim_advertised": 32,
         "embedding_dim_native": 32,
         "target": "MAE 4.268→3.8 with Procrustes+RealMLP+MoE + TabPFN distill KL T=2 w=0.15",
-        "note": "new train_mtnn.py enables repro — run nflverse fetch to get MAE 4.268→3.8 target. 32-d native primary, 16-d slice+re-L2 legacy for bundle <300KB gz.",
+        "note": (
+            "new train_mtnn.py enables repro — run nflverse fetch to get MAE 4.268→3.8 target. "
+            "32-d native primary, 16-d slice+re-L2 legacy for bundle <300KB gz."
+        ),
         "architecture_v2": {
             "d_emb": 32,
             "legacy_16d": "slice first 16 dims re-L2",
             "transformer": "d_model128 n_heads4 n_layers4 CLS→32-d L2",
             "towers": "10 families holistic 160 feats ResidualTower cat([x*m,m]) d_cat*2→96h GELU LN →24d + skip",
             "procrustes": "rotation-only orthogonal Procrustes Q chains season→root drift (hoops same)",
-            "realmlp": "per-season RobustScaler median/IQR clip[-3,3] PL embedding sin/cos k=8 d_out16 proj linear 2k→16",
+            "realmlp": (
+                "per-season RobustScaler median/IQR clip[-3,3] PL embedding " "sin/cos k=8 d_out16 proj linear 2k→16"
+            ),
         },
         "plan_for_nflverse_fetch": {
             "source": "nflverse 2025 play-by-play roster weather Vegas",
@@ -246,15 +258,21 @@ def main():
                 "weather API (Open-Meteo) join wind/temp/dome",
                 "Vegas lines scrape / nflverse betting data join spread/total/implied",
                 "compute lag 1-3 fantasy points PPR, form rolling avg, redzone usage, def-vs-pos SOS_NET analog",
-                "build 10 families holistic 160 feats, per-season RobustScaler fit, emit train_matrix.npz X [N,160] M mask Y next-game FPTS",
+                "build 10 families holistic 160 feats, per-season RobustScaler fit, "
+                "emit train_matrix.npz X [N,160] M mask Y next-game FPTS",
                 "player-split honest, no season-split leakage",
             ],
-            "command_target": "python pipeline/train_mtnn.py --epochs 50 --d-emb 32 --scaling robust --era-align procrustes → MAE 4.268→3.8",
+            "command_target": (
+                "python pipeline/train_mtnn.py --epochs 50 --d-emb 32 --scaling robust "
+                "--era-align procrustes → MAE 4.268→3.8"
+            ),
         },
     }
     if existing:
         # preserve best known MAE if better?
-        scoreboard["_prev"] = {k: existing.get(k) for k in ["best_val_MAE", "claimed_MAE_next_game", "target"] if k in existing}
+        scoreboard["_prev"] = {
+            k: existing.get(k) for k in ["best_val_MAE", "claimed_MAE_next_game", "target"] if k in existing
+        }
     out_path.write_text(json.dumps(scoreboard, indent=2), encoding="utf-8")
     print(f"[eval] wrote {out_path} (claimed only)")
     return 0

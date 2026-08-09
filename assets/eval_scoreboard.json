@@ -9,7 +9,7 @@
     "r2": -7.356736504230172,
     "n": 2000
   },
-  "current_source": "/home/hatch/workspace/vector-gridiron/pipeline/data/embedding_gridiron.npz",
+  "current_source": "pipeline/data/embedding_gridiron.npz",
   "metrics": {
     "MAE_next_game": 8.475404739379883,
     "R2": -7.356736504230172,

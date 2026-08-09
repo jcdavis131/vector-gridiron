@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vector Gridiron — Play · Daily Guess Wordle 6 tries cosine · Lab fusion A+B=C</title>
+<meta name="description" content="Guess The Player fantasy — RB by rushing YAC, WR by targets airyards, QB by EPA, TE anchor — 6 tries cosine 32-d, Lab fusion A+B=C, streak, pack battle, shareable.">
+<meta name="theme-color" content="#1A150F">
+<meta property="og:image" content="/assets/og-1200x630.png">
+<link rel="manifest" href="/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/shell.css"><link rel="stylesheet" href="/assets/gridiron.css"><link rel="stylesheet" href="/assets/unified.css"><link rel="stylesheet" href="/assets/responsive.css"><link rel="stylesheet" href="/assets/motion.css"><link rel="stylesheet" href="/assets/final-qa.css">
+<style>
+.play-main{width:min(980px,100%);margin:0 auto;padding:12px clamp(12px,3vw,20px) 80px;display:flex;flex-direction:column;gap:12px}
+.vh-header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:#0f1d14;border:2.2px solid #f5f7f2;border-radius:14px;box-shadow:4px 4px 0 #f5f7f2;padding:10px 12px}
+.vh-brand{font-family:"Architects Daughter",ui-monospace,monospace;font-size:22px;font-weight:900;color:#f5f7f2}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:2px solid #f5f7f2;border-radius:999px;padding:6px 12px;background:#0a130d;color:#93a596;font-family:ui-monospace,monospace;font-size:11px;font-weight:800;cursor:pointer}
+.tab.is-active{background:#f0873c;color:#20120a}
+.play-card{border:2.2px solid #f5f7f2;border-radius:14px;background:#0f1d14;box-shadow:3px 3px 0 #f5f7f2;padding:12px}
+.guess-input{width:100%;border:2.2px solid #f5f7f2;border-radius:12px;background:#0a130d;color:#f5f7f2;padding:10px 12px;font-family:ui-monospace,monospace;font-size:15px;min-height:44px}
+.guess{border:1.5px solid #213024;border-radius:8px;padding:6px 8px;margin:4px 0;background:#0a130d;display:flex;justify-content:space-between;align-items:center;font-family:ui-monospace,monospace;font-size:11px}
+.guess b{color:#f5f7f2}
+.pack-row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#0f1d14;border:2.2px solid #f5f7f2;border-radius:12px;box-shadow:4px 4px 0 #f5f7f2;padding:10px 14px;font-family:ui-monospace,monospace;font-size:12px;color:#f5f7f2;z-index:200;display:none}
+.toast.is-visible{display:flex}
+</style>
+</head>
+<body>
+<nav class="site-nav" data-active="/play"></nav>
+<main class="play-main">
+<header class="vh-header"><span class="vh-brand">VECTOR GRIDIRON · PLAY</span><div class="tabs" role="tablist"><button class="tab is-active" data-tab="daily" role="tab" aria-selected="true">Daily Guess Wordle 6 tries</button><button class="tab" data-tab="lab" role="tab">Lab Fusion A+B=C</button></div><span id="streak" class="pill">🔥 streak 0</span></header>
+
+<div id="view-daily" class="play-card">
+<h2 style="font-family:'Architects Daughter',monospace;margin:0 0 6px">Daily Guess — 6 tries, cosine 32-d</h2>
+<p style="font-size:12px;color:#93a596;margin:0 0 8px">Guess the hidden NFL player-week. Each guess shows cosine similarity 32-d native (16-d compat wrapper) → hint rushing/targets/YAC/redzone/snaps/age/weather/Vegas/rest/def-vs-pos. Streak shareable pack identical friends. <span id="countdown">next daily in --:--:--</span></p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><input id="guess-input" class="guess-input" placeholder="Type player name — e.g. Jefferson, CMC, Mahomes" autocomplete="off"><button id="guess-btn" style="min-height:44px;border:2px solid #f5f7f2;border-radius:10px;background:#f0873c;color:#20120a;font-family:ui-monospace,monospace;font-weight:900;padding:8px 12px;cursor:pointer">Guess</button></div>
+<div id="suggest-list" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
+<div id="guesses-list"></div>
+<div class="pack-row" id="pack-row"><span class="pill">Pack Battle:</span><a class="pill" href="/play?pack=1">1 card</a><a class="pill" href="/play?pack=3">3 cards</a><a class="pill" href="/play?pack=5">5 cards</a><button id="share-btn" class="pill" style="cursor:pointer">Share score</button></div>
+</div>
+
+<div id="view-lab" class="play-card" hidden>
+<h2 style="font-family:'Architects Daughter',monospace;margin:0 0 6px">Lab Fusion A+B=C — Impossible before</h2>
+<p style="font-size:12px;color:#93a596">Pick any two player-weeks, fuse 32-d → nearest real. 32-d native L2, 16-d compat slice re-L2 cosine=similarity. Shows how vector knows MTNN weekly.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0"><input id="lab-a" class="guess-input" placeholder="Player A — e.g. Jefferson WR"><input id="lab-b" class="guess-input" placeholder="Player B — e.g. CMC RB"></div>
+<button id="lab-fuse" style="min-height:44px;border:2px solid #f5f7f2;border-radius:10px;background:#3ddc71;color:#0a130d;font-family:ui-monospace,monospace;font-weight:900;padding:8px 12px;cursor:pointer">Fuse A+B</button>
+<div id="lab-result" style="margin-top:10px;font-family:ui-monospace,monospace;font-size:12px;color:#c4d0c6"></div>
+</div>
+
+<div id="toast" class="toast"><span id="toast-msg">Copied!</span><button id="toast-close" style="margin-left:8px;background:#f5f7f2;color:#0a130d;border:1.5px solid #f5f7f2;border-radius:999px;padding:2px 8px;font-size:10px;cursor:pointer">✕</button></div>
+
+</main>
+<footer class="site-footer" style="border-top:2.5px solid #f5f7f2;padding:12px;background:#0f1d14;color:#f5f7f2;font-family:ui-monospace,monospace;font-size:11px"><a href="/">Map</a> · <a href="/model">Lab</a> · <a href="/players">Players</a> — Daily Guess Wordle 6 tries cosine Lab fusion A+B=C identical pack friends streak-safe</footer>
+
+<script src="/assets/site-nav.js"></script><script src="/assets/error-boundary.js"></script><script src="/assets/keyboard-a11y.js"></script><script src="/assets/pwa-install.js"></script><script src="/assets/search-enhance.js"></script>
+<script>
+(async()=>{
+  const params=new URLSearchParams(location.search); const tab=params.get('tab')||'daily'; const pack=params.get('pack');
+  const tabs=document.querySelectorAll('.tab'); tabs.forEach(t=>t.addEventListener('click',()=>{ tabs.forEach(x=>x.classList.remove('is-active')); t.classList.add('is-active'); document.getElementById('view-daily').hidden=t.dataset.tab!=='daily'; document.getElementById('view-lab').hidden=t.dataset.tab!=='lab'; history.replaceState(null,'','/play?tab='+t.dataset.tab+(pack?'&pack='+pack:'')); }));
+  if(tab==='lab'){ tabs[1].click(); } else tabs[0].click();
+
+  // streak + countdown
+  const key='vg_streak'; const today=new Date().toISOString().slice(0,10); let data={count:0,last:''}; try{data=JSON.parse(localStorage.getItem(key)||'{"count":0}')}catch{}; const streakEl=document.getElementById('streak'); if(streakEl) streakEl.textContent='🔥 streak '+(data.count||0);
+  function tick(){ const now=new Date(); const nxt=new Date(now); nxt.setUTCDate(nxt.getUTCDate()+1); nxt.setUTCHours(0,0,0,0); const diff=nxt-now; const h=Math.floor(diff/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000); const el=document.getElementById('countdown'); if(el) el.textContent='next daily in '+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); } setInterval(tick,1000); tick();
+
+  // load players
+  let players=[]; try{ const r=await fetch('/assets/vectors.json'); const d=await r.json(); players=(d.players||[]).map((p,i)=>({id:i,name:p.name||'player_'+i,pos:p.pos||['QB','RB','WR','TE'][i%4],v:p.v||[],fpts:p.fpts_next_pred||0})); }catch(e){ players=Array.from({length:200},(_,i)=>({id:i,name:'player_'+i,pos:['QB','RB','WR','TE'][i%4],v:Array.from({length:32},()=>Math.random()*2-1),fpts:Math.random()*20})); }
+
+  function cosine(a,b){ let dot=0,na=0,nb=0; for(let i=0;i<Math.min(a.length,b.length);i++){dot+=a[i]*b[i];na+=a[i]*a[i];nb+=b[i]*b[i];} return dot/(Math.sqrt(na*nb)+1e-9); }
+
+  // daily hidden deterministic from date
+  const seedStr=today+ (pack||''); let hash=0; for(let i=0;i<seedStr.length;i++) hash=((hash<<5)-hash)+seedStr.charCodeAt(i); hash=Math.abs(hash); const hiddenIdx=hash%players.length; const hidden=players[hiddenIdx];
+  let tries=0; const maxTries=6; const guesses=[];
+
+  const input=document.getElementById('guess-input'); const btn=document.getElementById('guess-btn'); const list=document.getElementById('guesses-list'); const suggest=document.getElementById('suggest-list');
+  function showGuess(g){
+    const sim=hidden?cosine(g.v,hidden.v):Math.random(); const pct=(sim*100).toFixed(1);
+    const div=document.createElement('div'); div.className='guess'; div.innerHTML=`<b>${g.name} ${g.pos}</b><span>${pct}% cosine · ${g.pos} ${['bellcow','separator','anchor','dual'][['QB','RB','WR','TE'].indexOf(g.pos)]||''} · proj ${Number(g.fpts).toFixed(1)}</span>`;
+    list.appendChild(div);
+  }
+  function onGuess(){
+    const q=(input.value||'').toLowerCase().trim(); if(!q) return; let g=players.find(p=>p.name.toLowerCase().includes(q)); if(!g) g=players[0]; if(!g) return; tries++; guesses.push(g); showGuess(g); input.value=''; suggest.innerHTML=''; if(g.name===hidden.name){ win(); } else if(tries>=maxTries){ lose(); }
+  }
+  btn.addEventListener('click',onGuess); input.addEventListener('keydown',e=>{ if(e.key==='Enter') onGuess(); });
+  input.addEventListener('input',()=>{ const q=input.value.toLowerCase().trim(); if(q.length<1){suggest.innerHTML='';return;} const matches=players.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8); suggest.innerHTML=matches.map(p=>`<button class="pill" data-n="${p.name}">${p.name} <span style="opacity:.6">${p.pos}</span></button>`).join(''); suggest.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{input.value=b.getAttribute('data-n'); onGuess();})); });
+
+  function win(){
+    const msg=`I guessed today's gridiron in ${tries}/6! 🔥${data.count+1} streak — play: ${location.origin}/play?pack=${pack||1}`;
+    showToast('Win! '+tries+'/6 — shareable pack identical friends'); localStorage.setItem('vg_played_'+today,'1'); data.count=(data.last===today?data.count: (data.last===new Date(Date.now()-86400000).toISOString().slice(0,10)?data.count+1:1) ); data.last=today; localStorage.setItem(key,JSON.stringify(data)); if(streakEl) streakEl.textContent='🔥 streak '+data.count; navigator.clipboard&&navigator.clipboard.writeText(msg).catch(()=>{});
+  }
+  function lose(){ showToast('Lose — answer '+(hidden?hidden.name:'player')+' — again tomorrow!'); }
+
+  function showToast(t){ const el=document.getElementById('toast'); el.classList.add('is-visible'); document.getElementById('toast-msg').textContent=t; setTimeout(()=>el.classList.remove('is-visible'),3000); }
+  document.getElementById('toast-close')?.addEventListener('click',()=>document.getElementById('toast').classList.remove('is-visible'));
+  document.getElementById('share-btn')?.addEventListener('click',()=>{ const score=guesses.map((g,i)=>{const s=hidden?cosine(g.v,hidden.v):0; return `${i+1}. ${g.name} ${(s*100).toFixed(0)}%`;}).join('\\n'); const text=`Gridiron Daily ${tries}/${maxTries}\\n${score}\\n${location.origin}/play?pack=${pack||1}`; navigator.clipboard&&navigator.clipboard.writeText(text).then(()=>showToast('Copied shareable score — pack identical friends')).catch(()=>showToast('Score copied')); });
+
+  // Lab fusion A+B=C
+  document.getElementById('lab-fuse')?.addEventListener('click',()=>{
+    const aName=(document.getElementById('lab-a').value||'').toLowerCase().trim(), bName=(document.getElementById('lab-b').value||'').toLowerCase().trim();
+    const A=players.find(p=>p.name.toLowerCase().includes(aName))||players[0];
+    const B=players.find(p=>p.name.toLowerCase().includes(bName))||players[1];
+    if(!A||!B) return;
+    // naive fuse average 32-d then nearest
+    const fused=A.v.map((v,i)=> (v+(B.v[i]||0))*0.5);
+    let best=null,bestSim=-1;
+    players.forEach(p=>{ if(p.name===A.name||p.name===B.name) return; const s=cosine(p.v,fused); if(s>bestSim){bestSim=s;best=p;} });
+    const out=document.getElementById('lab-result');
+    out.innerHTML=`Fused <b>${A.name}</b> + <b>${B.name}</b> = nearest real <b>${best?best.name:'player'}</b> ${best?best.pos:''} ${(bestSim*100).toFixed(1)}% cosine — impossible before 32-d native. 16-d compat slice re-L2 where cosine=similarity.`;
+  });
+
+})();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{});}
+</script></body></html>

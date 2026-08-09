@@ -1,0 +1,154 @@
+{
+  "built": "2026-08-09T17:05:20.491952Z",
+  "source": "stub \u2014 nflverse draft + combine planned (nflreadpy load_draft_picks / load_combine)",
+  "coverage": "stub 20 players with null actual \u2014 template only",
+  "players": {
+    "player_0_16": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_1_67": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_2_98": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_3_89": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_4_49": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_5_1": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_6_60": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_7_10": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_8_84": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_9_83": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_10_92": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_11_50": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_12_11": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_13_79": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_14_94": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_15_14": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_16_19": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_17_50": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_18_62": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    },
+    "player_19_84": {
+      "draft_year": null,
+      "draft_round": null,
+      "draft_pick": null,
+      "forty": null,
+      "stub": true
+    }
+  },
+  "note": "Gridiron analog to hoops draft pedigree: round/pick affects fantasy prior + forty affects speed score. Combine 40-yard dash ~4.22-4.84 WR/RB. Analogous to hoops 1.4MB player props.",
+  "todo": [
+    "Port hoops pipeline/fetch_draft_history.py -> NFL draft API (nflverse nfl_draft_picks)",
+    "Add combine 40-yard dash from https://www.nfl.com/combine/tracker or nflreadpy load_combine()",
+    "Wire into pipeline/train_mtnn.py tower age+athleticism family (age 8 already; add forty, vert, bench)",
+    "Use in front-office eval similar to hoops Front Office Lab"
+  ]
+}

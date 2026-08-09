@@ -1,28 +1,26 @@
-/* Shared top navigation — mount on <nav class="site-nav" data-active="/path"> */
+/* Vector Gridiron — Shared top navigation — hoops-level parity, gridiron blue theme */
 (function (global) {
   'use strict';
-
   var LINKS = [
-    { href: '/play', label: 'Play' },
-    { href: '/model', label: 'Network', title: 'MTNN Network Explorer' },
-    { href: '/trends', label: 'Trends', title: 'Trend Research' },
-    { href: '/players', label: 'Players', title: 'Player References' },
-    { href: '/teams', label: 'Teams', title: 'Team Labs' },
-    { href: '/methods', label: 'Methods' },
-    { href: '/leaderboard', label: 'Leaderboard' },
-    { href: '/dashboard', label: 'Lab', title: 'Dumbmodel Lab — Data→Clean→Train→Eval' },
+    { href: '/play', label: 'Play', title: 'Guess The NFL Player — fantasy style' },
+    { href: '/', label: 'Cockpit', title: 'Fantasy cockpit' },
+    { href: '/model', label: 'Lab', title: 'MTNN Training Cockpit + 10 Towers + Fusion' },
+    { href: '/trends', label: 'Trends', title: 'Fantasy meta drift — position value shifts' },
+    { href: '/players', label: 'Players', title: 'NFL player directory — skill grades + projections' },
+    { href: '/methods', label: 'Methods', title: 'nflverse sources + normalization + MTNN eval' }
   ];
-
   function mount() {
     var nav = document.querySelector('.site-nav');
     if (!nav) return;
     var active = nav.getAttribute('data-active') || '';
     var linksHtml = LINKS.map(function (l) {
       var isActive = active === l.href ||
-        (active === '/players' && (l.href === '/players')) ||
+        (active === '/' && l.href === '/') ||
+        (active === '/players' && l.href === '/players') ||
         (active === '/trends' && l.href === '/trends') ||
         (active === '/model' && l.href === '/model') ||
-        (active === '/teams' && l.href === '/teams');
+        (active === '/methods' && l.href === '/methods') ||
+        (active === '/play' && l.href === '/play');
       return '<a class="site-nav__link' + (isActive ? ' is-active' : '') + '"' +
         ' href="' + l.href + '"' +
         (l.title ? ' title="' + l.title + '"' : '') +
@@ -30,15 +28,14 @@
         '>' + l.label + '</a>';
     }).join('');
     nav.innerHTML =
-      '<a class="site-nav__brand" href="/">VECTOR<span class="site-nav__accent">HOOPS</span></a>' +
+      '<a class="site-nav__brand" href="/">VECTOR<span class="site-nav__accent">GRIDIRON</span></a>' +
       '<div class="site-nav__links">' + linksHtml + '</div>';
   }
-
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', mount);
   } else {
     mount();
   }
-
-  global.VHSiteNav = { mount: mount, links: LINKS };
+  global.VGSiteNav = { mount: mount, links: LINKS };
+  global.VHSiteNav = global.VGSiteNav; // compat alias for shared-map etc
 })(window);

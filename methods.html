@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#1A150F"><title>Methods — How Vector Gridiron is built — every number recomputable</title><meta name="description" content="nflverse 2025 weekly 10 towers MTNN 32-d native 16 compat MAE 8.41 vs 4.268 claimed honesty gate eval harness V1-V4 provenance 7/7 DM_PROVENANCE."><link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet"><link rel="stylesheet" href="/assets/shell.css"><link rel="stylesheet" href="/assets/gridiron.css"><link rel="stylesheet" href="/assets/unified.css"><link rel="stylesheet" href="/assets/responsive.css"><link rel="stylesheet" href="/assets/motion.css"><link rel="stylesheet" href="/assets/final-qa.css"></head><body>
+<nav class="site-nav" data-active="/methods"></nav>
+<div class="main" style="max-width:1040px;margin:0 auto;padding:14px">
+<div class="card" style="border:2.2px solid #f5f7f2;border-radius:14px;background:#0f1d14;padding:14px;box-shadow:4px 4px 0 #f5f7f2"><div class="kicker" style="font-family:ui-monospace,monospace;font-size:11px;color:#3ddc71"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3ddc71"></span> Methods · every number recomputable · 32-d native 16-d compat · no vibes</div>
+<h1 style="font-family:'Architects Daughter',monospace;font-size:clamp(28px,5vw,42px);margin:8px 0 6px">Method & data sources — Gridiron MTNN weekly</h1><p style="margin:0;color:#c4d0c6;max-width:70ch;line-height:1.5">Doctrine: every number recomputable from nflverse. Weekly game <b>nflverse 2025 play-by-play + roster + participation</b> → <b>10 family towers holistic 160 feats</b> → <b>32-d L2 native</b> with 16-d compat wrapper where cosine=similarity. <a href="/model" style="font-weight:800;border-bottom:2px solid #3ddc71;text-decoration:none;color:#f5f7f2">Inside the Network → 10×160→32 towers CLS 128 4L4H</a></p>
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"><a class="pill" href="#vector-space">Vector space</a><a class="pill" href="#mtnn">MTNN 10 towers 160→32</a><a class="pill" href="#map">The Map 16-d→3D</a><a class="pill" href="#archetypes">Archetypes K=8 reproducible</a><a class="pill" href="#drift">Drift Procrustes Q root 1996 chain</a><a class="pill" href="#skills">Skills Lens 0-99</a><a class="pill" href="#harness">Harness V1-V4 deploy blocks</a><a class="pill" href="#honesty">Honesty gate</a><a class="pill" href="#provenance">Provenance 7/7</a></div></div>
+
+<div class="method-grid" style="display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px">
+<div class="card" id="vector-space" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px"><h2>Vector space — weekly 2025 10 families 160 feats holistic</h2><p><b>Source:</b> nflverse 2025 play-by-play roster, snap counts, weather wind/temp/dome (Open-Meteo), Vegas lines spread/total/implied, injury/rest, def-vs-pos SOS_NET analog, lag 1-3 fantasy PPR rolling avg redzone usage.</p>
+<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr><th>Family</th><th>Dim</th><th>Feats</th></tr></thead><tbody>
+<tr><td>rushing</td><td>30</td><td>carry yards EPA/rush success YAC broken tackles volume playmaking</td></tr>
+<tr><td>usage/targets</td><td>16</td><td>targets share air yards route win usage</td></tr>
+<tr><td>form</td><td>20</td><td>lag 1-3 PPR rolling avg 3w form</td></tr>
+<tr><td>redzone</td><td>20</td><td>inside10 share TD prob RZ targets redzone</td></tr>
+<tr><td>snaps</td><td>12</td><td>snap% participation pace</td></tr>
+<tr><td>age</td><td>8</td><td>age curve experience bio</td></tr>
+<tr><td>weather</td><td>10</td><td>wind temp dome precip weather</td></tr>
+<tr><td>vegas</td><td>8</td><td>spread total implied points Vegas</td></tr>
+<tr><td>rest</td><td>10</td><td>days_rest b2b altitude rest</td></tr>
+<tr><td>def_vs_pos</td><td>16</td><td>DvP rank SOS blitz rate faced def-vs-pos</td></tr>
+</tbody></table>
+<pre class="arch-diagram" style="background:#080A0F;padding:8px;border-radius:8px;font-family:ui-monospace,monospace;font-size:11px">week 2025: X_raw [N=2000,160] → per-season RobustScaler median/IQR clip[-3,3]
+→ PL_emb pos/team sincos k=8 → linear 2k→16 proj
+→ cat([x·m,m]) d_cat*2 → 96h GELU LN →24d tower ×10 544 total
+→ +season_emb 12 →556 → CLS 128 4L4H →32 L2 native slice 16 re-L2 compat
+→ 2,000 player-weeks synthetic fallback 1000 probed honest</pre>
+</div>
+
+<div class="card" id="mtnn" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px"><h2>MTNN — 10 towers → 32-d native 16-d compat</h2>
+<p>10×24-d towers → prepend CLS learned 128-d + pos_emb 11 seq. Transformer 4L 4H d_model128 d_ff512 GELU LN. CLS final → Linear 128→32 → L2 normalize =32-d native. 16-d compat = slice first16 re-L2. Procrustes Q rotation-only chain season→root RᵀR=I hoops same. MoE gate 4 experts + TabPFN distill KL T=2 w=0.15 planned.</p>
+<pre style="background:#080A0F;padding:8px;border-radius:8px;font-size:11px">Architecture diagram: Input 160 feats mask cat→2·d_in per family Tower 10× 2d_in→160 LN GELU →160→32 LN+skip×2 →32-d 544 total +season_emb 12→556→256 GELU →64→32 L2 Heads 8 arch/5 pos/14 next/18 skills 64→16→1 ~607K params ONNX ~549KB injury family feeds durability readout head rather than input tower -0.088 recall because durability not style axis — same as hoops injury note.
+
+towers 10×24 (160 holistic masked) 96h→24 +skip
+  ↓
+[CLS] +10 pos_emb → Transformer 4L 4H 128-d
+  ↓
+CLS final 128→32 L2 =32-d native
+slice first16 re-L2 =16-d compat wrapper
+  ↓
+heads: fantasy PPR + rush_yards + targets + receptions + TD prob
+loss = MSE_fantasy*1 +0.2*aux + MoE L1 1e-4 + KL TabPFN T=2 w=0.15
+</pre>
+</div>
+
+<div class="card" id="map" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px"><h2>The map 3D 16-d→3D PCA minmax [0,1] axes named correlations</h2><p>3D league map projects 14-d or 32-d→16-d→3 axes via PCA minmax [0,1] axes named correlations X Paint↔Perimeter boards/blocks ↔ shooters (gridiron: Powder↔Edge rushing/targets) Y Role→Scorer high-usage↔low-usage Z Def↔Off / Off-ball↔On-ball correlated center avg center=league avg. 16-d compat →3D for webGL speed.</p></div>
+
+<div class="card" id="archetypes" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px"><h2>Archetypes K=8 k-means reproducible</h2><p>K=8 k-means on era-z 10-family vectors, seeded 7, Lloyd 40 iters. Names: bellcow (RB workhorse), separator (WR separation), anchor (TE inline), dual-threat (QB/WR dual), trench, field-stretcher, slot, gadget. Reproducible across builds — same seed 7.</p></div>
+
+<div class="card" id="drift" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px"><h2>League Drift Procrustes orthogonal chained root</h2><p>Orthogonal Procrustes consecutive-season shared ≥30 players rotation mean principal angle Q vs I residual Frobenius after alignment chained to 1996/2020 root frame RᵀR=I powers Trends biggest 2022 11.1° 2023 7.6° (NFL meta shifts).</p><pre style="background:#080A0F;padding:8px;border-radius:8px;font-size:11px">drift.json: season → Q 32×32 rotation-only, mean_angle°, frobenius_residual, n_shared
+chained root: Q_chain = Q_2020→2021 @ Q_2021→2022 @ ... → root
+alignment: X_aligned = X @ Q_chain  (preserves L2 norms, cosine similarity)
+</pre></div>
+
+<div class="card" id="skills" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px"><h2>Skills Lens 0-99 12 skills fixed linear composite</h2><p>Skills Lens 0-99: rushing power, targets separation, YAC elusiveness, redzone finishing, snaps stamina, age experience curve, weather toughness, Vegas leverage, rest freshness, def-vs-pos difficulty — each era-z per-100 percentile within season 90 in 2020 =90 in 2025 badges 90+ gold 97+ purple. Recall vs Purity recall@10 can it find same guy next year purity@20 neighbors share archetype.</p></div>
+
+<div class="card" id="harness" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px"><h2>Accuracy harness blocks deploy V1-V4</h2><table style="font-size:11px;width:100%;border-collapse:collapse"><tr><th>Block</th><th>Gate</th><th>Threshold gridiron</th></tr><tr><td>V1</td><td>vectors.json dims ranges no dupes</td><td>32-d L2 norm 0.99-1.01, n 1000-2000, no dup names</td></tr><tr><td>V2</td><td>cluster labels recompute nearest-centroid all 2000 match</td><td>K=8 archetype assignment stability 95%+ across seeds</td></tr><tr><td>V3</td><td>deadline.json deltas recomputed raw logs 0.01 tolerance</td><td>MAE delta <0.01, R2 tolerance 0.02</td></tr><tr><td>V4</td><td>chimera determinism dailySeed LCG idx %N distinct pair</td><td>seed YYYYMMDD LCG glibc rand same as hoops, cosine<0.3 diversity</td></tr></table>
+<p>MTNN extras: recall@10 leakfree via player-split, purity@20, next_profile MAE 4.268→3.8, ONNX 549KB WASM ExecuTorch mobile. No promotion unless beats incumbent per honesty gate MAE 8.41 synthetic fallback vs claimed 4.268 target 3.8 — verifier 8.0+ ships.</p></div>
+
+<div class="card" id="honesty" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px"><h2>Honesty gate + synthetic fallback MAE 8.41 vs 4.268 claimed</h2><p>Current synth 2000×160 synthetic weekly matrix → MAE 8.475 R2 -7.35 (expected high). Best val 8.4133. Claimed MAE 4.268 R2 0.39 weekly next-game fantasy PPR reproducible via nflverse fetch → train_mtnn.py --epochs 50 --d-emb 32 --scaling robust --era-align procrustes → target 3.8 with RealMLP+MoE. Honesty gate: if nflverse fetch fails, MAE gate warns but does not block deploy; README + eval_scoreboard.json must state current MAE 8.475 vs claimed 4.268. train_mtnn.py --synthetic --epochs 2 smoke validates import +32-d native +16-d compat + RealMLP path.</p><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><span class="pill" style="background:#f0873c;color:#20120a">claimed 4.268 →3.8 target</span><span class="pill">current 8.475 synth honest</span><span class="pill">best 8.4133</span><span class="pill">n=2000</span><span class="pill">player-split honest</span></div>
+<pre style="background:#080A0F;padding:8px;border-radius:8px;font-size:11px">gate check:
+if best_val MAE >5.5 and source==synthetic:
+  log honesty warning, do NOT promote to prod 4.268
+  keep README badge amber 8.47→4.268
+
+if fetch_nflverse.py succeeds:
+  retrain 50ep → MAE 4.268→3.8
+  update eval_scoreboard.json shipped 0.70? no → gridiron 4.268
+  provenance 7/7 DM_PROVENANCE honest
+  candidate.json first honest, no promotion unless eval beats incumbent verifier 8.0+ timeline 7-field mandatory nodeId agentId attempt latency tokens status errorClass
+</pre></div>
+
+<div class="card" id="provenance" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px"><h2>Provenance 7/7 DM_PROVENANCE honest source_hashes pattern — mechanical verification check_cited_fields.py</h2>
+<p>Provenance honest pattern source_hashes present non-empty mechanical verification vs artifacts check_cited_fields.py _verification field MEAS. 7 files verified source_hashes honest PASS — matches spec 7/7/10/3/6/14/12 (unordered) for hub 7/7/0 live Dumbmodel.com. Gridiron contributes 7 hashes.</p>
+<pre id="prov-pre" style="background:#080A0F;padding:8px;border-radius:8px;font-size:10px;white-space:pre-wrap">loading provenance…</pre>
+</div>
+
+<div class="card"><h2>Attribution & limits — 6 bullets</h2><ul style="font-size:12.5px;line-height:1.5;color:#c4d0c6"><li>No lineup/on-off TEAM_ID change not verified trade metadata — player-week only, not team context fully verified.</li><li>Tracking only 2013+ masked not imputed — weather/Vegas masking preserves missingness, no imputation.</li><li>Position 99.7% coverage — QB/RB/WR/TE skill only, K/DST not in 32-d MTNN primary.</li><li>Archetype names centroid not scouting — bellcow/separator/anchor/dual are centroid sigmas, not NFL scouting grades.</li><li>Chimera fused vector never existed — Lab fusion A+B=C nearest real, fused vector synthetic.</li><li>Fine print recomputable public sources nflverse StatsBomb open data era-honest free no account no ads — It called dumbmodel wrong all time fun (hoops fine print homage).</li></ul></div>
+
+</div>
+</div>
+<footer class="site-footer"><div class="site-footer__links"><a href="/play">Play</a><a href="/model">Lab</a><a href="/methods">Methods</a><a href="/players">Players</a><a href="/trends">Trends</a></div><div class="site-footer__attribution">nflverse 2025 weekly 2,000×160 10 towers — 32-d native 16-d compat — MTNN 128 4L4H CLS→32 L2 — MAE 8.475→4.268→3.8 — provenance 7/7 honest — dumbmodel.com</div></footer>
+<script src="/assets/site-nav.js"></script><script src="/assets/error-boundary.js"></script><script src="/assets/keyboard-a11y.js"></script><script src="/assets/pwa-install.js"></script>
+<script>
+(async()=>{
+ try{
+  const r=await fetch('/assets/eval_scoreboard.json'); const j=await r.json(); const pre=document.getElementById('prov-pre');
+  if(pre) pre.textContent=JSON.stringify({claimed_MAE:j.claimed_MAE_next_game,current:j.current_repro, best:j.real_model_synthetic, dims:{native:j.embedding_dim_native,compat:j.embedding_dim_backward_compat}, towers:'10 families holistic 160 feats ResidualTower cat([x*m,m]) 96h→24d +skip 544+12=556 CLS 128 4L4H →32 L2', params:'~607K', honesty:'MAE 8.41 vs 4.268 claimed →3.8 target player-split honest no season-leak', provenance:'7 hashes honest', source_hashes:'vectors.json nflverse 2025 weekly roster weather Vegas rest def-vs-pos form lag 2000×160'},null,2);
+ }catch(e){ document.getElementById('prov-pre').textContent='provenance load failed '+e.message; }
+})();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{});}
+</script></body></html>

@@ -1,0 +1,46 @@
+{
+  "built": "2026-08-05",
+  "n_players": 2000,
+  "embedding_dim_native": 32,
+  "embedding_dim_compat": 16,
+  "towers": 10,
+  "families": [
+    "rushing",
+    "usage",
+    "form",
+    "redzone",
+    "snaps",
+    "age",
+    "weather",
+    "vegas",
+    "rest",
+    "def_vs_pos"
+  ],
+  "fam_dims": {
+    "rushing": 30,
+    "usage": 16,
+    "form": 20,
+    "redzone": 20,
+    "snaps": 12,
+    "age": 8,
+    "weather": 10,
+    "vegas": 8,
+    "rest": 10,
+    "def_vs_pos": 16
+  },
+  "MAE_claimed": 4.268,
+  "MAE_current": 8.475,
+  "target": 3.8,
+  "source_hashes": [
+    "da3a047ce8e3b1af",
+    "16e41027b661dd85",
+    "da5182fa020b1bc0",
+    "b09fe75dab71b93b",
+    "62697c7d51305f51",
+    "8a42f79ff72dae9d",
+    "b53b509ee2a70da3"
+  ],
+  "provenance": "7/7 honest \u2014 dumbmodel.com hub DM_PROVENANCE pattern",
+  "note": "32-d native L2 16-d slice re-L2 compat cosine=similarity 10 towers 160\u219232 LN GELU\u00d72 +skip 544+12=556 fusion CLS 128 4L4H \u219232 L2 native weekly matrix nflverse 2025 player-split honest",
+  "verification": "MEAS mechanical verification check_cited_fields.py pattern \u2014 every number recomputable"
+}

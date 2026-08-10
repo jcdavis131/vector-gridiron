@@ -1,0 +1,71 @@
+{
+  "domain": "gridiron",
+  "source": "nflverse-data GitHub releases (player_stats weekly CSVs) \u2014 REAL data",
+  "source_url_templates": [
+    "https://github.com/nflverse/nflverse-data/releases/download/player_stats/stats_player_week_{season}.csv",
+    "https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_{season}.csv",
+    "https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_{season}.csv.gz"
+  ],
+  "license": "nflverse data \u2014 CC-BY 4.0 (see docs/DATA_SOURCES.md)",
+  "fetched_at": "2026-08-09T23:43:05Z",
+  "seasons": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "rows": 31670,
+  "entities": 1108,
+  "entity_kind": "NFL player (nflverse player_id), positions QB/RB/WR/TE",
+  "time_range": {
+    "min_time_key": 201901,
+    "max_time_key": 202421,
+    "time_key": "season*100 + week"
+  },
+  "features": "160-dim per-game vector from pipeline/fetch_nflverse.py (families usage/rushing/form/rest real; snaps/age/weather/vegas/def_vs_pos/redzone masked M=0). X is RAW (unscaled); M is the observability mask. Features for row (player, g) use information up to and including game g only.",
+  "targets": {
+    "next_game_fpts": {
+      "construction": "y = nflverse fantasy_points_ppr of the player's next recorded game in the same season (groupby(player, season).shift(-1); NaN->0 before shift, as in the committed pipeline). Rows with no next game are dropped.",
+      "observed": 31670,
+      "mean": 8.4081,
+      "std": 8.1815,
+      "min": -6.66,
+      "max": 57.9
+    },
+    "next_game_yards": {
+      "construction": "y = rushing_yards + receiving_yards + passing_yards (each NaN->0) of the player's next recorded game in the same season.",
+      "observed": 31670,
+      "mean": 58.6175,
+      "std": 78.0538,
+      "min": -20.0,
+      "max": 536.0
+    },
+    "next_game_tds": {
+      "construction": "y = rushing_tds + receiving_tds + passing_tds (each NaN->0) of the player's next recorded game in the same season.",
+      "observed": 31670,
+      "mean": 0.3844,
+      "std": 0.7546,
+      "min": 0.0,
+      "max": 6.0
+    }
+  },
+  "split": {
+    "kind": "temporal",
+    "train_seasons": [
+      2019,
+      2020,
+      2021,
+      2022
+    ],
+    "val_season": 2023,
+    "test_season": 2024,
+    "harness_time_cut": 202400,
+    "n_train": 20672,
+    "n_val": 5471,
+    "n_test": 5527,
+    "note": "Harness baselines fit on train+val (< time_cut); the MTNN fits on train only and early-stops on val. Test (2024) is never visible to any method at fit time."
+  },
+  "leakage_note": "Labels are strictly forward-shifted within (player, season); the label for row (player, week w) uses only the game at week > w. Form features are lagged/rolling over games <= w (shift(1) based). Preprocessing for the MTNN is fit on train rows only."
+}

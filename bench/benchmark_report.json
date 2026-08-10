@@ -9,15 +9,15 @@
     "targets_spec_only": 0,
     "targets_errored": 0,
     "targets_judged": 3,
-    "mtnn_target_wins": 2,
-    "baseline_target_wins": 1,
+    "mtnn_target_wins": 3,
+    "baseline_target_wins": 0,
     "primary_metric_verdicts": {
       "next_game_fpts": true,
-      "next_game_yards": false,
+      "next_game_yards": true,
       "next_game_tds": true
     },
-    "headline": "MTNN beats best baseline on 2/3 judged target(s) (primary metric); baseline wins the rest",
-    "built": "2026-08-09T23:50:53"
+    "headline": "MTNN beats best baseline on all 3 judged target(s)",
+    "built": "2026-08-10T13:49:39"
   },
   "targets": [
     {
@@ -47,7 +47,7 @@
           "mtnn_wins": 4,
           "baseline_wins": 0,
           "headline": "MTNN wins all 4 judged metric(s)",
-          "built": "2026-08-09T23:49:13",
+          "built": "2026-08-10T13:48:00",
           "n_train": 26143,
           "n_test": 5527
         },
@@ -162,10 +162,10 @@
             "is_mtnn": true,
             "status": "ok",
             "metrics": {
-              "spearman_ic": 0.684243,
-              "mae": 4.585008,
-              "rmse": 6.254074,
-              "r2": 0.413748
+              "spearman_ic": 0.682895,
+              "mae": 4.579396,
+              "rmse": 6.267914,
+              "r2": 0.41115
             },
             "note": ""
           }
@@ -176,7 +176,7 @@
             "ranking": [
               {
                 "method": "mtnn",
-                "value": 0.684243
+                "value": 0.682895
               },
               {
                 "method": "hist_gbm",
@@ -214,8 +214,8 @@
             "best_method": "mtnn",
             "best_baseline": "hist_gbm",
             "best_baseline_value": 0.682036,
-            "mtnn_value": 0.684243,
-            "mtnn_delta": 0.002207,
+            "mtnn_value": 0.682895,
+            "mtnn_delta": 0.000859,
             "mtnn_beats_best_baseline": true
           },
           "mae": {
@@ -223,7 +223,7 @@
             "ranking": [
               {
                 "method": "mtnn",
-                "value": 4.585008
+                "value": 4.579396
               },
               {
                 "method": "hist_gbm",
@@ -261,8 +261,8 @@
             "best_method": "mtnn",
             "best_baseline": "hist_gbm",
             "best_baseline_value": 4.620297,
-            "mtnn_value": 4.585008,
-            "mtnn_delta": 0.03529,
+            "mtnn_value": 4.579396,
+            "mtnn_delta": 0.040901,
             "mtnn_beats_best_baseline": true
           },
           "rmse": {
@@ -270,7 +270,7 @@
             "ranking": [
               {
                 "method": "mtnn",
-                "value": 6.254074
+                "value": 6.267914
               },
               {
                 "method": "hist_gbm",
@@ -308,8 +308,8 @@
             "best_method": "mtnn",
             "best_baseline": "hist_gbm",
             "best_baseline_value": 6.273623,
-            "mtnn_value": 6.254074,
-            "mtnn_delta": 0.019549,
+            "mtnn_value": 6.267914,
+            "mtnn_delta": 0.005709,
             "mtnn_beats_best_baseline": true
           },
           "r2": {
@@ -317,7 +317,7 @@
             "ranking": [
               {
                 "method": "mtnn",
-                "value": 0.413748
+                "value": 0.41115
               },
               {
                 "method": "hist_gbm",
@@ -355,8 +355,8 @@
             "best_method": "mtnn",
             "best_baseline": "hist_gbm",
             "best_baseline_value": 0.410077,
-            "mtnn_value": 0.413748,
-            "mtnn_delta": 0.003671,
+            "mtnn_value": 0.41115,
+            "mtnn_delta": 0.001073,
             "mtnn_beats_best_baseline": true
           }
         },
@@ -367,7 +367,7 @@
           "primary_metric": "spearman_ic",
           "construction": "y = fantasy points scored in the player's next game; features from games strictly before it. Temporal split on game date/week: train on weeks <= cut, test strictly after. No future game leaks.",
           "data": "REAL nflverse weekly player stats (see bench/data/datasheet.json)",
-          "mtnn_training": "{\"d_emb\": 32, \"d_model\": 64, \"n_fusion_layers\": 2, \"n_attn_heads\": 4, \"d_tower\": 24, \"d_tower_hidden\": 96, \"n_seasons_embedding\": 4} seed=0 best_epoch=33"
+          "mtnn_training": "{\"d_emb\": 32, \"d_model\": 64, \"n_fusion_layers\": 2, \"n_attn_heads\": 4, \"d_tower\": 24, \"d_tower_hidden\": 96, \"n_seasons_embedding\": 4} loss_mode=uncertainty seeds=[0, 1, 2] best_epochs=[33, 33, 36]"
         }
       }
     },
@@ -395,10 +395,10 @@
         ],
         "summary": {
           "metrics_judged": 4,
-          "mtnn_wins": 0,
-          "baseline_wins": 4,
-          "headline": "baseline wins all 4 judged metric(s) — this domain is simple",
-          "built": "2026-08-09T23:50:04",
+          "mtnn_wins": 1,
+          "baseline_wins": 3,
+          "headline": "MTNN wins 1/4 judged metric(s); baseline wins the rest",
+          "built": "2026-08-10T13:48:48",
           "n_train": 26143,
           "n_test": 5527
         },
@@ -513,10 +513,10 @@
             "is_mtnn": true,
             "status": "ok",
             "metrics": {
-              "spearman_ic": 0.737749,
-              "mae": 27.036409,
-              "rmse": 39.886272,
-              "r2": 0.726793
+              "spearman_ic": 0.7396,
+              "mae": 26.639392,
+              "rmse": 39.96836,
+              "r2": 0.725668
             },
             "note": ""
           }
@@ -526,12 +526,12 @@
             "higher_is_better": true,
             "ranking": [
               {
-                "method": "hist_gbm",
-                "value": 0.738903
+                "method": "mtnn",
+                "value": 0.7396
               },
               {
-                "method": "mtnn",
-                "value": 0.737749
+                "method": "hist_gbm",
+                "value": 0.738903
               },
               {
                 "method": "ridge",
@@ -562,12 +562,12 @@
                 "value": 0.0
               }
             ],
-            "best_method": "hist_gbm",
+            "best_method": "mtnn",
             "best_baseline": "hist_gbm",
             "best_baseline_value": 0.738903,
-            "mtnn_value": 0.737749,
-            "mtnn_delta": -0.001154,
-            "mtnn_beats_best_baseline": false
+            "mtnn_value": 0.7396,
+            "mtnn_delta": 0.000697,
+            "mtnn_beats_best_baseline": true
           },
           "mae": {
             "higher_is_better": false,
@@ -578,7 +578,7 @@
               },
               {
                 "method": "mtnn",
-                "value": 27.036409
+                "value": 26.639392
               },
               {
                 "method": "mlp",
@@ -612,8 +612,8 @@
             "best_method": "hist_gbm",
             "best_baseline": "hist_gbm",
             "best_baseline_value": 26.422756,
-            "mtnn_value": 27.036409,
-            "mtnn_delta": -0.613654,
+            "mtnn_value": 26.639392,
+            "mtnn_delta": -0.216637,
             "mtnn_beats_best_baseline": false
           },
           "rmse": {
@@ -625,7 +625,7 @@
               },
               {
                 "method": "mtnn",
-                "value": 39.886272
+                "value": 39.96836
               },
               {
                 "method": "mlp",
@@ -659,8 +659,8 @@
             "best_method": "hist_gbm",
             "best_baseline": "hist_gbm",
             "best_baseline_value": 39.506988,
-            "mtnn_value": 39.886272,
-            "mtnn_delta": -0.379284,
+            "mtnn_value": 39.96836,
+            "mtnn_delta": -0.461371,
             "mtnn_beats_best_baseline": false
           },
           "r2": {
@@ -672,7 +672,7 @@
               },
               {
                 "method": "mtnn",
-                "value": 0.726793
+                "value": 0.725668
               },
               {
                 "method": "mlp",
@@ -706,8 +706,8 @@
             "best_method": "hist_gbm",
             "best_baseline": "hist_gbm",
             "best_baseline_value": 0.731965,
-            "mtnn_value": 0.726793,
-            "mtnn_delta": -0.005171,
+            "mtnn_value": 0.725668,
+            "mtnn_delta": -0.006297,
             "mtnn_beats_best_baseline": false
           }
         },
@@ -718,7 +718,7 @@
           "primary_metric": "spearman_ic",
           "construction": "y = total yards in the next game; features from prior games. Temporal split.",
           "data": "REAL nflverse weekly player stats (see bench/data/datasheet.json)",
-          "mtnn_training": "{\"d_emb\": 32, \"d_model\": 64, \"n_fusion_layers\": 2, \"n_attn_heads\": 4, \"d_tower\": 24, \"d_tower_hidden\": 96, \"n_seasons_embedding\": 4} seed=0 best_epoch=33"
+          "mtnn_training": "{\"d_emb\": 32, \"d_model\": 64, \"n_fusion_layers\": 2, \"n_attn_heads\": 4, \"d_tower\": 24, \"d_tower_hidden\": 96, \"n_seasons_embedding\": 4} loss_mode=uncertainty seeds=[0, 1, 2] best_epochs=[33, 33, 36]"
         }
       }
     },
@@ -746,10 +746,10 @@
         ],
         "summary": {
           "metrics_judged": 4,
-          "mtnn_wins": 3,
-          "baseline_wins": 1,
-          "headline": "MTNN wins 3/4 judged metric(s); baseline wins the rest",
-          "built": "2026-08-09T23:50:53",
+          "mtnn_wins": 4,
+          "baseline_wins": 0,
+          "headline": "MTNN wins all 4 judged metric(s)",
+          "built": "2026-08-10T13:49:39",
           "n_train": 26143,
           "n_test": 5527
         },
@@ -864,10 +864,10 @@
             "is_mtnn": true,
             "status": "ok",
             "metrics": {
-              "spearman_ic": 0.466335,
-              "mae": 0.409632,
-              "rmse": 0.600898,
-              "r2": 0.358286
+              "spearman_ic": 0.466457,
+              "mae": 0.402013,
+              "rmse": 0.599477,
+              "r2": 0.361318
             },
             "note": ""
           }
@@ -878,7 +878,7 @@
             "ranking": [
               {
                 "method": "mtnn",
-                "value": 0.466335
+                "value": 0.466457
               },
               {
                 "method": "hist_gbm",
@@ -916,13 +916,17 @@
             "best_method": "mtnn",
             "best_baseline": "hist_gbm",
             "best_baseline_value": 0.463206,
-            "mtnn_value": 0.466335,
-            "mtnn_delta": 0.003128,
+            "mtnn_value": 0.466457,
+            "mtnn_delta": 0.00325,
             "mtnn_beats_best_baseline": true
           },
           "mae": {
             "higher_is_better": false,
             "ranking": [
+              {
+                "method": "mtnn",
+                "value": 0.402013
+              },
               {
                 "method": "ridge",
                 "value": 0.407112
@@ -938,10 +942,6 @@
               {
                 "method": "pca_ridge(n=16)",
                 "value": 0.409624
-              },
-              {
-                "method": "mtnn",
-                "value": 0.409632
               },
               {
                 "method": "persistence_current_stat",
@@ -960,19 +960,19 @@
                 "value": 0.562043
               }
             ],
-            "best_method": "ridge",
+            "best_method": "mtnn",
             "best_baseline": "ridge",
             "best_baseline_value": 0.407112,
-            "mtnn_value": 0.409632,
-            "mtnn_delta": -0.00252,
-            "mtnn_beats_best_baseline": false
+            "mtnn_value": 0.402013,
+            "mtnn_delta": 0.0051,
+            "mtnn_beats_best_baseline": true
           },
           "rmse": {
             "higher_is_better": false,
             "ranking": [
               {
                 "method": "mtnn",
-                "value": 0.600898
+                "value": 0.599477
               },
               {
                 "method": "hist_gbm",
@@ -1010,8 +1010,8 @@
             "best_method": "mtnn",
             "best_baseline": "hist_gbm",
             "best_baseline_value": 0.601075,
-            "mtnn_value": 0.600898,
-            "mtnn_delta": 0.000177,
+            "mtnn_value": 0.599477,
+            "mtnn_delta": 0.001598,
             "mtnn_beats_best_baseline": true
           },
           "r2": {
@@ -1019,7 +1019,7 @@
             "ranking": [
               {
                 "method": "mtnn",
-                "value": 0.358286
+                "value": 0.361318
               },
               {
                 "method": "hist_gbm",
@@ -1057,8 +1057,8 @@
             "best_method": "mtnn",
             "best_baseline": "hist_gbm",
             "best_baseline_value": 0.357908,
-            "mtnn_value": 0.358286,
-            "mtnn_delta": 0.000378,
+            "mtnn_value": 0.361318,
+            "mtnn_delta": 0.00341,
             "mtnn_beats_best_baseline": true
           }
         },
@@ -1069,7 +1069,7 @@
           "primary_metric": "spearman_ic",
           "construction": "y = total TDs in the next game; features from prior games. Temporal split.",
           "data": "REAL nflverse weekly player stats (see bench/data/datasheet.json)",
-          "mtnn_training": "{\"d_emb\": 32, \"d_model\": 64, \"n_fusion_layers\": 2, \"n_attn_heads\": 4, \"d_tower\": 24, \"d_tower_hidden\": 96, \"n_seasons_embedding\": 4} seed=0 best_epoch=33"
+          "mtnn_training": "{\"d_emb\": 32, \"d_model\": 64, \"n_fusion_layers\": 2, \"n_attn_heads\": 4, \"d_tower\": 24, \"d_tower_hidden\": 96, \"n_seasons_embedding\": 4} loss_mode=uncertainty seeds=[0, 1, 2] best_epochs=[33, 33, 36]"
         }
       }
     }

@@ -304,11 +304,19 @@ def train_mtnn_multitask(
     sid = np.minimum(sid, max_train_sid)
     n_seasons = max_train_sid + 1
 
-    prep = dict(
-        Z=Z, M=M, Yz=Yz, sid=sid, n_seasons=n_seasons,
-        train_idx=train_idx, val_idx=val_idx, test_idx=test_idx,
-        feats=feats, y_mu=y_mu, y_sd=y_sd,
-    )
+    prep = {
+        "Z": Z,
+        "M": M,
+        "Yz": Yz,
+        "sid": sid,
+        "n_seasons": n_seasons,
+        "train_idx": train_idx,
+        "val_idx": val_idx,
+        "test_idx": test_idx,
+        "feats": feats,
+        "y_mu": y_mu,
+        "y_sd": y_sd,
+    }
 
     t0 = time.time()
     member_preds = []
@@ -317,7 +325,10 @@ def train_mtnn_multitask(
         preds_sd, diag_sd = train_mtnn_one_seed(prep, seed=sd, epochs=epochs, patience=patience, loss_mode=loss_mode)
         member_preds.append(preds_sd)
         member_diags.append(diag_sd)
-        print(f"[mtnn] seed={sd} done: best_val_ref_mse={diag_sd['best_val_ref_mse']:.4f} @ep{diag_sd['best_epoch']}; {diag_sd['params_total']} params")
+        print(
+            f"[mtnn] seed={sd} done: best_val_ref_mse={diag_sd['best_val_ref_mse']:.4f} "
+            f"@ep{diag_sd['best_epoch']}; {diag_sd['params_total']} params"
+        )
 
     preds = {t: np.mean([mp[t] for mp in member_preds], axis=0) for t in TARGETS}
 
@@ -456,7 +467,8 @@ def main(argv: list[str] | None = None) -> int:
                 "mtnn_training": (
                     json.dumps(config["dims"])
                     + f" loss_mode={config['loss_mode']} seeds={config['ensemble_seeds']} "
-                    + "best_epochs=" + json.dumps([d["best_epoch"] for d in config["member_diagnostics"]])
+                    + "best_epochs="
+                    + json.dumps([d["best_epoch"] for d in config["member_diagnostics"]])
                 ),
             },
         )

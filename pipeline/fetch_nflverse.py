@@ -259,8 +259,8 @@ FEATURES = build_feature_names()
 # ---------------------------------------------------------------------------
 def _http_get(url: str, timeout: float = 60.0) -> bytes:
     """GET raw bytes, honoring env proxies / CA bundle via urllib defaults."""
-    req = urllib.request.Request(url, headers={"User-Agent": "vector-gridiron/fetch_nflverse"})  # noqa: S310
-    with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310 (fixed https hosts)
+    req = urllib.request.Request(url, headers={"User-Agent": "vector-gridiron/fetch_nflverse"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
         return resp.read()
 
 

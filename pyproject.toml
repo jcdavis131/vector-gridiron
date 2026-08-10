@@ -37,6 +37,10 @@ fixable = ["ALL"]
 [tool.ruff.lint.per-file-ignores]
 "assets/*" = ["ALL"]
 "scripts/*" = ["S","TCH","E402"]
+# Data-fetch scripts (same convention as scripts/*): S = audited urllib/subprocess/random
+# usage in the resumable fetcher; E722 = deliberate bare-excepts that must keep catching
+# everything so a backfill never crashes mid-run (narrowing them would change behavior).
+"pipeline/fetch_*.py" = ["S","E722"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["assets","scripts"]

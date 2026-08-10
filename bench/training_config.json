@@ -12,18 +12,96 @@
   },
   "params_total": 172528,
   "optimizer": "Adam(lr=1e-3, weight_decay=1e-4)",
-  "loss": "mean MSE over 3 z-scored targets (target stats fit on train rows only)",
+  "loss": "uncertainty",
+  "loss_mode": "uncertainty",
+  "loss_mode_detail": "homoscedastic uncertainty weighting (Kendall/Gal/Cipolla 2018): loss = sum_i [exp(-log_var_i) * MSE_i + log_var_i], log_var_i a learned per-target scalar (3 extra params) initialized to 0 (equal weighting at init). Chosen over equal-weighted mean MSE by an improvement-pass hyperparameter search selected on VAL loss only (bench/README.md 'Improvement pass' section).",
+  "ensemble_seeds": [
+    0,
+    1,
+    2
+  ],
+  "n_ensemble_members": 3,
+  "member_diagnostics": [
+    {
+      "seed": 0,
+      "loss_mode": "uncertainty",
+      "best_epoch": 33,
+      "epochs_run": 48,
+      "best_val_ref_mse": 0.460272,
+      "best_val_per_target_mse": [
+        0.562047,
+        0.255542,
+        0.563229
+      ],
+      "params_total": 172528,
+      "wall_seconds": 276.4,
+      "learned_log_var": [
+        -0.4788,
+        -1.0292,
+        -0.4454
+      ],
+      "learned_task_weight": [
+        1.6142,
+        2.7989,
+        1.5612
+      ]
+    },
+    {
+      "seed": 1,
+      "loss_mode": "uncertainty",
+      "best_epoch": 33,
+      "epochs_run": 48,
+      "best_val_ref_mse": 0.465268,
+      "best_val_per_target_mse": [
+        0.569029,
+        0.265959,
+        0.560817
+      ],
+      "params_total": 172528,
+      "wall_seconds": 281.5,
+      "learned_log_var": [
+        -0.4806,
+        -1.0335,
+        -0.4512
+      ],
+      "learned_task_weight": [
+        1.6171,
+        2.8108,
+        1.5702
+      ]
+    },
+    {
+      "seed": 2,
+      "loss_mode": "uncertainty",
+      "best_epoch": 36,
+      "epochs_run": 51,
+      "best_val_ref_mse": 0.463294,
+      "best_val_per_target_mse": [
+        0.565375,
+        0.264006,
+        0.560501
+      ],
+      "params_total": 172528,
+      "wall_seconds": 294.6,
+      "learned_log_var": [
+        -0.4772,
+        -1.0591,
+        -0.4501
+      ],
+      "learned_task_weight": [
+        1.6115,
+        2.8838,
+        1.5684
+      ]
+    }
+  ],
   "batch_size": 1024,
   "max_epochs": 150,
-  "epochs_run": 48,
-  "best_epoch": 33,
-  "best_val_mse_z": 0.462638,
   "early_stop_patience": 15,
-  "seed": 0,
   "preprocessing": "vector_core.RobustScaler (median/IQR, clip [-3,3]) fit on train rows over observed (M==1) cells only; masked cells 0. Targets z-scored on train rows; predictions de-standardized back to raw units.",
   "train_rows": 20672,
   "val_rows": 5471,
   "test_rows": 5527,
   "season_id_clamp": "val/test season ids clamped to max train id (3)",
-  "wall_seconds": 302.8
+  "wall_seconds": 854.7
 }

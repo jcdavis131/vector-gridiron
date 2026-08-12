@@ -23,6 +23,25 @@ dev = ["ruff>=0.8.2","pre-commit>=3.5","pytest>=8.0"]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.metadata]
+# vector-core is pulled straight from vector-hub's git repo (see the
+# dependency above) rather than PyPI. Hatchling refuses to build metadata
+# for a direct git/URL reference unless this is explicitly opted in --
+# without it, `pip install .` / `pip install -e ".[dev]"` fails outright
+# with "Dependency ... cannot be a direct reference".
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+# This project ships no importable `vector_gridiron` package -- it's a flat
+# collection of scripts (pipeline/, scripts/, operator/, bench/) invoked
+# directly (`python pipeline/train_mtnn.py`), plus a static site. Hatchling's
+# default wheel file-selection heuristic looks for a source dir matching the
+# project name and errors out ("Unable to determine which files to ship")
+# when none exists. `pip install -e .` is only used here to install the
+# dependency set (torch/pandas/vector-core/etc.) for local dev + CI, so skip
+# file selection entirely rather than inventing a fake package layout.
+bypass-selection = true
+
 [tool.ruff]
 target-version = "py311"
 line-length = 120

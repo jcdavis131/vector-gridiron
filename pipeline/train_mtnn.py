@@ -325,7 +325,7 @@ def train_mtnn(args):
     seasons_tr = np.array(season_ids_np)[train_mask]
     X_val, y_val = X[val_mask], y[val_mask]
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # auto: GPU on personal local, CPU in Hatch VM
     print(f"  device {device}")
 
     # torch tensors (validation split; train batches are built per-step below)

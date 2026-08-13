@@ -1,0 +1,111 @@
+{
+  "built": "2026-08-09T17:05:56.330744Z",
+  "domain": "gridiron",
+  "construct_validity": {
+    "definition_plain_english": "next-game fantasy PPR + matchup closing risk",
+    "operationalization": "Model predicts MAE next-game PPR 4.268\u21923.8 \u2014 nflverse fetch required for repro; measured via CV MAE/RMSE/R2 + SHAP/permutation importance + glass-box logs",
+    "convergent_checks": [
+      "SHAP rank correlation across models",
+      "permutation importance agreement",
+      "cross-domain analogs where avail"
+    ],
+    "discriminant_checks": [
+      "no leakage feature correlation",
+      "negative control shuffle test"
+    ],
+    "predictive_validity": "out-of-sample CV + holdout 80/10/10 split stratified by era/sector (train13/val1/test3 pattern)",
+    "threats_documented": [
+      "vanity metric risk",
+      "era shift (COVID, TV spike),",
+      "survivorship bias in team/season joins"
+    ],
+    "modeling_rule_reminder": "train real models \u22652, 5-fold CV MAE/RMSE/R2, model-agnostic SHAP/permutation + glass-box log \u2014 no heuristics alone"
+  },
+  "rule_compliance": {
+    "train_ge_2_models": false,
+    "cv_5_fold": false,
+    "metrics": [
+      "MAE",
+      "RMSE",
+      "R2"
+    ],
+    "explainer": "SHAP or permutation + partial dependence logged in eval JSON + surfaced glass-box",
+    "shipped_threshold": 8.0,
+    "status": "scaffold \u2014 needs real training to pass"
+  },
+  "evaluation_protocol": {
+    "split": "80/10/10 stratified by era/sector/year",
+    "cv": "5-fold grouped by player/ticker/season to prevent leakage",
+    "player_split_honest": "no season-split leakage \u2014 player/team holdout mandatory per hoops modeling rule locked 2026-08-08",
+    "holdout": "final refit on train+val, eval on test only once"
+  },
+  "next_game": {
+    "Linear": {
+      "avg_mae": null,
+      "avg_rmse": null,
+      "avg_r2": null,
+      "fold_metrics": [],
+      "perm_importance_delta_mae": {},
+      "feature_names": [],
+      "base_mae_full": null,
+      "status": "not_trained \u2014 run pipeline/train_mtnn.py or equivalent \u22652 models to fill",
+      "shap_logged": false,
+      "glass_box_example": "TBD \u2014 must log per README modeling rule"
+    },
+    "Ridge": {
+      "avg_mae": null,
+      "avg_rmse": null,
+      "avg_r2": null,
+      "fold_metrics": [],
+      "perm_importance_delta_mae": {},
+      "feature_names": [],
+      "base_mae_full": null,
+      "status": "not_trained \u2014 run pipeline/train_mtnn.py or equivalent \u22652 models to fill",
+      "shap_logged": false,
+      "glass_box_example": "TBD \u2014 must log per README modeling rule"
+    },
+    "RandomForest": {
+      "avg_mae": null,
+      "avg_rmse": null,
+      "avg_r2": null,
+      "fold_metrics": [],
+      "perm_importance_delta_mae": {},
+      "feature_names": [],
+      "base_mae_full": null,
+      "status": "not_trained \u2014 run pipeline/train_mtnn.py or equivalent \u22652 models to fill",
+      "shap_logged": false,
+      "glass_box_example": "TBD \u2014 must log per README modeling rule"
+    },
+    "Transformer_MTNN32": {
+      "avg_mae": null,
+      "avg_rmse": null,
+      "avg_r2": null,
+      "fold_metrics": [],
+      "perm_importance_delta_mae": {},
+      "feature_names": [],
+      "base_mae_full": null,
+      "status": "not_trained \u2014 run pipeline/train_mtnn.py or equivalent \u22652 models to fill",
+      "shap_logged": false,
+      "glass_box_example": "TBD \u2014 must log per README modeling rule"
+    },
+    "RealMLP": {
+      "avg_mae": null,
+      "avg_rmse": null,
+      "avg_r2": null,
+      "fold_metrics": [],
+      "perm_importance_delta_mae": {},
+      "feature_names": [],
+      "base_mae_full": null,
+      "status": "not_trained \u2014 run pipeline/train_mtnn.py or equivalent \u22652 models to fill",
+      "shap_logged": false,
+      "glass_box_example": "TBD \u2014 must log per README modeling rule"
+    }
+  },
+  "meta": {
+    "zero_deps_flag": "pipeline/fetch_missing_core.py respects zero-deps \u2014 no pip installs, no cloud",
+    "coverage_audit": "run with --audit-only to see missing years/files vs hoops gold standard",
+    "sister_comparison": "hoops 686 files 51M cache complete; sister gaps 95-100% missing before scaffold",
+    "created_by": "fetch_missing_core scaffold generation (ULTRACODE subtask)",
+    "next_steps": "1. populate pipeline/cache/ via fetch_missing_core.py, 2. train \u22652 models with CV, 3. fill perm importance + SHAP, 4. re-run eval to pass verifier threshold 8.0"
+  }
+}

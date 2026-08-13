@@ -1,0 +1,63 @@
+{
+  "cap_by_season": {
+    "2011": 120000000,
+    "2012": 120600000,
+    "2013": 123000000,
+    "2014": 133000000,
+    "2015": 143280000,
+    "2016": 155270000,
+    "2017": 167000000,
+    "2018": 177200000,
+    "2019": 188200000,
+    "2020": 198200000,
+    "2021": 182500000,
+    "2022": 208200000,
+    "2023": 224800000,
+    "2024": 255400000,
+    "2025": 279200000,
+    "2026": 295000000
+  },
+  "cba_by_season": {
+    "2011": "2011 CBA \u2014 10yr, rookie wage scale, 47-48.5% revenue split",
+    "2012": "2011 CBA",
+    "2013": "2011 CBA",
+    "2014": "2011 CBA",
+    "2015": "2011 CBA",
+    "2016": "2011 CBA",
+    "2017": "2011 CBA",
+    "2018": "2011 CBA",
+    "2019": "2011 CBA",
+    "2020": "2020 CBA \u2014 17-game season, 48% player share grows to 48.5%, playoff expansion",
+    "2021": "2020 CBA \u2014 17 games",
+    "2022": "2020 CBA",
+    "2023": "2020 CBA",
+    "2024": "2020 CBA \u2014 $110B TV deal starts 2023, cap spike 2024",
+    "2025": "2020 CBA \u2014 year 2 of $110B",
+    "2026": "2020 CBA"
+  },
+  "tv_by_season": {
+    "2011": "2006-13 FOX/CBS/NBC/ESPN $3.7B/yr",
+    "2012": "2006-13",
+    "2013": "2014-22 FOX/CBS/NBC/ESPN $5.9B/yr",
+    "2014": "2014-22",
+    "2015": "2014-22",
+    "2016": "2014-22",
+    "2017": "2014-22",
+    "2018": "2014-22",
+    "2019": "2014-22",
+    "2020": "2014-22 \u2014 COVID",
+    "2021": "2014-22",
+    "2022": "2014-22 last year",
+    "2023": "2023-33 FOX/CBS/NBC/ESPN/Amazon $10B/yr (~$110B 11yr) + YouTube $2B Sunday Ticket",
+    "2024": "2023-33 \u2014 spike driver +30M cap",
+    "2025": "2023-33 year2",
+    "2026": "2023-33 year3 smoothing mandatory"
+  },
+  "notes": {
+    "hard_cap_vs_soft": "NFL is hard cap (no luxury tax/aprons unlike NBA 2023 CBA). Single threshold \u2014 dead cap hits matter more than cap_pct.",
+    "franchise_tag": "Tag value = top5 avg at position \u2014 restricts mobility, analog to NBA max but team-initiated.",
+    "cap_floor": "89% cash spend floor over 4yr period (2021-24 89%) \u2014 no per-season floor like NBA 90%.",
+    "spike_year": "2024 +$30.6M (13.6%) from $110B TV \u2014 NFL equivalent of NBA 2016 +34% spike, but mandatory smoothing 2025+ via 2020 CBA growth formula.",
+    "source": "Spotrac, OverTheCap, ESPN, NFL Communications 2025 official $279.2M team cap"
+  }
+}

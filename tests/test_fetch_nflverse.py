@@ -133,7 +133,7 @@ def test_roundtrip_through_train_mtnn_load_bundle(tmp_path, payload: dict):
     tm = _trainer()
     out = tmp_path / "train_matrix.npz"
     np.savez_compressed(out, **payload)
-    X, M, y, pos, pids, season_ids, seasons, feats, fam_dims, uids = tm.load_bundle(out)
+    X, M, y, _pos, pids, _season_ids, _seasons, feats, _fam_dims, _uids = tm.load_bundle(out)
     n = X.shape[0]
     assert X.shape == (n, 160)
     assert M.shape == (n, 160)
@@ -141,5 +141,5 @@ def test_roundtrip_through_train_mtnn_load_bundle(tmp_path, payload: dict):
     assert y.shape == (n,)
     assert len(pids) == n
     # trainer can build family slices from these features
-    slices, dims = tm.family_slices_from_dims(feats, DEFAULT_FAM_DIMS)
+    slices, _dims = tm.family_slices_from_dims(feats, DEFAULT_FAM_DIMS)
     assert sum(len(v) for v in slices.values()) == 150  # 10 families, pad excluded

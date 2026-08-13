@@ -184,7 +184,7 @@ def family_slices_from_dims(
 
 def kmeans(X, k, seed=0, iters=20):
     rng = np.random.default_rng(seed)
-    n, d = X.shape
+    n, _d = X.shape
     idx = rng.choice(n, k, replace=False)
     cent = X[idx].astype(np.float32)
     for _ in range(iters):
@@ -268,7 +268,7 @@ def train_mtnn(args):
     elif src == "synthetic":
         print("[gridiron] Using SYNTHETIC fallback matrix — run fetch_nflverse.py for real data.")
     X, M, y, pos, pids, season_ids_np, seasons, feats, fam_dims_manifest, player_uids = load_bundle(matrix_path)
-    n, F_dim = X.shape
+    _n, F_dim = X.shape
     print(f"  X {X.shape} y mean {float(y.mean()):.2f} pos dist {np.bincount(pos) if len(pos) else 'n/a'}")
     print(f"  seasons {len(set(seasons))} feats {len(feats)} families raw dims {fam_dims_manifest}")
 
@@ -277,7 +277,7 @@ def train_mtnn(args):
         fam_dims = fam_dims_manifest
         # need slice reconstruction: we only know dims, not cols; if original had families dict col lists we lost
         # approximate contiguous as in model.py
-        slices, fam_dims_calc = family_slices_from_dims(feats, fam_dims)
+        slices, _fam_dims_calc = family_slices_from_dims(feats, fam_dims)
     else:
         slices, fam_dims = family_slices_from_dims(feats, DEFAULT_FAM_DIMS)
     print(f"  families {fam_dims}")
@@ -325,7 +325,8 @@ def train_mtnn(args):
     seasons_tr = np.array(season_ids_np)[train_mask]
     X_val, y_val = X[val_mask], y[val_mask]
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # auto: GPU on personal local, CPU in Hatch VM
+    # auto: GPU on personal local, CPU in Hatch VM
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"  device {device}")
 
     # torch tensors (validation split; train batches are built per-step below)
@@ -419,7 +420,7 @@ def train_mtnn(args):
         model.eval()
         with torch.no_grad():
             xs_v, ms_v = batch_fam_torch(X_val_t)
-            emb_v, out_v = model(xs_v, ms_v, season_val_t)
+            _emb_v, out_v = model(xs_v, ms_v, season_val_t)
             mae = F.l1_loss(out_v["fpts"], y_val_t).item()
             # optional MoE val
             mae_moe = F.l1_loss(out_v["fpts_moe"], y_val_t).item()

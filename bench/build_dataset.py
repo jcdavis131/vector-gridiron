@@ -250,7 +250,7 @@ def build(seasons: list[int]) -> tuple[dict[str, np.ndarray], dict]:
         "fetched_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "seasons": seasons,
         "rows": int(n),
-        "entities": int(len(set(lab["_pid"]))),
+        "entities": len(set(lab["_pid"])),
         "entity_kind": "NFL player (nflverse player_id), positions QB/RB/WR/TE",
         "time_range": {
             "min_time_key": int(time_key.min()),
@@ -295,9 +295,9 @@ def build(seasons: list[int]) -> tuple[dict[str, np.ndarray], dict]:
             "val_season": VAL_SEASON,
             "test_season": TEST_SEASON,
             "harness_time_cut": TIME_CUT,
-            "n_train": int(len(train_idx)),
-            "n_val": int(len(val_idx)),
-            "n_test": int(len(test_idx)),
+            "n_train": len(train_idx),
+            "n_val": len(val_idx),
+            "n_test": len(test_idx),
             "note": (
                 "Harness baselines fit on train+val (< time_cut); the MTNN fits "
                 "on train only and early-stops on val. Test (2024) is never "

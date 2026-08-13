@@ -373,9 +373,9 @@ def train_mtnn_multitask(
             "over observed (M==1) cells only; masked cells 0. Targets z-scored on "
             "train rows; predictions de-standardized back to raw units."
         ),
-        "train_rows": int(len(train_idx)),
-        "val_rows": int(len(val_idx)),
-        "test_rows": int(len(test_idx)),
+        "train_rows": len(train_idx),
+        "val_rows": len(val_idx),
+        "test_rows": len(test_idx),
         "season_id_clamp": (f"val/test season ids clamped to max train id ({max_train_sid})"),
         "wall_seconds": round(time.time() - t0, 1),
     }

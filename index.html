@@ -13,8 +13,8 @@
 <meta name="twitter:image" content="/assets/og-1200x630.png">
 <meta name="theme-color" content="#1A150F">
 <link rel="manifest" href="/manifest.json">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
+
+
 <link rel="stylesheet" href="/assets/shell.css">
 <link rel="stylesheet" href="/assets/gridiron.css">
 <link rel="stylesheet" href="/assets/unified.css">
@@ -26,7 +26,7 @@
 <link rel="stylesheet" href="/assets/trading-card.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8F%88%3C/text%3E%3C/svg%3E">
 <style>
-.vg-pill{display:inline-flex;align-items:center;gap:6px;border:1.6px solid #f5f7f2;border-radius:999px;padding:4px 10px;background:#0a130d;color:#f5f7f2;font-family:ui-monospace,monospace;font-size:10px;font-weight:800;box-shadow:1.5px 1.5px 0 #f5f7f2}
+.vg-pill{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:7px 14px;border:2px solid #f5f7f2;border-radius:999px;background:#0a130d;color:#f5f7f2;font-family:ui-monospace,monospace;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;box-shadow:2px 2px 0 #f5f7f2;white-space:nowrap}
 .vg-pill--accent{background:#f0873c;color:#20120a}.vg-pill--green{background:#3ddc71;color:#0a130d}
 .vg-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#0f1d14;border:2.2px solid #f5f7f2;border-radius:12px;box-shadow:4px 4px 0 #f5f7f2;padding:10px 14px;font-family:ui-monospace,monospace;font-size:12px;color:#f5f7f2;z-index:200;display:none}
 .vg-toast.is-visible{display:flex;gap:8px;align-items:center}
@@ -54,14 +54,16 @@
         <span class="vg-pill">MAE 8.41 current → 4.268 claimed → 3.8 target</span>
         <span class="vg-pill">10 family towers rushing·targets·YAC·redzone·snaps·age·weather·Vegas·rest·def-vs-pos</span>
       </div>
-      <h1 class="vg-hero-h1" style="font-family:'Architects Daughter',ui-monospace,monospace;font-size:clamp(28px,5vw,42px);margin:6px 0;color:#f5f7f2">Your fantasy team<br>lives in 32-d.</h1>
+      <h1 class="vg-hero-h1" style="font-family:var(--sans);font-size:clamp(28px,5vw,42px);margin:6px 0;color:#f5f7f2">Your fantasy team<br>lives in 32-d.</h1>
       <p class="vg-hero-deck" style="color:#c4d0c6;line-height:1.55;font-size:13.5px;max-width:62ch"><b>10 family towers</b> rushing·targets·YAC·redzone·snaps·age·weather·Vegas·rest·def-vs-pos → <b>96h GELU LN → 24-d</b> + skip → transformer 128-d 4L4H CLS → <b>32-d L2</b> native, 16-d slice re-L2 compat where cosine=similarity. <b>MTNN weekly MAE 4.268 → 3.8 target</b> with Procrustes rotation-only + RealMLP RobustScaler + MoE. <span style="border-bottom:2px solid #3ddc71;font-weight:800">Player-split honest, no season-split leakage.</span></p>
       <div class="vg-cta-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
-        <a class="btn btn-primary" href="/play?tab=daily" style="min-height:44px;background:#f0873c;color:#20120a;border:2px solid #f5f7f2;border-radius:10px;padding:8px 12px;font-family:ui-monospace,monospace;font-weight:900;box-shadow:3px 3px 0 #f5f7f2;text-decoration:none">▶ Play Today</a>
-        <button class="btn" id="btn-random" style="min-height:44px;border:2px solid #f5f7f2;border-radius:10px;padding:8px 12px;background:#0a130d;color:#f5f7f2;font-family:ui-monospace,monospace;font-weight:800;cursor:pointer">🎲 Random Player</button>
-        <a class="btn" id="btn-pack" href="/play?pack=1" style="min-height:44px;border:2px solid #f5f7f2;border-radius:10px;padding:8px 12px;background:#fff;color:#0a130d;font-family:ui-monospace,monospace;font-weight:800;text-decoration:none">📦 Pack 1</a>
+        <a class="btn btn-primary" href="/play?tab=daily" style="min-height:40px;background:#f0873c;color:#20120a;border:2px solid #f5f7f2;border-radius:10px;padding:8px 12px;font-family:ui-monospace,monospace;font-weight:900;box-shadow:3px 3px 0 #f5f7f2;text-decoration:none">▶ Play Today</a>
+        <button class="btn" id="btn-random" style="min-height:40px;border:2px solid #f5f7f2;border-radius:10px;padding:8px 12px;background:#0a130d;color:#f5f7f2;font-family:ui-monospace,monospace;font-weight:800;cursor:pointer">🎲 Random Player</button>
+        <a class="btn" id="btn-pack" href="/play?pack=1" style="min-height:40px;border:2px solid #f5f7f2;border-radius:10px;padding:8px 12px;background:#fff;color:#0a130d;font-family:ui-monospace,monospace;font-weight:800;text-decoration:none">📦 Pack 1</a>
         <span class="small-mono" style="color:#93a596;align-self:center">2,000×160 · 10×160→32 towers · 544+12 season 556→128→32 L2 ~607K params</span>
       </div>
+      
+    <details style="margin:10px 0;padding:8px 12px;border:1.6px dashed #28402e;border-radius:10px;background:rgba(15,29,20,.6)"><summary style="cursor:pointer;font-family:ui-monospace,monospace;font-size:11px;font-weight:800;color:#c4d0c6">Technical details — MTNN honest (collapsed)</summary><div style="margin-top:8px;color:#93a596;font-size:12px;line-height:1.5" class="small-mono">10 family towers: rushing·targets·YAC·redzone·snaps·age·weather·Vegas·rest·def-vs-pos → 96h GELU LN → 24-d + skip → transformer 128-d 4L4H CLS → 32-d L2 native, 16-d slice re-L2. 544+12 season 556→128→32 ~607K params. Player-split honest, no season leakage. Procrustes rotation-only chain.</div></details>
       <div class="vg-viral-row" id="viral-row">
         <span class="small-mono" style="color:#f5f7f2;font-weight:900">Pack Battle:</span>
         <a class="vg-pill" href="/play?pack=1" data-pack="1">1 card</a>
@@ -104,28 +106,28 @@
     <div id="persona-grid" style="display:grid;gap:12px">
       <a class="pcard" href="https://hoops.dumbmodel.com/owner" style="text-decoration:none;color:#f5f7f2;border:2.2px solid #f5f7f2;border-left:5px solid #f0873c;border-radius:12px;background:#0f1d14;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:3px 3px 0 #f5f7f2">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="vg-pill" style="background:#f0873c;color:#20120a;font-size:11px">🏆 Owner / GM</span><span class="vg-pill" style="font-size:10px;background:#0a130d">cap $255M</span></div>
-        <b style="font-family:'Architects Daughter',ui-monospace,monospace;font-size:18px">Championship Windows</b>
+        <b style="font-family:var(--sans);font-size:18px">Championship Windows</b>
         <div style="font-size:12.8px;color:#c4d0c6;line-height:1.45">Cap & draft capital stacked — W*/$M wage-cap NFL style, true FOR, where HOU 9.8 W*/$M beats DAL 5.2. Apron planner + rookie scale surplus.</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="vg-pill" style="font-size:10px">FOR 0.35/0.35/0.30</span><span class="vg-pill" style="font-size:10px">W*/$M</span><span class="vg-pill" style="font-size:10px">Draft AV+</span></div>
         <div style="margin-top:2px"><span style="display:inline-flex;min-height:38px;padding:8px 12px;border:2px solid #f5f7f2;border-radius:10px;background:#f0873c;color:#20120a;font-family:ui-monospace,monospace;font-weight:900;font-size:12px;box-shadow:2px 2px 0 #f5f7f2">Open Owner →</span></div>
       </a>
       <a class="pcard" href="https://hoops.dumbmodel.com/player" style="text-decoration:none;color:#f5f7f2;border:2.2px solid #f5f7f2;border-left:5px solid #3ddc71;border-radius:12px;background:#0f1d14;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:3px 3px 0 #f5f7f2">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="vg-pill vg-pill--green" style="font-size:11px">👟 Player WR/RB</span><span class="vg-pill" style="font-size:10px;background:#0a130d">sep 2.8y</span></div>
-        <b style="font-family:'Architects Daughter',ui-monospace,monospace;font-size:18px">Separation King</b>
+        <b style="font-family:var(--sans);font-size:18px">Separation King</b>
         <div style="font-size:12.8px;color:#c4d0c6;line-height:1.45">Stay on field 3rd down — closer 1.22 stays late, exploitable 0.71 sits. Separation vs man/zone, YAC+, 3rd-down conversion, closing factor 4th Q.</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="vg-pill" style="font-size:10px;background:#142a1b;color:#f5f7f2">closer 1.22</span><span class="vg-pill" style="font-size:10px;background:#2a1c14;color:#f5f7f2">exploit 0.71</span><span class="vg-pill" style="font-size:10px">sep/cap%</span></div>
         <div style="margin-top:2px"><span style="display:inline-flex;min-height:38px;padding:8px 12px;border:2px solid #f5f7f2;border-radius:10px;background:#3ddc71;color:#0a130d;font-family:ui-monospace,monospace;font-weight:900;font-size:12px;box-shadow:2px 2px 0 #f5f7f2">Open Player →</span></div>
       </a>
       <a class="pcard" href="https://hoops.dumbmodel.com/brand" style="text-decoration:none;color:#f5f7f2;border:2.2px solid #f5f7f2;border-left:5px solid #5aa0f0;border-radius:12px;background:#0f1d14;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:3px 3px 0 #f5f7f2">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="vg-pill" style="background:#5aa0f0;color:#fff;font-size:11px">📺 Brand</span><span class="vg-pill" style="font-size:10px;background:#0a130d">Nielsen</span></div>
-        <b style="font-family:'Architects Daughter',ui-monospace,monospace;font-size:18px">TV Windows & Primetime Story</b>
+        <b style="font-family:var(--sans);font-size:18px">TV Windows & Primetime Story</b>
         <div style="font-size:12.8px;color:#c4d0c6;line-height:1.45">Wins into story — market beat +4.5, primetime flex valuation, Nielsen windows, SNF/MNF slot lift, storyline alpha over pure Ws.</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="vg-pill" style="font-size:10px">Wins/$B</span><span class="vg-pill" style="font-size:10px">PT vis 2.2×</span><span class="vg-pill" style="font-size:10px">ValΔ% +1.8pp</span></div>
         <div style="margin-top:2px"><span style="display:inline-flex;min-height:38px;padding:8px 12px;border:2px solid #f5f7f2;border-radius:10px;background:#5aa0f0;color:#fff;font-family:ui-monospace,monospace;font-weight:900;font-size:12px;box-shadow:2px 2px 0 #f5f7f2">Open Brand →</span></div>
       </a>
       <a class="pcard" href="https://hoops.dumbmodel.com/dfs" style="text-decoration:none;color:#f5f7f2;border:2.2px solid #f5f7f2;border-left:5px solid #F0E442;border-radius:12px;background:#0f1d14;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:3px 3px 0 #f5f7f2">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="vg-pill" style="background:#F0E442;color:#0a130d;font-size:11px">🎯 DFS</span><span class="vg-pill" style="font-size:10px;background:#201e0a;color:#F0E442">props</span></div>
-        <b style="font-family:'Architects Daughter',ui-monospace,monospace;font-size:18px">Tonight's Locks</b>
+        <b style="font-family:var(--sans);font-size:18px">Tonight's Locks</b>
         <div style="font-size:12.8px;color:#c4d0c6;line-height:1.45">Red-zone usage + weather/Vegas + props alpha — 18yd-line target share, wind>15mph drop, OU/total, late sharp $ +5.3 Jefferson o/u 82.5.</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="vg-pill" style="font-size:10px;background:#1a2411;color:#f5f7f2">lock 1.24</span><span class="vg-pill" style="font-size:10px;background:#2a1c14;color:#f5f7f2">fade 0.68</span><span class="vg-pill" style="font-size:10px">$/pt RZ%</span></div>
         <div style="margin-top:2px"><span style="display:inline-flex;min-height:38px;padding:8px 12px;border:2px solid #f5f7f2;border-radius:10px;background:#F0E442;color:#0a130d;font-family:ui-monospace,monospace;font-weight:900;font-size:12px;box-shadow:2px 2px 0 #f5f7f2">Open DFS →</span></div>
@@ -148,7 +150,7 @@
 </header>
 
 <main id="app" style="max-width:1040px;margin:0 auto;padding:14px">
-  <section class="vg-view is-active" id="view-team"><div class="vg-card" style="border:2.2px solid #f5f7f2;border-radius:14px;padding:14px;background:#0f1d14;box-shadow:4px 4px 0 #f5f7f2"><h2 style="font-family:'Architects Daughter',monospace;margin:0 0 6px">Your fantasy season, on rails — now with 32-d map.</h2><p style="color:#c4d0c6;line-height:1.5">Connect ESPN or Sleeper. Vector Gridiron maps every skill player into 32-d native (16-d compat) — rushing, targets, YAC, redzone, snaps, age, weather, Vegas, rest, def-vs-pos — MTNN next-game MAE 4.268 →3.8. Free, no tracking, nflverse-powered, player-split honest.</p><a class="btn" href="/play" style="display:inline-flex;margin-top:8px;background:#f5f7f2;color:#0a130d;border:2px solid #f5f7f2;border-radius:8px;padding:8px 12px;font-weight:800;text-decoration:none">▶ Play Daily Guess 6 tries cosine</a></div></section>
+  <section class="vg-view is-active" id="view-team"><div class="vg-card" style="border:2.2px solid #f5f7f2;border-radius:14px;padding:14px;background:#0f1d14;box-shadow:4px 4px 0 #f5f7f2"><h2 style="font-family:var(--sans);margin:0 0 6px">Your fantasy season, on rails — now with 32-d map.</h2><p style="color:#c4d0c6;line-height:1.5">Connect ESPN or Sleeper. Vector Gridiron maps every skill player into 32-d native (16-d compat) — rushing, targets, YAC, redzone, snaps, age, weather, Vegas, rest, def-vs-pos — MTNN next-game MAE 4.268 →3.8. Free, no tracking, nflverse-powered, player-split honest.</p><a class="btn" href="/play" style="display:inline-flex;margin-top:8px;background:#f5f7f2;color:#0a130d;border:2px solid #f5f7f2;border-radius:8px;padding:8px 12px;font-weight:800;text-decoration:none">▶ Play Daily Guess 6 tries cosine</a></div></section>
 </main>
 
 <div class="roster-void" id="roster-void"><div style="padding:24px;font-family:ui-monospace;font-size:12px;color:#c4d0c6;text-align:center">Loading roster cards… 10 towers × 2000 player-weeks</div></div>

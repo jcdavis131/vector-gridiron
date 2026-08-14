@@ -2395,22 +2395,69 @@ function backtestNote() {
    EXPLORER — search + profile + comps
    ================================================================ */
 const eInput = $('#explore-input'), eSuggest = $('#explore-suggest');
+// The suggestion list is a role="listbox" with CSS already keyed off
+// li[aria-selected="true"] (see .vg-suggest li[aria-selected] in
+// gridiron.css) but nothing ever set that attribute or handled a key
+// press — the only way to pick a suggestion was a mouse click, so a
+// keyboard-only user could open the list but never act on it. eActiveIdx
+// tracks the highlighted option; arrow keys move it, Enter selects it,
+// Escape closes the list.
+let eActiveIdx = -1;
+function eRenderActive() {
+  $$('li', eSuggest).forEach((li, i) => {
+    const on = i === eActiveIdx;
+    li.setAttribute('aria-selected', on ? 'true' : 'false');
+    if (on) li.scrollIntoView({ block: 'nearest' });
+  });
+  if (eActiveIdx >= 0) eInput.setAttribute('aria-activedescendant', `explore-opt-${eActiveIdx}`);
+  else eInput.removeAttribute('aria-activedescendant');
+}
+function eHideSuggest() {
+  eSuggest.hidden = true;
+  eActiveIdx = -1;
+  eInput.setAttribute('aria-expanded', 'false');
+  eInput.removeAttribute('aria-activedescendant');
+}
+function eSelect(li) {
+  if (!li) return;
+  eInput.value = li.dataset.name; eHideSuggest();
+  showProfile(li.dataset.name, li.dataset.pos);
+}
 eInput.addEventListener('input', () => {
   const q = eInput.value.toLowerCase().trim();
-  if (!q) { eSuggest.hidden = true; return; }
+  eActiveIdx = -1;
+  if (!q) { eHideSuggest(); return; }
   const hits = STATE.names.filter(n => n.name.toLowerCase().includes(q)).slice(0, 8);
-  eSuggest.innerHTML = hits.map(h =>
-    `<li role="option" data-name="${escapeAttr(h.name)}" data-pos="${h.pos}">
+  eSuggest.innerHTML = hits.map((h, i) =>
+    `<li role="option" id="explore-opt-${i}" data-name="${escapeAttr(h.name)}" data-pos="${h.pos}">
       <span class="vg-pos ${h.pos}">${h.pos}</span> ${escapeHtml(h.name)}
       <span class="vg-slot" style="margin-left:auto">${escapeHtml(h.team || '')}</span></li>`).join('');
   eSuggest.hidden = !hits.length;
+  eInput.setAttribute('aria-expanded', hits.length ? 'true' : 'false');
+});
+eInput.addEventListener('keydown', e => {
+  if (eSuggest.hidden) return;
+  const opts = $$('li', eSuggest);
+  if (!opts.length) return;
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    eActiveIdx = (eActiveIdx + 1) % opts.length;
+    eRenderActive();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    eActiveIdx = (eActiveIdx - 1 + opts.length) % opts.length;
+    eRenderActive();
+  } else if (e.key === 'Enter') {
+    if (eActiveIdx >= 0) { e.preventDefault(); eSelect(opts[eActiveIdx]); }
+  } else if (e.key === 'Escape') {
+    eHideSuggest();
+  }
 });
 eSuggest.addEventListener('click', e => {
   const li = e.target.closest('li'); if (!li) return;
-  eInput.value = li.dataset.name; eSuggest.hidden = true;
-  showProfile(li.dataset.name, li.dataset.pos);
+  eSelect(li);
 });
-document.addEventListener('click', e => { if (!e.target.closest('.vg-search')) eSuggest.hidden = true; });
+document.addEventListener('click', e => { if (!e.target.closest('.vg-search')) eHideSuggest(); });
 
 function statLine(line) {
   if (!line) return '';

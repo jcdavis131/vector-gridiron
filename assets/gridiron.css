@@ -12,14 +12,20 @@
   --ink-soft:#c4d0c6;
   --ink-muted:#93a596;
   --hairline:#213024;
-  --accent:#f0873c;         /* brand orange */
+  --accent:#da4e34;         /* korall — brand accent, Fargekart dark tint */
   --accent-2:#3ddc71;       /* field green highlight */
 
-  /* position palette — the categorical data colors */
-  --qb:#e8b23a;             /* gold */
-  --rb:#4bd0a0;             /* teal-green */
-  --wr:#5aa0f0;             /* blue */
-  --te:#c77dff;             /* violet */
+  /* Position palette — the categorical data colors, and the ones that carry
+     the most weight in this app: you scan the board by position.
+
+     The previous set put RB (#4bd0a0 teal-green) and WR (#5aa0f0 blue) only
+     10.8 dE apart under tritanopia, which is close enough to be the same
+     colour. Retinting RB, WR and TE off the Fargekart moves the worst pair
+     to 26.1. QB keeps its gold — tested, and holding it costs nothing. */
+  --qb:#e8b23a;             /* gold — unchanged */
+  --rb:#3c8d21;             /* furu     4.52:1 on paper */
+  --wr:#4b78e2;             /* fjord    4.57:1 */
+  --te:#9a69c3;             /* lavendel 4.66:1 */
 
   --start:#3ddc71;
   --sit:#ff5c5c;

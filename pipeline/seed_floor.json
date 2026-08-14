@@ -1,0 +1,79 @@
+{
+ "question": "Does gridiron's --seed flag do anything, and what is the noise floor?",
+ "why_this_did_not_exist_before": "SEED was a module constant with no flag. vector-gridiron 56d8e4e added --seed and threaded it into train_rookie_model, VERIFIED BY INSPECTION AND --help ONLY because the trainer writes assets/ in a repo whose assets/ is mid-operator-decision. This is that deferred check.",
+ "how_it_was_run": "3 seeds in an ISOLATED COPY at a scratch path, --offline --skip-build. The 551 MB pipeline/cache was copied too, not junctioned. Real assets checksummed before and after: kdst.json 301817045c3fe765 and nextgame.json 2a50f9529d6eeb87, IDENTICAL both times. UNTOUCHED.",
+ "flag_is_not_vacuous": {
+  "assets_written_per_seed": 8,
+  "assets_that_differ_across_seeds": 3,
+  "which": [
+   "embedding.json",
+   "nextgame.json",
+   "projections.json"
+  ],
+  "identical": [
+   "adp.json",
+   "eval_backtest.json",
+   "kdst.json",
+   "lookback_seasons.json",
+   "vectors.json"
+  ],
+  "note": "The five identical ones are seeded into the copy from the real repo and are not rewritten by train_mtnn.py under --skip-build, so their being identical is not evidence about the seed either way."
+ },
+ "cqs": {
+  "per_seed": {
+   "7": 63.16,
+   "11": 62.35,
+   "13": 61.7
+  },
+  "mean": 62.4033,
+  "sd_n3": 0.7315,
+  "range": 1.46
+ },
+ "next_game_fantasy_mae": {
+  "per_seed": {
+   "7": 4.295,
+   "11": 4.294,
+   "13": 4.306
+  },
+  "mean": 4.2983,
+  "sd_n3": 0.0067,
+  "range": 0.012
+ },
+ "next_game_r2": {
+  "per_seed": {
+   "7": 0.422,
+   "11": 0.411,
+   "13": 0.406
+  },
+  "mean": 0.413,
+  "sd_n3": 0.0082,
+  "range": 0.016
+ },
+ "rookie_val_fpts_mae": {
+  "per_seed": {
+   "7": 2.907,
+   "11": 2.909,
+   "13": 2.906
+  },
+  "mean": 2.9073,
+  "sd_n3": 0.0015,
+  "range": 0.003
+ },
+ "FINDING_the_redeploy_baseline_is_one_lucky_seed": {
+  "shipped_baseline_cqs": 63.16,
+  "observed_cqs_by_seed": {
+   "7": 63.16,
+   "11": 62.35,
+   "13": 61.7
+  },
+  "shipped_is_the": "MAXIMUM of the three seeds",
+  "three_seed_mean": 62.4,
+  "gate_text_seed7": "redeploy-ok: CQS 63.16 >= baseline 63.16 (final-refit allowed)",
+  "what_seeds_11_and_13_would_do": "FAIL. 62.35 and 61.70 are both below the 63.16 baseline, so a re-run at any seed but 7 is refused redeploy for reasons that are entirely which seed ran.",
+  "why_this_matters": "The baseline is not a property of the model, it is the CQS of one draw. With a CQS seed sd near 0.73 and a gate of '>= baseline' where the baseline IS the high draw, roughly two thirds of honest re-runs are rejected. This is the same shape as the hoops promotion_gate_is_unsatisfiable finding: a threshold set from a single observation of a noisy quantity.",
+  "promote_bar": 63.66,
+  "promote_bar_vs_observed_max": "63.66 is ABOVE all three seeds, so the promote gate did not fire on any of them either."
+ },
+ "what_is_actually_stable": "The headline next-game claim is robust. MAE 4.295 / 4.294 / 4.306 across seeds, range 0.012, against a last-4 baseline of 4.616 -- the 'beats by 0.321' margin is 26x the seed range. R2 0.422 / 0.411 / 0.406 and rookie val MAE 2.907 / 2.909 / 2.906 are likewise tight. CQS is the noisy one, and CQS is what the gates use.",
+ "LIMITATION_three_seeds": "An sd from n=3 is itself very uncertain -- the 95% CI on a 3-sample sd spans roughly 0.5x to 2.8x the estimate. 0.73 is an order-of-magnitude statement, not a floor to size experiments against. Do not compute a paired MDE from it and quote the result as though it were the pitch floor (5 seeds) or the hoops floor. Three seeds establishes NON-VACUITY of the flag and shows the baseline problem; it does not establish a measurement floor."
+}

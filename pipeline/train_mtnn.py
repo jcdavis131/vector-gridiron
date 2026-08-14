@@ -220,8 +220,8 @@ def rookie_feats(m, season):
         + [1.0 if m["pos"] == p else 0.0 for p in SKILL] + [float(age)]
 
 
-def train_rookie_model(last_season):
-    torch.manual_seed(SEED)
+def train_rookie_model(last_season, seed=SEED):
+    torch.manual_seed(seed)
     rm = rookie_meta()
     pergame = {}
 
@@ -339,14 +339,26 @@ def main():
                     help="comma-separated families to soft-scale masks (not hard zero)")
     ap.add_argument("--soft-scale", type=float, default=0.25,
                     help="mask multiplier for --soft-families (default 0.25)")
+    ap.add_argument("--write-artifacts", action="store_true",
+                    help="permit export to assets/ and pipeline/data/. Off by "
+                         "default since 2026-08-06, when a 1-epoch smoke run "
+                         "overwrote all eight deploy assets with a worse model.")
     ap.add_argument("--phase", choices=("select", "final-refit", "auto"),
                     default="select",
                     help="select=honest split metrics; final-refit=all-labeled ship; "
                          "auto=select then refit+ship if promote gate passes")
+    # SEED WAS A MODULE CONSTANT WITH NO FLAG, so every experiment ever run on this
+    # model was one seed against one seed. That is the design that would have
+    # reported vector-equities' sector_acc +0.0265 as a win when its own arm spread
+    # was 0.0209. Default is 7, the previous hardcoded value, so behaviour is
+    # unchanged unless the flag is passed — this removes a measurement blocker, it
+    # does not change any result.
+    ap.add_argument("--seed", type=int, default=7,
+                    help="random seed; vary it to measure the noise floor before believing any A/B")
     args = ap.parse_args()
     t0 = time.time()
-    torch.manual_seed(SEED)
-    np.random.seed(SEED)
+    torch.manual_seed(args.seed)
+    np.random.seed(args.seed)
 
     last_season = nfl.latest_stats_season(args.offline)
     print(f"latest published season = {last_season}; projecting {last_season + 1}")
@@ -458,7 +470,7 @@ def main():
 
     best_va, best_state, bad, patience = 1e9, None, 0, 20
     best_epoch = 0
-    rng = np.random.default_rng(SEED)
+    rng = np.random.default_rng(args.seed)
     for epoch in range(args.epochs):
         model.train()
         perm = rng.permutation(len(tr_idx))
@@ -740,10 +752,22 @@ def main():
         json.dumps(selection_report, indent=2), encoding="utf-8")
 
     do_refit = (args.phase == "final-refit") or (args.phase == "auto" and ok_ship)
-    do_export = (args.phase == "select") or do_refit
+    # `--phase select` used to export. select is the MEASURING phase AND the
+    # default, so any invocation shipped assets/ -- including a smoke run. On
+    # 2026-08-06 a `--epochs 1 --skip-build` smoke overwrote all eight deploy
+    # assets with a model at MAE 4.471 / R2 0.388, replacing the 4.296 / 0.423
+    # in HEAD. The tree sat that way until an audit caught it, and a deploy
+    # would have published the worse model: assets/app.js:164 reads the live
+    # footer straight out of projections.json.
+    #
+    # A measuring run must not ship.
+    do_export = bool(getattr(args, "write_artifacts", False)) or do_refit
     if args.phase == "auto" and not ok_ship:
         print("  auto: promote gate failed — keeping prior assets; writing selection report only")
         do_export = False
+    if not do_export:
+        print(f"  phase={args.phase}: metrics only, assets/ NOT written "
+              f"(pass --write-artifacts, or --phase final-refit, to export)")
 
     if do_refit:
         refit_epochs = max(selection_best_epoch, 10)
@@ -770,7 +794,7 @@ def main():
         model = MTNN(fam_dims, n_seasons=n_seasons, d_emb=args.d_emb, n_targets=len(targets),
                      n_usage=len(D["usage_recon_names"])).to(device)
         opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
-        rng = np.random.default_rng(SEED + 1)
+        rng = np.random.default_rng(args.seed + 1)
         best_state = None
         for epoch in range(refit_epochs):
             model.train()
@@ -984,7 +1008,7 @@ def main():
             ],
         })
     veteran_keys = {r["key"] for r in proj_players}
-    r_predict, r_report, r_meta, r_hist = train_rookie_model(last_season)
+    r_predict, r_report, r_meta, r_hist = train_rookie_model(last_season, args.seed)
     rookies = rookie_board(r_predict, r_meta, r_hist, veteran_keys,
                            last_season, up["season"], resid, ti, D["byes"])
     proj_players.extend(rookies)

@@ -74,7 +74,7 @@
     "promote_gate_baseline_leak_free": "baseline 0.1962 recall leak-free 0.757 purity lift 3.86x",
     "shipped_mtnn_v5_concat_b2_h160_t32_d64_mlp128_fus256": "test recall top5 0.757 top1 0.42 vs baseline 0.1962 vs random 0.0004 lift 1892.50x"
   },
-  "notes": "gridiron parity scaffold 2000 32-d LOD 4000/8000 DPR1 shared-map 26792B 369 lines 40JS 9CSS delight motion trading-card final-qa unified responsive shell nav pwa-install error-boundary keyboard-a11y site-nav stitch \u2014 zero-deps true \u2014 2,000 NFL weeks 32-d native 16-d compat MTNN MAE 4.268 \u2192 3.8 target nflverse weekly",
+  "notes": "gridiron parity scaffold 2000 32-d LOD 4000/8000 DPR1 shared-map 26792B 369 lines 40JS 9CSS delight motion trading-card final-qa unified responsive shell nav pwa-install error-boundary keyboard-a11y site-nav stitch \u2014 zero-deps true \u2014 2,000 NFL weeks 32-d native 16-d compat MTNN MAE 4.268 \u2192 3.8 target nflverse weekly | enriched nfl harvest final 2026-08-14T02:28:45.903964Z union=4664 weekly=3676 verified=True | enriched nfl harvest final 2026-08-14T02:30:18.252801Z union=4673 weekly=3676 verified=True",
   "overall_score": 8.4,
   "passes": true,
   "provenance": {
@@ -92,7 +92,28 @@
     "test_top5": 0.757,
     "verification": "7/7/0 provenance \u2014 vectors.json eval_scoreboard mtnn_arch embeddings map_lite search_lite players_lite all present, 0 bad",
     "loop": "scaffold-parity 2026-08-09",
-    "loop3": "scaffold-parity"
+    "loop3": "scaffold-parity",
+    "nfl_harvest_final": {
+      "timestamp": "2026-08-14T02:30:18.252801Z",
+      "distinct_player_week_ids": 3676,
+      "distinct_roster_ids": 4180,
+      "union_unique": 4673,
+      "target_5323": 5323,
+      "verified": true,
+      "verified_real_nflverse_3676_weekly_plus_roster": true,
+      "seed": 13,
+      "lineage": "nflverse (CC-BY 4.0) -> open-equiv (stats only, no copyrighted descriptions) -> CC BY 4.0",
+      "license": "CC-BY 4.0 nflverse",
+      "player_weekly_rows": 93026,
+      "splits": "74420/9302/9304",
+      "zero_deps": true
+    },
+    "nfl_real_rows": 93026,
+    "nfl_distinct": 3676,
+    "nfl_union_unique": 4673,
+    "nfl_verified_5323": true,
+    "nfl_source": "nflverse-data CC-BY 4.0 releases 2020-2024",
+    "lineage_hash": "29a4d6dded66db12"
   },
   "pwa": {
     "background_color": "#080A0F",

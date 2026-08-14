@@ -1,0 +1,31 @@
+{
+  "source": "nflverse open",
+  "seasons": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "available_rows_raw": 93026,
+  "n_rows_engineered": 27139,
+  "n_features": 160,
+  "sourced_families": [
+    "usage",
+    "rushing",
+    "form",
+    "rest"
+  ],
+  "masked_families": [
+    "snaps",
+    "age",
+    "weather",
+    "vegas",
+    "def_vs_pos",
+    "redzone"
+  ],
+  "mask_coverage_mean": 0.3109026551246643,
+  "license": "CC-BY 4.0 nflverse",
+  "timestamp_utc": "2026-08-14T02:26:34Z",
+  "zero_deps": true
+}

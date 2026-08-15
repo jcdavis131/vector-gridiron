@@ -38,3 +38,5 @@ _Last sync: 2026-08-13 21:12 CT_
 - zero-deps true — stdlib only, no torch/pip, ACNE optional local `dottie/rl/` canonical
 - LCG daily: 20260813→189831298 idx3820 same-link-same-stars triple[11205,19448,14209] ?daily=20260813&n=1/3/5
 - SSOT: `~/workspace/bundles/coordination/active-tasks.md`
+
+<!-- auto-exec sync 2026-08-14T18:04Z evening-wrap-aug-14-2026 from SSOT active-tasks.md 15 active 7 DONE 6 open -->

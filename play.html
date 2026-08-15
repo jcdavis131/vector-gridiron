@@ -12,7 +12,7 @@
 <style>
 .play-main{width:min(980px,100%);margin:0 auto;padding:12px clamp(12px,3vw,20px) 80px;display:flex;flex-direction:column;gap:12px}
 .vh-header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:#0f1d14;border:2.2px solid #f5f7f2;border-radius:14px;box-shadow:4px 4px 0 #f5f7f2;padding:10px 12px}
-.vh-brand{font-family:"Architects Daughter",ui-monospace,monospace;font-size:22px;font-weight:900;color:#f5f7f2}
+.vh-brand{font-family:ui-monospace,monospace;font-size:22px;font-weight:900;color:#f5f7f2}
 .tabs{display:flex;gap:6px;flex-wrap:wrap}
 .tab{border:2px solid #f5f7f2;border-radius:999px;padding:6px 12px;background:#0a130d;color:#93a596;font-family:ui-monospace,monospace;font-size:11px;font-weight:800;cursor:pointer}
 .tab.is-active{background:#f0873c;color:#20120a}
@@ -31,7 +31,7 @@
 <header class="vh-header"><span class="vh-brand">VECTOR GRIDIRON · PLAY</span><div class="tabs" role="tablist"><button class="tab is-active" data-tab="daily" role="tab" aria-selected="true">Daily Guess Wordle 6 tries</button><button class="tab" data-tab="lab" role="tab">Lab Fusion A+B=C</button></div><span id="streak" class="pill">🔥 streak 0</span></header>
 
 <div id="view-daily" class="play-card">
-<h2 style="font-family:'Architects Daughter',monospace;margin:0 0 6px">Daily Guess — 6 tries, cosine 32-d</h2>
+<h2 style="font-family:monospace;margin:0 0 6px">Daily Guess — 6 tries, cosine 32-d</h2>
 <p style="font-size:12px;color:#93a596;margin:0 0 8px">Guess the hidden NFL player-week. Each guess shows cosine similarity 32-d native (16-d compat wrapper) → hint rushing/targets/YAC/redzone/snaps/age/weather/Vegas/rest/def-vs-pos. Streak shareable pack identical friends. <span id="countdown">next daily in --:--:--</span></p>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><input id="guess-input" class="guess-input" placeholder="Type player name — e.g. Jefferson, CMC, Mahomes" autocomplete="off"><button id="guess-btn" style="min-height:44px;border:2px solid #f5f7f2;border-radius:10px;background:#f0873c;color:#20120a;font-family:ui-monospace,monospace;font-weight:900;padding:8px 12px;cursor:pointer">Guess</button></div>
 <div id="suggest-list" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
@@ -40,7 +40,7 @@
 </div>
 
 <div id="view-lab" class="play-card" hidden>
-<h2 style="font-family:'Architects Daughter',monospace;margin:0 0 6px">Lab Fusion A+B=C — Impossible before</h2>
+<h2 style="font-family:monospace;margin:0 0 6px">Lab Fusion A+B=C — Impossible before</h2>
 <p style="font-size:12px;color:#93a596">Pick any two player-weeks, fuse 32-d → nearest real. 32-d native L2, 16-d compat slice re-L2 cosine=similarity. Shows how vector knows MTNN weekly.</p>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0"><input id="lab-a" class="guess-input" placeholder="Player A — e.g. Jefferson WR"><input id="lab-b" class="guess-input" placeholder="Player B — e.g. CMC RB"></div>
 <button id="lab-fuse" style="min-height:44px;border:2px solid #f5f7f2;border-radius:10px;background:#3ddc71;color:#0a130d;font-family:ui-monospace,monospace;font-weight:900;padding:8px 12px;cursor:pointer">Fuse A+B</button>

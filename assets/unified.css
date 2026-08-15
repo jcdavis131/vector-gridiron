@@ -16,7 +16,7 @@
   --shadow:4px 4px 0 var(--ink);
   --mono:ui-monospace,monospace;
   --sans:ui-sans-serif,system-ui;
-  --hd:"Architects Daughter",var(--mono);
+  --hd:var(--mono);
   --qb:#e8b23a; --rb:#4bd0a0; --wr:#5aa0f0; --te:#c77dff;
 }
 *{box-sizing:border-box}

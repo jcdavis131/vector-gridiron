@@ -1,0 +1,19 @@
+---
+metric: 3.816128
+secondary: 52.6
+status: ok
+sharpe: 1.082
+torch: cpu fallback honest 503 stdlib smoke (Hatch VM CPU no CUDA vs Alienware CUDA auto)
+domain: gridiron
+latency_ms: 428
+peak_vram_mb: 0.0
+repo: train_mtnn_v7_gridiron.py
+n: na
+commit: 9a6c586
+gates_pass: 3/3
+train_matrix: stdlib_smoke
+note: stdlib fallback no-npz npz load fail could not convert string to float: 'Tom Brady'
+eval_json: ./pipeline/eval_reports/eval_gridiron_9a6c586.json
+shap_top: injury_load,snap_pct,vegas_total
+perm_top: injury_load,snap_pct
+glass_box: SHAP+permutation+construct+threats lineage 01-07 honest 503 survives untrusted — zero-deps true

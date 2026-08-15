@@ -17,7 +17,7 @@ DFS rigor per-domain independent:
   Data: nflverse 2020-2025 weather wind temp humidity dome, Vegas spread/total implied, depth chart snaps, injuries
   DFS: FD/DK salary vs pts, slate optimizer, close-risk filter exploitable tag low-owned leverage
   Science: >=2 real models CV 5-fold MAE/RMSE/R2, SHAP/permutation, construct validity plain-English opportunity+efficiency+matchup
-  Money: novel insight + good ML + rigorous + good inputs -> profit, paper-track private Kelly 0.25/1% kill-switch games free forever
+  Money: novel insight + good ML + rigorous + good inputs -> profit, paper-track private Kelly 0.25/1% kill-switch games free — open access
   Honest CPU: stdlib smoke path so lane runs on Hatch VM without torch full GPU path on Alienware auto
 Zero-deps true stdlib only no pip torch ACNE optional local
 

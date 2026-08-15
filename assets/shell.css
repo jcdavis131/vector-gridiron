@@ -109,7 +109,7 @@
 .vg-pill{border:1.8px solid #f5f7f2;border-radius:999px;padding:4px 10px;background:#0a130d;color:#f5f7f2;font-family:ui-monospace,monospace;font-size:11px;font-weight:800;box-shadow:1.5px 1.5px 0 #f5f7f2}
 .vg-pill--accent{background:#f0873c;color:#20120a;transform:rotate(-1deg)}
 .vg-pill--green{background:#3ddc71;color:#0a130d}
-.vg-hero-h1{font-family:"Architects Daughter",ui-monospace,monospace;font-size:clamp(28px,5vw,48px);line-height:.95;margin:4px 0 6px;color:#f5f7f2;letter-spacing:-.01em}
+.vg-hero-h1{font-family:ui-monospace,monospace;font-size:clamp(28px,5vw,48px);line-height:.95;margin:4px 0 6px;color:#f5f7f2;letter-spacing:-.01em}
 .vg-hero-deck{color:#c4d0c6;margin:0;line-height:1.5;font-size:15px;max-width:52ch}
 .vg-hero-deck b{color:#f5f7f2}
 .vg-hero-map{position:relative;min-height:360px;border:2.5px solid #f5f7f2;border-radius:16px;box-shadow:6px 6px 0 #f5f7f2;overflow:hidden;background:radial-gradient(110% 80% at 70% 20%, rgba(90,160,240,.18), transparent 50%), #0a130d;width:100%}
@@ -119,7 +119,7 @@
 .vg-tri-card{background:#0f1d14;border:2.2px solid #f5f7f2;border-radius:14px;box-shadow:4px 4px 0 #f5f7f2;padding:12px 14px;text-decoration:none;color:inherit;transition:transform .12s, box-shadow .12s}
 .vg-tri-card:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 #f5f7f2}
 .vg-tri-card .small-mono{font-family:ui-monospace,monospace;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#93a596}
-.vg-tri-card b{font-family:"Architects Daughter",ui-monospace,monospace;font-size:18px;display:block;margin:2px 0;color:#f5f7f2}
+.vg-tri-card b{font-family:ui-monospace,monospace;font-size:18px;display:block;margin:2px 0;color:#f5f7f2}
 .vg-tri-card p{font-size:12.5px;color:#c4d0c6;margin:4px 0 0;line-height:1.45}
 
 /* roster-card void = trading-card void equivalent */

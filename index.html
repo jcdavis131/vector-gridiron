@@ -19,7 +19,7 @@
 .hero{max-width:1240px;margin:0 auto;padding:18px var(--gutter) 14px;display:grid;grid-template-columns:1.15fr .85fr;gap:18px}
 @media(max-width:920px){.hero{grid-template-columns:1fr}}
 .map-wrap{position:relative;background:radial-gradient(1100px 600px at 18% -10%,#1A233A 0%,#121A2D 32%,#080A0F 72%);border:1.5px solid rgba(232,240,255,0.10);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.35);overflow:hidden}
-#sky{width:100%;height:540px;display:block;touch-action:pan-y;cursor:grab;outline:none}
+#sky{width:100%;height:clamp(60vh,72vh,86vh);min-height:340px;display:block;touch-action:pan-y;cursor:grab;outline:none}
 @media(max-width:680px){#sky{height:440px}}
 .card{background:#0f141e;border:1px solid rgba(232,240,255,0.10);border-radius:14px;padding:14px 16px}
 .card-paper{background:var(--paper);color:#080A0F;border:1px solid rgba(8,10,15,0.08);border-radius:14px;padding:14px 16px}
@@ -38,6 +38,8 @@ footer{max-width:1240px;margin:0 auto;padding:18px var(--gutter);color:#6b7a9a;f
 .modal[hidden]{display:none!important}.modal{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.56);backdrop-filter:blur(8px)}
 .modal__box{background:var(--paper);color:#080A0F;border:1px solid rgba(8,10,15,0.12);border-radius:16px;padding:18px 16px;max-width:420px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.45)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* map first-class canvas >60vh mobile >70vh desktop drag rotate pinch zoom DPR1 LOD8000/4000 */
+#sky{height:clamp(60vh,72vh,86vh)}@media(min-width:920px){#sky{height:clamp(70vh,78vh,88vh)}}@media(max-width:680px){#sky{height:clamp(60vh,68vh,78vh)}}
 </style><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23080A0F'/%3E%3Ccircle cx='11' cy='12' r='3' fill='%23E69F00'/%3E%3Ccircle cx='21' cy='20' r='3' fill='%2356B4E9'/%3E%3C/svg%3E"></head><body>
 <nav class="site-nav"><a class="site-nav__brand" href="/?pov=owner">VECTOR<span>GRIDIRON</span> — 646</a><div class="site-nav__links"><a class="site-nav__link on" href="/?pov=owner">Owner</a><a class="site-nav__link" href="/model?pov=player">Player</a><a class="site-nav__link" href="/model?pov=brand">Brand</a><a class="site-nav__link" href="/model?pov=dfs">DFS</a><a class="site-nav__link" style="background:#FEFCF9;color:#080A0F" href="/play">Play</a></div></nav>
 <div class="pov-bar" role="tablist" aria-label="4 POV Owner/Operator cap tools / Player fit finder / Brand / DFS optimizer"><button class="chip on" data-pov="owner" role="tab" aria-selected="true">Owner / cap $255M surplus</button><button class="chip" data-pov="player" role="tab">Player / separation</button><button class="chip" data-pov="brand" role="tab">Brand / primetime</button><button class="chip" data-pov="dfs" role="tab">DFS / $/pt RZ%</button><span class="chip subtle" style="margin-left:auto">646 REAL x/y/z [-1,1] QB5 WR1 RB2 TE3 OKABE-8 void #080A0F single-select clear prev</span></div>
@@ -185,6 +187,8 @@ footer { font-family:var(--font-mono,ui-monospace) !important; }
 footer .free, footer span.free { color:#FFFEF7 !important; opacity:.88 !important; }
 /* hide dev pills if any */
 .dev-pill, [data-dev] { display:none !important; }
+/* map first-class canvas >60vh mobile >70vh desktop drag rotate pinch zoom DPR1 LOD8000/4000 */
+#sky{height:clamp(60vh,72vh,86vh)}@media(min-width:920px){#sky{height:clamp(70vh,78vh,88vh)}}@media(max-width:680px){#sky{height:clamp(60vh,68vh,78vh)}}
 </style>
 <div id="retry-ui" style="display:none;position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:99;background:#FFFEF7;color:#080A0F;border:2px solid #000;border-radius:999px;padding:10px 16px;font:800 12px ui-monospace,monospace;box-shadow:4px 4px 0 #000"><span id="retry-msg">Loading map… LOD4000 DPR1 #080A0F</span> <button id="retry-btn" style="margin-left:10px;border:2px solid #000;border-radius:999px;padding:6px 12px;background:#F0E442;font-weight:900;cursor:pointer">Tap to retry</button></div>
 <script>

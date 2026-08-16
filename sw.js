@@ -1,4 +1,4 @@
-/* gridiron PWA v67 — CORE20 offline13k LOD4000/8000 DPR1 fillRect #080A0F
+/* gridiron PWA v67 — CORE20 offline13k LOD4000/8000 DPR1
    - CORE20 shell only immutable SWR, DENY9 network-only, offline 13k void #080A0F
    - HIT ~74k gz shell — tokens.css ~5k shared-map 28k inertial-map 13.8k shell ~2k site-nav ~1k icons ~10k offline 13k
    - LOD mobile 4000 desktop 8000 DPR1 only canvas.width=W fillRect #080A0F void dark true
@@ -8,7 +8,7 @@
    - LCG 20260813→189831298 idx3820 triple[11205,19448,14209] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5
    - provenance 7/7/0 59 hashes — zero-deps true stdlib only
 */
-const CACHE_NAME = 'vector-gridiron-v67-offline13k';
+const CACHE_NAME = 'vector-gridiron-v67.2-offline13k';
 const CORE = [
 '/',
 '/index.html',
@@ -44,7 +44,7 @@ self.addEventListener('install', e=>{
     const cache=await caches.open(CACHE_NAME);
     const results=await Promise.allSettled(CORE.map(u=> cache.add(new Request(u,{cache:'reload'})).catch(err=>{ console.warn('[sw v67 13k gridiron] miss',u,err&&err.message); return null; })));
     const ok=results.filter(r=>r.status==='fulfilled'&&r.value!==null).length;
-    console.log(`[sw v67 gridiron] CORE ${ok}/`+CORE.length+` — 20×5888B ≈117k shell 74k gz 13k offline dark card void #080A0F — LOD4000/8000 DPR1 fillRect #080A0F — LCG 20260813→189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,11701,18524] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 — momentum 0.94 k120 b0.18`);
+    console.log(`[sw v67.2 gridiron] CORE ${ok}/`+CORE.length+` — 20×5888B ≈117k shell 74k gz 13k offline dark card void #080A0F — LOD4000/8000 DPR1 fillRect #080A0F — LCG 20260813→189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,11701,18524] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 — momentum 0.94 k120 b0.18`);
   })());
 });
 
@@ -54,7 +54,7 @@ self.addEventListener('activate', e=>{
     const keys=await caches.keys();
     await Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)));
     await self.clients.claim();
-    console.log('[sw v67 gridiron] activate '+CACHE_NAME+' — 74k HIT offline13k CORE20 LOD4000/8000 DPR1 momentum0.94 k120 b0.18 quaternion arcball void #080A0F');
+    console.log('[sw v67.2 gridiron] activate '+CACHE_NAME+' — 74k HIT offline13k CORE20 LOD4000/8000 DPR1 momentum0.94 k120 b0.18 quaternion arcball void #080A0F');
   })());
 });
 

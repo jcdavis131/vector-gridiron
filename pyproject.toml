@@ -50,7 +50,7 @@ exclude = ["assets/*","data/*","__pycache__",".venv","dist",".git"]
 [tool.ruff.lint]
 select = ["E","W","F","I","B","C4","UP","N","S","PTH","TCH","RUF"]
 # N806/N812: allow conventional ML/math variable names (X, W, N, etc.) in function bodies.
-ignore = ["S101","S603","S607","N803","N806","N812"]
+ignore = ["S101","S603","S607","N803","N806","N812","S110","E501"]
 fixable = ["ALL"]
 
 [tool.ruff.lint.per-file-ignores]

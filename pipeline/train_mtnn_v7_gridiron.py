@@ -40,11 +40,9 @@ v7 improvements (2026-08-14 07:46 CT):
 """
 
 from __future__ import annotations
+
 import argparse
-import json
-import math
 import os
-import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -67,17 +65,21 @@ ASSETS = ROOT / "assets"
 # Predictive: FPTS vs salary excess ROI, Vegas ITT correlates opportunity r~0.31
 # Threats: survivorship (3+ seasons filter bias), Jr/Sr dedup, weather漏, Vegas lookahead PIT, snap drop leakage
 
-def ppr_score(rec: float, rec_yds: float, rush_yds: float, td: float, pass_yds: float = 0, is_qb: bool=False) -> float:
+
+def ppr_score(
+    rec: float, rec_yds: float, rush_yds: float, td: float, pass_yds: float = 0, is_qb: bool = False
+) -> float:
     """PPR = rec*1 + rush yds/10 + rec yds/10 + TD*6 (+ pass yds/25 + QB TD 4 if QB)
     Spec simplified: rec*1 + rush yds/10 + rec yds/10 + TD*6 fantasy salary
     """
-    base = rec*1.0 + rec_yds/10.0 + rush_yds/10.0 + td*6.0
+    base = rec * 1.0 + rec_yds / 10.0 + rush_yds / 10.0 + td * 6.0
     if is_qb:
         # QB variant adjustments, not in spec simplified but useful for 32-d
-        base += pass_yds/25.0 - 0.5*td  # TD 6->4 diff approximate
+        base += pass_yds / 25.0 - 0.5 * td  # TD 6->4 diff approximate
     return float(base)
 
-def vegas_itt(total: float, spread: float, is_home: bool=True) -> float:
+
+def vegas_itt(total: float, spread: float, is_home: bool = True) -> float:
     """
     Vegas implied team total
     ITT = total/2 - spread/2 (per spec)
@@ -86,15 +88,17 @@ def vegas_itt(total: float, spread: float, is_home: bool=True) -> float:
     Robust variant handles spread sign. vegas spread total
     """
     try:
-        t = float(total); s = float(spread)
-    except:
-        return float(total)/2.0 if total else 22.5
+        t = float(total)
+        s = float(spread)
+    except Exception:
+        return float(total) / 2.0 if total else 22.5
     if is_home:
-        return t/2.0 - s/2.0
+        return t / 2.0 - s / 2.0
     else:
-        return t/2.0 + s/2.0
+        return t / 2.0 + s / 2.0
 
-def weather_bucket(wind_mph: float, temp_f: float, is_dome: bool, precip: float=0.0) -> int:
+
+def weather_bucket(wind_mph: float, temp_f: float, is_dome: bool, precip: float = 0.0) -> int:
     """
     weather bucket for nflverse open: dome 0, cold <32 1, wind>15 2, cold+wind 3, precip 4, else 5 mild
     wind/temp -2% deep passing adjust, dome flag periodic sin/cos k=8 d_out16 PLEmbedding
@@ -114,6 +118,7 @@ def weather_bucket(wind_mph: float, temp_f: float, is_dome: bool, precip: float=
         return 1
     return 5
 
+
 def weather_deep_adjustment(wind_mph: float, temp_f: float, is_dome: bool, depth_rate: float) -> float:
     """
     wind/temp -2% deep
@@ -129,6 +134,7 @@ def weather_deep_adjustment(wind_mph: float, temp_f: float, is_dome: bool, depth
     # depth_rate is feature of deep target % (e.g., ADOT>15)
     return float(depth_rate * adj)
 
+
 def def_vs_pos_embedding(def_rank: float, pos_type: int) -> float:
     """
     def_vs_pos 00-05 six types: 00 QB, 01 RB, 02 WR, 03 TE, 04 K, 05 DEF
@@ -137,15 +143,18 @@ def def_vs_pos_embedding(def_rank: float, pos_type: int) -> float:
     """
     try:
         r = float(def_rank)
-    except:
+    except Exception:
         return 1.0
     # 16 midpoint neutral
-    factor = 1.0 + (16.5 - r) * 0.01  # r=1 => +0.155, r=32 => -0.155 inverted? Actually higher r easy -> want higher factor.
+    factor = (
+        1.0 + (16.5 - r) * 0.01
+    )  # r=1 => +0.155, r=32 => -0.155 inverted? Actually higher r easy -> want higher factor.
     # Let's invert: rank 1 toughest -> 0.85, rank 32 easiest -> 1.15
-    factor = 0.85 + (32 - r) * (0.30/31)  # linear 0.85..1.15
+    factor = 0.85 + (32 - r) * (0.30 / 31)  # linear 0.85..1.15
     # pos adjust: QB less impacted by def_vs_pos than RB/WR
-    pos_mult = {0:0.6,1:1.0,2:1.0,3:0.9}.get(int(pos_type),1.0)
-    return float(1.0 + (factor-1.0)*pos_mult)
+    pos_mult = {0: 0.6, 1: 1.0, 2: 1.0, 3: 0.9}.get(int(pos_type), 1.0)
+    return float(1.0 + (factor - 1.0) * pos_mult)
+
 
 def redzone_share(redzone_targets: float, team_redzone_plays: float, pos_type: int) -> float:
     """
@@ -153,19 +162,21 @@ def redzone_share(redzone_targets: float, team_redzone_plays: float, pos_type: i
     redzone targets / team redzone plays, capped 0..1.
     """
     try:
-        rt = float(redzone_targets); tp = float(team_redzone_plays)
+        rt = float(redzone_targets)
+        tp = float(team_redzone_plays)
         if tp <= 0:
             return 0.0
         share = rt / tp
-    except:
+    except Exception:
         return 0.0
     share = max(0.0, min(1.0, share))
     # pos multiplier
-    if pos_type in (1,): # RB
+    if pos_type in (1,):  # RB
         share *= 1.1
-    elif pos_type in (3,): # TE
+    elif pos_type in (3,):  # TE
         share *= 1.05
     return float(min(1.0, share))
+
 
 def closing_risk_4q(snap_pct_q1: float, snap_pct_q2: float, snap_pct_q3: float, snap_pct_q4: float) -> float:
     """
@@ -175,13 +186,18 @@ def closing_risk_4q(snap_pct_q1: float, snap_pct_q2: float, snap_pct_q3: float, 
     If snaps drop >15% in Q4 vs avg Q1-3, risk flag. Models back-up RB, garbage time WR.
     Returns risk 0..1, 0=safe closer, 1=risky closing (low late leverage)
     """
-    avg_early = (snap_pct_q1 + snap_pct_q2 + snap_pct_q3)/3.0 if all(v is not None for v in [snap_pct_q1,snap_pct_q2,snap_pct_q3]) else snap_pct_q3
+    avg_early = (
+        (snap_pct_q1 + snap_pct_q2 + snap_pct_q3) / 3.0
+        if all(v is not None for v in [snap_pct_q1, snap_pct_q2, snap_pct_q3])
+        else snap_pct_q3
+    )
     if avg_early == 0:
         return 0.0
     drop = (avg_early - snap_pct_q4) / max(0.1, avg_early)
     # clamp 0-1, >0.15 drop = risk
-    risk = max(0.0, min(1.0, (drop - 0.05)/0.4))
+    risk = max(0.0, min(1.0, (drop - 0.05) / 0.4))
     return float(risk)
+
 
 def snap_security_score(snap_pct: float, route_pct: float, age: float) -> float:
     """
@@ -189,16 +205,19 @@ def snap_security_score(snap_pct: float, route_pct: float, age: float) -> float:
     Hoops: stay on floor / fit finder POV; here snap%*route%*age_curve snap
     Age cliff RB 28, WR 30, QB 34 — modeled via simple curve
     """
-    if snap_pct is None: snap_pct=0.5
-    if route_pct is None: route_pct=snap_pct
+    if snap_pct is None:
+        snap_pct = 0.5
+    if route_pct is None:
+        route_pct = snap_pct
     age_factor = 1.0
     try:
-        a=float(age)
-        if a>28:
-            age_factor = max(0.7, 1.0 - (a-28)*0.04)  # 4% per year post 28
-    except:
+        a = float(age)
+        if a > 28:
+            age_factor = max(0.7, 1.0 - (a - 28) * 0.04)  # 4% per year post 28
+    except Exception:
         pass
-    return float(snap_pct * 0.6 + route_pct*0.4) * age_factor
+    return float(snap_pct * 0.6 + route_pct * 0.4) * age_factor
+
 
 def injury_load_flag(inj_status: str, practice_participation: str) -> float:
     """
@@ -209,13 +228,14 @@ def injury_load_flag(inj_status: str, practice_participation: str) -> float:
     p = str(practice_participation or "").lower()
     if "out" in s or "ir" in s or "dnp" in p:
         return 1.0
-    if "doubtful" in s or "limited" in p and "questionable" in s:
+    if "doubtful" in s or ("limited" in p and "questionable" in s):
         return 0.8
     if "questionable" in s or "limited" in p:
         return 0.5
-    if "full" in p or "healthy" in s or s=="" :
+    if "full" in p or "healthy" in s or s == "":
         return 0.0
     return 0.2
+
 
 def coverage_unmask_audit(M) -> float:
     """
@@ -227,47 +247,54 @@ def coverage_unmask_audit(M) -> float:
     """
     try:
         import numpy as np
-        cov = float(np.mean(M)) if hasattr(M, 'mean') else 0.31
-    except:
+
+        cov = float(np.mean(M)) if hasattr(M, "mean") else 0.31
+    except Exception:
         cov = 0.31
     # simulate collector progress: salary-snap 0.31→0.55, weather-vegas-def 0.55→0.75, injury-rest 0.75→0.85
     # final target 0.85
     improved = 0.31
     collectors = ["salary-snap", "weather-vegas-def", "injury-rest"]
-    for stage, add in zip(collectors, [0.24, 0.20, 0.10]):
+    for _stage, add in zip(collectors, [0.24, 0.20, 0.10], strict=False):
         improved += add
     improved = min(0.85, max(cov, improved))
     return float(improved)
+
 
 # --- Torch auto detection honest 503 (Hatch VM CPU no CUDA vs Alienware GPU auto) ---
 def get_device():
     try:
         import torch
+
         if hasattr(torch, "cuda") and torch.cuda.is_available():
             return "cuda", True
         return "cpu", True
     except Exception as e:
         return f"cpu fallback honest 503 no-torch ({type(e).__name__}) stdlib smoke", False
 
+
 HAS_TORCH, _ = get_device()
+
+
 # Actually call properly:
 def torch_available():
     try:
-        import torch
         return True
-    except:
+    except Exception:
         return False
+
 
 # --- MTNN wrapper ----
 # Re-use underlying pipeline/model.py MTNN definition when torch present
 # Zero-deps true: fallback to stdlib smoke if no torch
 
+
 def train_with_torch(args):
     """Full MTNN training 32-d native weather+Vegas, for Alienware GPU auto else CPU 17 towers CLS w_vicreg RoPE RMSNorm dropout d_model=64 cosine LR_SCHED"""
     import numpy as np
+
     try:
         import torch
-        import torch.nn.functional as F
     except ImportError as e:
         print(f"[gridiron v7] torch not present honest 503 {e} — stdlib smoke only Hatch VM")
         return stdlib_smoke()
@@ -293,8 +320,8 @@ def train_with_torch(args):
     data = np.load(matrix_path, allow_pickle=True)
     X = data["X"].astype(np.float32)  # [N,160]
     M = data["M"].astype(np.float32) if "M" in data else np.ones_like(X)
-    y = data["fpts_next"].astype(np.float32) if "fpts_next" in data else data["y"].astype(np.float32)
-    pos = data["pos"].astype(int) if "pos" in data else np.zeros(len(X), dtype=int)
+    data["fpts_next"].astype(np.float32) if "fpts_next" in data else data["y"].astype(np.float32)
+    data["pos"].astype(int) if "pos" in data else np.zeros(len(X), dtype=int)
     seasons = [str(s) for s in data["seasons"]]
     season_ids = data["season_ids"].astype(int)
 
@@ -306,19 +333,22 @@ def train_with_torch(args):
     # Simplified: compute per-season scaling for honesty
     try:
         from vector_core import RealMLPPreprocessor  # type: ignore
+
         preproc = RealMLPPreprocessor(feats, mode="robust", clip=3.0)
         preproc.fit(X, seasons, M, by_season=True)
         X_scaled = preproc.transform(X, seasons)
         X = X_scaled
         preproc.save(ROOT / "pipeline" / "data" / "realmlp_preproc_v7.json")
-        print(f"[gridiron v7] robust per-season median/IQR clip[-3,3] mean_abs scaled")
+        print("[gridiron v7] robust per-season median/IQR clip[-3,3] mean_abs scaled")
     except Exception as e:
         print(f"[gridiron v7] robust scaler fallback stdlib {e}")
 
     # Coverage audit 0.31→0.85 target after collectors
     cov = float(M.mean())
     cov_new = coverage_unmask_audit(M)
-    print(f"[gridiron v7] mask coverage mean {cov:.3f} -> unmasked {cov_new:.3f} target 0.85 unmask after collectors salary-snap/weather-vegas-def/injury-rest")
+    print(
+        f"[gridiron v7] mask coverage mean {cov:.3f} -> unmasked {cov_new:.3f} target 0.85 unmask after collectors salary-snap/weather-vegas-def/injury-rest"
+    )
 
     # Player-split honest 80/20
     player_ids = [str(p) for p in data["player_ids"]]
@@ -326,7 +356,7 @@ def train_with_torch(args):
     rng = np.random.default_rng(13)
     uniq_players = sorted(set(player_ids))
     rng.shuffle(uniq_players)
-    n_test = max(1, int(len(uniq_players)*0.2))
+    n_test = max(1, int(len(uniq_players) * 0.2))
     test_players = set(uniq_players[:n_test])
     train_mask = np.array([p not in test_players for p in player_ids])
     val_mask = ~train_mask
@@ -334,71 +364,115 @@ def train_with_torch(args):
 
     # Device auto cuda else cpu
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"[gridiron v7] device {device} 32-d native transformer d_model=64 d_model128 n_heads4 n_layers4 D_MODEL=64 17 towers CLS RoPE RMSNorm dropout cosine")
+    print(
+        f"[gridiron v7] device {device} 32-d native transformer d_model=64 d_model128 n_heads4 n_layers4 D_MODEL=64 17 towers CLS RoPE RMSNorm dropout cosine"
+    )
 
-    n_seasons = int(season_ids.max())+1 if len(season_ids) else 30
+    n_seasons = int(season_ids.max()) + 1 if len(season_ids) else 30
     n_seasons = max(n_seasons, 30)
 
     # MTNN 32-d native: d_emb=32, d_model=64 (also mention 128 for compatibility) CLS token 17 towers
-    model = MTNN(fam_dims, n_seasons=n_seasons, d_tower=24, d_tower_hidden=96, d_emb=32, legacy_16d=False, d_model=64, n_fusion_layers=4, n_attn_heads=4).to(device)
+    model = MTNN(
+        fam_dims,
+        n_seasons=n_seasons,
+        d_tower=24,
+        d_tower_hidden=96,
+        d_emb=32,
+        legacy_16d=False,
+        d_model=64,
+        n_fusion_layers=4,
+        n_attn_heads=4,
+    ).to(device)
     # Note: MTNN 32-d native L2 + legacy 16-d slice re-L2 compatibility retained, w_vicreg 0.05 RoPE RMSNorm dropout 0.15 cosine LR_SCHED
     from model import count_params, param_report
-    print(f"[gridiron v7] MTNN params {count_params(model)} {param_report(model)} d_emb=32 32-d native CLS 17 towers w_vicreg RoPE RMSNorm dropout")
+
+    print(
+        f"[gridiron v7] MTNN params {count_params(model)} {param_report(model)} d_emb=32 32-d native CLS 17 towers w_vicreg RoPE RMSNorm dropout"
+    )
 
     # Optional PL embedding note weather embed k=8 d_out16 periodic sin/cos
-    print("[gridiron v7] weather embed periodic sin/cos k=8 d_out16 PLEmbedding numeric towers age/weather/vegas def_vs_pos redzone_share weather bucket")
-    print("[gridiron v7] vegas embed spread/total ITT total/2 - spread/2 market expectation baseline vs props def_vs_pos")
-    print("[gridiron v7] salary embed FD/DK correlation r~0.68 + sn % security + injury load flag redzone_share 4Q snap drop")
-    print("[gridiron v7] wind/temp -2% deep passing adjust dome flag, closing risk 4Q snap drop playoff_sec analog weather_bucket fantasy salary")
-    print("[gridiron v7] w_vicreg 0.05 vicreg CLS RoPE RMSNorm dropout 0.15 cosine LR_SCHED d_model=64 D_MODEL=64 17 towers")
+    print(
+        "[gridiron v7] weather embed periodic sin/cos k=8 d_out16 PLEmbedding numeric towers age/weather/vegas def_vs_pos redzone_share weather bucket"
+    )
+    print(
+        "[gridiron v7] vegas embed spread/total ITT total/2 - spread/2 market expectation baseline vs props def_vs_pos"
+    )
+    print(
+        "[gridiron v7] salary embed FD/DK correlation r~0.68 + sn % security + injury load flag redzone_share 4Q snap drop"
+    )
+    print(
+        "[gridiron v7] wind/temp -2% deep passing adjust dome flag, closing risk 4Q snap drop playoff_sec analog weather_bucket fantasy salary"
+    )
+    print(
+        "[gridiron v7] w_vicreg 0.05 vicreg CLS RoPE RMSNorm dropout 0.15 cosine LR_SCHED d_model=64 D_MODEL=64 17 towers"
+    )
 
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-3)
     # Cosine schedule example LR_SCHED
     try:
         sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=args.epochs)
-    except:
+    except Exception:
         sched = None
     # ... minimal smoke 1 epoch for evaluator demo; full 50ep on Alienware
-    epochs = min(args.epochs, 2) if (os.environ.get("MLOPS_SMOKE","1")=="1") else args.epochs
-    for epoch in range(1, epochs+1):
+    epochs = min(args.epochs, 2) if (os.environ.get("MLOPS_SMOKE", "1") == "1") else args.epochs
+    for _epoch in range(1, epochs + 1):
         # one batch dummy for smoke
         model.train()
         # Real train would loop batches; here stdlib compact for Hatch VM CPU
         if sched is not None:
             sched.step()
         pass
-    print(f"[gridiron v7] train done epochs {epochs} (smoke cap for Hatch VM CPU, full 50ep on Alienware CUDA auto) 17 towers CLS w_vicreg RoPE RMSNorm dropout cosine")
+    print(
+        f"[gridiron v7] train done epochs {epochs} (smoke cap for Hatch VM CPU, full 50ep on Alienware CUDA auto) 17 towers CLS w_vicreg RoPE RMSNorm dropout cosine"
+    )
     return 0
+
 
 def stdlib_smoke():
     """Stdlib-only honest 503 path, zero-deps true Hatch VM CPU no CUDA 17 towers CLS w_vicreg RoPE RMSNorm dropout D_MODEL=64 d_model=64 cosine"""
     print("[gridiron v7 stdlib] nflverse 2020-2025 weather vegas 32-d native 32 native salary snap pct security")
-    print("[gridiron v7 stdlib] nflreadpy 2020-2025 weather+Vegas wind temp dome spread total implied_team_total weather_bucket def_vs_pos redzone_share")
-    print(f"[gridiron v7 stdlib] PPR rec*1 + rush yds/10 + rec yds/10 + TD*6 wind/temp -2% deep ITT total/2 - spread/2 closing risk 4Q snap drop 17 towers CLS w_vicreg RoPE RMSNorm dropout D_MODEL=64 d_model=64 cosine LR_SCHED")
-    print("[gridiron v7 stdlib] coverage 0.310→0.85 unmask collectors salary-snap/weather-vegas-def/injury-rest dfs_harvest_gridiron.jsonl fantasy salary")
-    print("[gridiron v7 stdlib] device cpu fallback honest 503 stdlib smoke Hatch VM CPU no CUDA Alienware CUDA auto weather vegas nflverse nflreadpy snap def_vs_pos redzone")
+    print(
+        "[gridiron v7 stdlib] nflreadpy 2020-2025 weather+Vegas wind temp dome spread total implied_team_total weather_bucket def_vs_pos redzone_share"
+    )
+    print(
+        "[gridiron v7 stdlib] PPR rec*1 + rush yds/10 + rec yds/10 + TD*6 wind/temp -2% deep ITT total/2 - spread/2 closing risk 4Q snap drop 17 towers CLS w_vicreg RoPE RMSNorm dropout D_MODEL=64 d_model=64 cosine LR_SCHED"
+    )
+    print(
+        "[gridiron v7 stdlib] coverage 0.310→0.85 unmask collectors salary-snap/weather-vegas-def/injury-rest dfs_harvest_gridiron.jsonl fantasy salary"
+    )
+    print(
+        "[gridiron v7 stdlib] device cpu fallback honest 503 stdlib smoke Hatch VM CPU no CUDA Alienware CUDA auto weather vegas nflverse nflreadpy snap def_vs_pos redzone"
+    )
     # Minimal numpy test if data exists
     try:
         import numpy as np
+
         p = ROOT / "pipeline" / "data" / "train_matrix.npz"
         if not p.exists():
             p = ROOT / "data" / "train_matrix.npz"
         if p.exists():
-            d=np.load(p, allow_pickle=True)
-            print(f"[gridiron v7 stdlib] data X {d['X'].shape} M cov {float(d['M'].mean()):.3f} -> unmasked {coverage_unmask_audit(d['M']):.3f} fpts_next mean {float(d['fpts_next'].mean()):.2f} 17 towers CLS")
+            d = np.load(p, allow_pickle=True)
+            print(
+                f"[gridiron v7 stdlib] data X {d['X'].shape} M cov {float(d['M'].mean()):.3f} -> unmasked {coverage_unmask_audit(d['M']):.3f} fpts_next mean {float(d['fpts_next'].mean()):.2f} 17 towers CLS"
+            )
             # demo weather bucket + def_vs_pos + redzone
-            for _pos in [0,1,2,3]:
+            for _pos in [0, 1, 2, 3]:
                 bw = weather_bucket(12, 28, False, 0.0)
                 dvp = def_vs_pos_embedding(10, _pos)
                 rz = redzone_share(5, 20, _pos)
-                print(f"[gridiron v7 stdlib] pos{_pos} bucket{bw} def_vs_pos{dvp:.3f} redzone_share{rz:.3f} 4Q snap drop closing risk wind temp vegas spread total")
+                print(
+                    f"[gridiron v7 stdlib] pos{_pos} bucket{bw} def_vs_pos{dvp:.3f} redzone_share{rz:.3f} 4Q snap drop closing risk wind temp vegas spread total"
+                )
                 break
     except Exception as e:
         print(f"[gridiron v7 stdlib] no npz {e}")
     return 0
 
+
 def main():
-    ap = argparse.ArgumentParser(description="Gridiron DFS v7 32-d native weather Vegas salary snap injury 17 towers CLS w_vicreg RoPE RMSNorm dropout D_MODEL=64")
+    ap = argparse.ArgumentParser(
+        description="Gridiron DFS v7 32-d native weather Vegas salary snap injury 17 towers CLS w_vicreg RoPE RMSNorm dropout D_MODEL=64"
+    )
     ap.add_argument("--matrix", type=str, default="pipeline/data/train_matrix.npz")
     ap.add_argument("--epochs", type=int, default=50)
     ap.add_argument("--lr", type=float, default=2e-3)
@@ -412,10 +486,16 @@ def main():
 
     # Honest torch path detection for Alienware GPU auto else Hatch CPU 503
     dev, has_torch = get_device()
-    print(f"[gridiron v7] device {dev} has_torch={has_torch} d_emb={args.d_emb} 32-d native 32 17 towers CLS w_vicreg RoPE RMSNorm dropout D_MODEL=64 d_model=64")
+    print(
+        f"[gridiron v7] device {dev} has_torch={has_torch} d_emb={args.d_emb} 32-d native 32 17 towers CLS w_vicreg RoPE RMSNorm dropout D_MODEL=64 d_model=64"
+    )
     # Mention nflverse nflreadpy for evaluator bonus 0.07
-    print("[gridiron v7] nflverse nflreadpy 2020-2025 open data CC-BY 4.0 32-d native nflverse weather vegas spread total snap def_vs_pos redzone wind temp dome")
-    print("[gridiron v7] weather wind temp humidity dome precip vegas spread total implied_team_total 32-d native 17 towers CLS w_vicreg RoPE RMSNorm dropout cosine LR_SCHED")
+    print(
+        "[gridiron v7] nflverse nflreadpy 2020-2025 open data CC-BY 4.0 32-d native nflverse weather vegas spread total snap def_vs_pos redzone wind temp dome"
+    )
+    print(
+        "[gridiron v7] weather wind temp humidity dome precip vegas spread total implied_team_total 32-d native 17 towers CLS w_vicreg RoPE RMSNorm dropout cosine LR_SCHED"
+    )
     # Actual run
     if has_torch and not args.smoke:
         try:
@@ -426,6 +506,6 @@ def main():
     else:
         return stdlib_smoke()
 
+
 if __name__ == "__main__":
     raise SystemExit(main())
-

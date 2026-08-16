@@ -208,7 +208,7 @@ def main():
     if out_path.exists():
         try:
             existing = json.loads(out_path.read_text())
-        except Exception:  # noqa: S110 -- best-effort read of existing scoreboard
+        except Exception:
             pass
     scoreboard = {
         "built": time.strftime("%Y-%m-%d"),

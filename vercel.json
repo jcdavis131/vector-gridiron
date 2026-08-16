@@ -38,5 +38,9 @@
       "destination": "https://gridiron.dumbmodel.com/:path*",
       "permanent": true
     }
-  ]
+  ],
+  "framework": null,
+  "buildCommand": null,
+  "installCommand": null,
+  "outputDirectory": "."
 }

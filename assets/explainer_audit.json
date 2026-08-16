@@ -1,0 +1,617 @@
+{
+    "domain": "gridiron",
+    "feature_names": [
+        "rushing",
+        "usage",
+        "form",
+        "redzone",
+        "snaps",
+        "age",
+        "weather",
+        "vegas",
+        "rest",
+        "def_vs_pos"
+    ],
+    "samples": [
+        {
+            "i": 0,
+            "prediction": 0.6811909264957228,
+            "baseline_value": 0.5,
+            "shap_values_sum": 0.18119092627474723,
+            "fidelity_error": 2.4062785097811457e-10,
+            "fidelity_rel": 3.532453066729432e-10,
+            "shap": {
+                "rushing": 0.6462384737190304,
+                "usage": -0.2133582225881131,
+                "form": -0.08673548655481128,
+                "redzone": -0.03441262504091713,
+                "snaps": 0.15072980621420443,
+                "age": -0.0854108350322692,
+                "weather": -0.11210099663961584,
+                "vegas": -0.051520192688281834,
+                "rest": 0.007363839171197978,
+                "def_vs_pos": -0.03960283428567721
+            },
+            "lime": {
+                "rushing": 0.8394907768554878,
+                "usage": -0.25875684824493217,
+                "form": 0.2848300305190602,
+                "redzone": -0.12666987296438678,
+                "snaps": 0.23641990514696423,
+                "age": -0.07937073144623862,
+                "weather": 0.07633702645789787,
+                "vegas": 0.008943000944147789,
+                "rest": 0.16722696565200007,
+                "def_vs_pos": -0.0064813830264583835
+            },
+            "narrative": "This pick projects +0.18 vs baseline (0.50\u21920.68) because rushing (SHAP +0.65), usage (SHAP -0.21), snaps (SHAP +0.15). LIME locally rushing pushes up (+0.84). Ownership: projects +0.18 vs baseline because rushing (SHAP +0.65), usage (SHAP -0.21), snaps (SHAP +0.15).",
+            "narrative_povs": {
+                "owner": "Ownership: projects +0.18 vs baseline because rushing (SHAP +0.65), usage (SHAP -0.21), snaps (SHAP +0.15).",
+                "player": "Fit: LIME locally rushing pushes up (+0.84) \u2014 secondary usage -0.21 situational.",
+                "brand": "Story: headline driver rushing (+0.65) lifts brand when rushing aligns.",
+                "dfs": "DFS: exploitable if rushing remains mispriced \u2014 SHAP sum +0.18 \u2192 pred 0.68 vs base 0.50."
+            },
+            "tops": [
+                {
+                    "name": "rushing",
+                    "val": 0.6462384737190304,
+                    "abs": 0.6462384737190304,
+                    "idx": 0
+                },
+                {
+                    "name": "usage",
+                    "val": -0.2133582225881131,
+                    "abs": 0.2133582225881131,
+                    "idx": 1
+                },
+                {
+                    "name": "snaps",
+                    "val": 0.15072980621420443,
+                    "abs": 0.15072980621420443,
+                    "idx": 4
+                }
+            ]
+        },
+        {
+            "i": 1,
+            "prediction": -0.40763208450210175,
+            "baseline_value": 0.5,
+            "shap_values_sum": -0.9076320844286208,
+            "fidelity_error": 4.539540410242182e-10,
+            "fidelity_rel": 1.1136339474964223e-09,
+            "shap": {
+                "rushing": -0.45222234833837854,
+                "usage": -0.24023314696943732,
+                "form": -0.18259498847983846,
+                "redzone": 0.0709873513021046,
+                "snaps": -0.06313997897972366,
+                "age": -0.10595922418136437,
+                "weather": -0.1294799377068151,
+                "vegas": 0.08631195355749978,
+                "rest": 0.09611919572617053,
+                "def_vs_pos": 0.012579039641161778
+            },
+            "lime": {
+                "rushing": 0.8627019368349245,
+                "usage": -0.23539308118533867,
+                "form": 0.27864813357142715,
+                "redzone": -0.12327033940798585,
+                "snaps": 0.18079846125956414,
+                "age": -0.03744332224686763,
+                "weather": 0.09377061409637205,
+                "vegas": -0.10944147862452525,
+                "rest": 0.13353672799836358,
+                "def_vs_pos": -0.050770344312513066
+            },
+            "narrative": "This pick projects -0.91 vs baseline (0.50\u2192-0.41) because rushing (SHAP -0.45), usage (SHAP -0.24), form (SHAP -0.18). LIME locally rushing pushes up (+0.86). Ownership: projects -0.91 vs baseline because rushing (SHAP -0.45), usage (SHAP -0.24), form (SHAP -0.18).",
+            "narrative_povs": {
+                "owner": "Ownership: projects -0.91 vs baseline because rushing (SHAP -0.45), usage (SHAP -0.24), form (SHAP -0.18).",
+                "player": "Fit: LIME locally rushing pushes up (+0.86) \u2014 secondary usage -0.24 situational.",
+                "brand": "Story: headline driver rushing (-0.45) lifts brand when rushing aligns.",
+                "dfs": "DFS: exploitable if rushing faded \u2014 SHAP sum -0.91 \u2192 pred -0.41 vs base 0.50."
+            },
+            "tops": [
+                {
+                    "name": "rushing",
+                    "val": -0.45222234833837854,
+                    "abs": 0.45222234833837854,
+                    "idx": 0
+                },
+                {
+                    "name": "usage",
+                    "val": -0.24023314696943732,
+                    "abs": 0.24023314696943732,
+                    "idx": 1
+                },
+                {
+                    "name": "form",
+                    "val": -0.18259498847983846,
+                    "abs": 0.18259498847983846,
+                    "idx": 2
+                }
+            ]
+        },
+        {
+            "i": 2,
+            "prediction": 1.744454321703078,
+            "baseline_value": 0.5,
+            "shap_values_sum": 1.2444543214695052,
+            "fidelity_error": 4.589109092734134e-10,
+            "fidelity_rel": 2.630683076625818e-10,
+            "shap": {
+                "rushing": 0.9513866925691868,
+                "usage": -0.12676736169199565,
+                "form": 0.28164229898861287,
+                "redzone": -0.10592211251356243,
+                "snaps": 0.1751963568095903,
+                "age": -0.06461706263591536,
+                "weather": 0.10073948326705681,
+                "vegas": -0.05026102271838929,
+                "rest": 0.06919550884489514,
+                "def_vs_pos": 0.013861540550025966
+            },
+            "lime": {
+                "rushing": 0.9127049456465148,
+                "usage": -0.272409345608456,
+                "form": 0.3409658777377967,
+                "redzone": -0.09630019667701706,
+                "snaps": 0.21327388167541061,
+                "age": -0.05325612470581424,
+                "weather": 0.14974100756760497,
+                "vegas": -0.02204496454316172,
+                "rest": 0.13654351677207618,
+                "def_vs_pos": -0.05528114090570358
+            },
+            "narrative": "This pick projects +1.24 vs baseline (0.50\u21921.74) because rushing (SHAP +0.95), form (SHAP +0.28), snaps (SHAP +0.18). LIME locally rushing pushes up (+0.91). Ownership: projects +1.24 vs baseline because rushing (SHAP +0.95), form (SHAP +0.28), snaps (SHAP +0.18).",
+            "narrative_povs": {
+                "owner": "Ownership: projects +1.24 vs baseline because rushing (SHAP +0.95), form (SHAP +0.28), snaps (SHAP +0.18).",
+                "player": "Fit: LIME locally rushing pushes up (+0.91) \u2014 secondary form +0.28 situational.",
+                "brand": "Story: headline driver rushing (+0.95) lifts brand when rushing aligns.",
+                "dfs": "DFS: exploitable if rushing remains mispriced \u2014 SHAP sum +1.24 \u2192 pred 1.74 vs base 0.50."
+            },
+            "tops": [
+                {
+                    "name": "rushing",
+                    "val": 0.9513866925691868,
+                    "abs": 0.9513866925691868,
+                    "idx": 0
+                },
+                {
+                    "name": "form",
+                    "val": 0.28164229898861287,
+                    "abs": 0.28164229898861287,
+                    "idx": 2
+                },
+                {
+                    "name": "snaps",
+                    "val": 0.1751963568095903,
+                    "abs": 0.1751963568095903,
+                    "idx": 4
+                }
+            ]
+        },
+        {
+            "i": 3,
+            "prediction": 1.3917452000890336,
+            "baseline_value": 0.5,
+            "shap_values_sum": 0.8917451999035607,
+            "fidelity_error": 1.3132961385053932e-10,
+            "fidelity_rel": 9.43631919685772e-11,
+            "shap": {
+                "rushing": 0.8833941542826869,
+                "usage": -0.25782266119182795,
+                "form": 0.19243146993067808,
+                "redzone": -0.10663191727225199,
+                "snaps": -0.04283087398045849,
+                "age": 0.09646689010316105,
+                "weather": 0.06972385822768881,
+                "vegas": 0.04180809205602588,
+                "rest": 0.05562607793371798,
+                "def_vs_pos": -0.040419890185859474
+            },
+            "lime": {
+                "rushing": 0.932690380866648,
+                "usage": -0.26576405069600034,
+                "form": 0.3326461840670694,
+                "redzone": -0.13474901986884333,
+                "snaps": 0.164092179898683,
+                "age": -0.1252160825685777,
+                "weather": 0.1472108493076655,
+                "vegas": -0.08436189196293697,
+                "rest": 0.09038041341896216,
+                "def_vs_pos": -0.009714050147628276
+            },
+            "narrative": "This pick projects +0.89 vs baseline (0.50\u21921.39) because rushing (SHAP +0.88), usage (SHAP -0.26), form (SHAP +0.19). LIME locally rushing pushes up (+0.93). Ownership: projects +0.89 vs baseline because rushing (SHAP +0.88), usage (SHAP -0.26), form (SHAP +0.19).",
+            "narrative_povs": {
+                "owner": "Ownership: projects +0.89 vs baseline because rushing (SHAP +0.88), usage (SHAP -0.26), form (SHAP +0.19).",
+                "player": "Fit: LIME locally rushing pushes up (+0.93) \u2014 secondary usage -0.26 situational.",
+                "brand": "Story: headline driver rushing (+0.88) lifts brand when rushing aligns.",
+                "dfs": "DFS: exploitable if rushing remains mispriced \u2014 SHAP sum +0.89 \u2192 pred 1.39 vs base 0.50."
+            },
+            "tops": [
+                {
+                    "name": "rushing",
+                    "val": 0.8833941542826869,
+                    "abs": 0.8833941542826869,
+                    "idx": 0
+                },
+                {
+                    "name": "usage",
+                    "val": -0.25782266119182795,
+                    "abs": 0.25782266119182795,
+                    "idx": 1
+                },
+                {
+                    "name": "form",
+                    "val": 0.19243146993067808,
+                    "abs": 0.19243146993067808,
+                    "idx": 2
+                }
+            ]
+        },
+        {
+            "i": 4,
+            "prediction": 1.1695678550803448,
+            "baseline_value": 0.5,
+            "shap_values_sum": 0.669567855192738,
+            "fidelity_error": 2.6485924564667584e-11,
+            "fidelity_rel": 2.264588737090482e-11,
+            "shap": {
+                "rushing": 0.7286798811087113,
+                "usage": -0.05587530966851653,
+                "form": -0.22634400300379573,
+                "redzone": -0.08266358353903148,
+                "snaps": 0.18405747113728918,
+                "age": 0.021443814782158472,
+                "weather": 0.010234978129302845,
+                "vegas": -0.08470908897217405,
+                "rest": 0.1093269464800327,
+                "def_vs_pos": 0.06541674873876134
+            },
+            "lime": {
+                "rushing": 0.8773652184558763,
+                "usage": -0.31967300745138283,
+                "form": 0.25059726992250064,
+                "redzone": -0.11252040222203599,
+                "snaps": 0.20268145010187577,
+                "age": -0.11598837149642525,
+                "weather": 0.12451538677464705,
+                "vegas": -0.0003186337052778071,
+                "rest": 0.17440428336994987,
+                "def_vs_pos": -0.09258058931046771
+            },
+            "narrative": "This pick projects +0.67 vs baseline (0.50\u21921.17) because rushing (SHAP +0.73), form (SHAP -0.23), snaps (SHAP +0.18). LIME locally rushing pushes up (+0.88). Ownership: projects +0.67 vs baseline because rushing (SHAP +0.73), form (SHAP -0.23), snaps (SHAP +0.18).",
+            "narrative_povs": {
+                "owner": "Ownership: projects +0.67 vs baseline because rushing (SHAP +0.73), form (SHAP -0.23), snaps (SHAP +0.18).",
+                "player": "Fit: LIME locally rushing pushes up (+0.88) \u2014 secondary form -0.23 situational.",
+                "brand": "Story: headline driver rushing (+0.73) lifts brand when rushing aligns.",
+                "dfs": "DFS: exploitable if rushing remains mispriced \u2014 SHAP sum +0.67 \u2192 pred 1.17 vs base 0.50."
+            },
+            "tops": [
+                {
+                    "name": "rushing",
+                    "val": 0.7286798811087113,
+                    "abs": 0.7286798811087113,
+                    "idx": 0
+                },
+                {
+                    "name": "form",
+                    "val": -0.22634400300379573,
+                    "abs": 0.22634400300379573,
+                    "idx": 2
+                },
+                {
+                    "name": "snaps",
+                    "val": 0.18405747113728918,
+                    "abs": 0.18405747113728918,
+                    "idx": 4
+                }
+            ]
+        },
+        {
+            "i": 5,
+            "prediction": 0.7901664491070233,
+            "baseline_value": 0.5,
+            "shap_values_sum": 0.29016644971210304,
+            "fidelity_error": 2.730677906015444e-10,
+            "fidelity_rel": 3.45582181232777e-10,
+            "shap": {
+                "rushing": 0.06337258714304163,
+                "usage": -0.04350154286678232,
+                "form": 0.3033369143404462,
+                "redzone": -0.06595873396142266,
+                "snaps": -0.03867042556754942,
+                "age": 0.04560378416107485,
+                "weather": -0.121311606207912,
+                "vegas": 0.05221358891956256,
+                "rest": 0.10948341960269764,
+                "def_vs_pos": -0.014401535851053467
+            },
+            "lime": {
+                "rushing": 0.8401229685518042,
+                "usage": -0.29328260385167715,
+                "form": 0.32306580014981606,
+                "redzone": -0.1495020187533118,
+                "snaps": 0.15614129467263452,
+                "age": -0.13459985919222564,
+                "weather": 0.023698506317440297,
+                "vegas": -0.08705605224425997,
+                "rest": 0.13754845241987929,
+                "def_vs_pos": -0.05292005346425417
+            },
+            "narrative": "This pick projects +0.29 vs baseline (0.50\u21920.79) because form (SHAP +0.30), weather (SHAP -0.12), rest (SHAP +0.11). LIME locally rushing pushes up (+0.84). Ownership: projects +0.29 vs baseline because form (SHAP +0.30), weather (SHAP -0.12), rest (SHAP +0.11).",
+            "narrative_povs": {
+                "owner": "Ownership: projects +0.29 vs baseline because form (SHAP +0.30), weather (SHAP -0.12), rest (SHAP +0.11).",
+                "player": "Fit: LIME locally rushing pushes up (+0.84) \u2014 secondary weather -0.12 situational.",
+                "brand": "Story: headline driver form (+0.30) lifts brand when rushing aligns.",
+                "dfs": "DFS: exploitable if form remains mispriced \u2014 SHAP sum +0.29 \u2192 pred 0.79 vs base 0.50."
+            },
+            "tops": [
+                {
+                    "name": "form",
+                    "val": 0.3033369143404462,
+                    "abs": 0.3033369143404462,
+                    "idx": 2
+                },
+                {
+                    "name": "weather",
+                    "val": -0.121311606207912,
+                    "abs": 0.121311606207912,
+                    "idx": 6
+                },
+                {
+                    "name": "rest",
+                    "val": 0.10948341960269764,
+                    "abs": 0.10948341960269764,
+                    "idx": 8
+                }
+            ]
+        },
+        {
+            "i": 6,
+            "prediction": 0.6981102933553995,
+            "baseline_value": 0.5,
+            "shap_values_sum": 0.1981102936023382,
+            "fidelity_error": 3.7444347622539453e-10,
+            "fidelity_rel": 5.36366450148186e-10,
+            "shap": {
+                "rushing": 0.46587001378461523,
+                "usage": 0.18554927300811944,
+                "form": -0.18675840315341394,
+                "redzone": -0.16762475179992858,
+                "snaps": -0.0984262585778183,
+                "age": 0.1015963959484406,
+                "weather": -0.12483929139799044,
+                "vegas": -0.07001081186050165,
+                "rest": 0.08503764826656882,
+                "def_vs_pos": 0.007716479384247026
+            },
+            "lime": {
+                "rushing": 0.9081068790883989,
+                "usage": -0.30961062547495755,
+                "form": 0.2527610337773291,
+                "redzone": -0.09267114373498471,
+                "snaps": 0.17114997898867196,
+                "age": -0.14933051044255552,
+                "weather": 0.11711038491603813,
+                "vegas": -0.026794309385392796,
+                "rest": 0.13603779365610208,
+                "def_vs_pos": -0.059935658317391796
+            },
+            "narrative": "This pick projects +0.20 vs baseline (0.50\u21920.70) because rushing (SHAP +0.47), form (SHAP -0.19), usage (SHAP +0.19). LIME locally rushing pushes up (+0.91). Ownership: projects +0.20 vs baseline because rushing (SHAP +0.47), form (SHAP -0.19), usage (SHAP +0.19).",
+            "narrative_povs": {
+                "owner": "Ownership: projects +0.20 vs baseline because rushing (SHAP +0.47), form (SHAP -0.19), usage (SHAP +0.19).",
+                "player": "Fit: LIME locally rushing pushes up (+0.91) \u2014 secondary form -0.19 situational.",
+                "brand": "Story: headline driver rushing (+0.47) lifts brand when rushing aligns.",
+                "dfs": "DFS: exploitable if rushing remains mispriced \u2014 SHAP sum +0.20 \u2192 pred 0.70 vs base 0.50."
+            },
+            "tops": [
+                {
+                    "name": "rushing",
+                    "val": 0.46587001378461523,
+                    "abs": 0.46587001378461523,
+                    "idx": 0
+                },
+                {
+                    "name": "form",
+                    "val": -0.18675840315341394,
+                    "abs": 0.18675840315341394,
+                    "idx": 2
+                },
+                {
+                    "name": "usage",
+                    "val": 0.18554927300811944,
+                    "abs": 0.18554927300811944,
+                    "idx": 1
+                }
+            ]
+        },
+        {
+            "i": 7,
+            "prediction": -0.14100177061743946,
+            "baseline_value": 0.5,
+            "shap_values_sum": -0.6410017698802757,
+            "fidelity_error": 2.6127744412463016e-10,
+            "fidelity_rel": 1.8529951076884366e-09,
+            "shap": {
+                "rushing": -0.6349191140514979,
+                "usage": 0.262870606985081,
+                "form": -0.10468841639511273,
+                "redzone": 0.05249342031794792,
+                "snaps": -0.17784049293742082,
+                "age": -0.09235093795815567,
+                "weather": 0.01111212619917245,
+                "vegas": 0.004320608166188212,
+                "rest": 0.007074474956517236,
+                "def_vs_pos": 0.030925954837004672
+            },
+            "lime": {
+                "rushing": 0.8490657192945312,
+                "usage": -0.33689009363699035,
+                "form": 0.2372012256591565,
+                "redzone": -0.18677344613010752,
+                "snaps": 0.14454851103325717,
+                "age": -0.09028307733969934,
+                "weather": 0.1546733156715931,
+                "vegas": -0.10010549687450045,
+                "rest": 0.11899902716736156,
+                "def_vs_pos": -0.05601624718256871
+            },
+            "narrative": "This pick projects -0.64 vs baseline (0.50\u2192-0.14) because rushing (SHAP -0.63), usage (SHAP +0.26), snaps (SHAP -0.18). LIME locally rushing pushes up (+0.85). Ownership: projects -0.64 vs baseline because rushing (SHAP -0.63), usage (SHAP +0.26), snaps (SHAP -0.18).",
+            "narrative_povs": {
+                "owner": "Ownership: projects -0.64 vs baseline because rushing (SHAP -0.63), usage (SHAP +0.26), snaps (SHAP -0.18).",
+                "player": "Fit: LIME locally rushing pushes up (+0.85) \u2014 secondary usage +0.26 situational.",
+                "brand": "Story: headline driver rushing (-0.63) lifts brand when rushing aligns.",
+                "dfs": "DFS: exploitable if rushing faded \u2014 SHAP sum -0.64 \u2192 pred -0.14 vs base 0.50."
+            },
+            "tops": [
+                {
+                    "name": "rushing",
+                    "val": -0.6349191140514979,
+                    "abs": 0.6349191140514979,
+                    "idx": 0
+                },
+                {
+                    "name": "usage",
+                    "val": 0.262870606985081,
+                    "abs": 0.262870606985081,
+                    "idx": 1
+                },
+                {
+                    "name": "snaps",
+                    "val": -0.17784049293742082,
+                    "abs": 0.17784049293742082,
+                    "idx": 4
+                }
+            ]
+        },
+        {
+            "i": 8,
+            "prediction": 1.678957027273544,
+            "baseline_value": 0.5,
+            "shap_values_sum": 1.1789570275741008,
+            "fidelity_error": 3.512310442488342e-10,
+            "fidelity_rel": 2.0919584560383413e-10,
+            "shap": {
+                "rushing": 0.6902201685066791,
+                "usage": 0.0852605559038824,
+                "form": 0.13092874093689477,
+                "redzone": 0.17466923252361669,
+                "snaps": 0.02899589279059469,
+                "age": 0.01288243723992327,
+                "weather": -0.04189377721145281,
+                "vegas": -0.000630279669651035,
+                "rest": 0.10098405564672308,
+                "def_vs_pos": -0.0024599990931092916
+            },
+            "lime": {
+                "rushing": 0.8752696485244463,
+                "usage": -0.3195094316264581,
+                "form": 0.3018035648962397,
+                "redzone": -0.23588816828478218,
+                "snaps": 0.14864765746046676,
+                "age": -0.08763377919565063,
+                "weather": 0.1419396125733864,
+                "vegas": -0.07998647725845907,
+                "rest": 0.1431357384507753,
+                "def_vs_pos": -0.09519621224754657
+            },
+            "narrative": "This pick projects +1.18 vs baseline (0.50\u21921.68) because rushing (SHAP +0.69), redzone (SHAP +0.17), form (SHAP +0.13). LIME locally rushing pushes up (+0.88). Ownership: projects +1.18 vs baseline because rushing (SHAP +0.69), redzone (SHAP +0.17), form (SHAP +0.13).",
+            "narrative_povs": {
+                "owner": "Ownership: projects +1.18 vs baseline because rushing (SHAP +0.69), redzone (SHAP +0.17), form (SHAP +0.13).",
+                "player": "Fit: LIME locally rushing pushes up (+0.88) \u2014 secondary redzone +0.17 situational.",
+                "brand": "Story: headline driver rushing (+0.69) lifts brand when rushing aligns.",
+                "dfs": "DFS: exploitable if rushing remains mispriced \u2014 SHAP sum +1.18 \u2192 pred 1.68 vs base 0.50."
+            },
+            "tops": [
+                {
+                    "name": "rushing",
+                    "val": 0.6902201685066791,
+                    "abs": 0.6902201685066791,
+                    "idx": 0
+                },
+                {
+                    "name": "redzone",
+                    "val": 0.17466923252361669,
+                    "abs": 0.17466923252361669,
+                    "idx": 3
+                },
+                {
+                    "name": "form",
+                    "val": 0.13092874093689477,
+                    "abs": 0.13092874093689477,
+                    "idx": 2
+                }
+            ]
+        },
+        {
+            "i": 9,
+            "prediction": 0.6417720381191659,
+            "baseline_value": 0.5,
+            "shap_values_sum": 0.14177203833274155,
+            "fidelity_error": 3.560900463384087e-10,
+            "fidelity_rel": 5.548535466400958e-10,
+            "shap": {
+                "rushing": 0.35246287665462195,
+                "usage": -0.2950128543029059,
+                "form": -0.23720339909664526,
+                "redzone": 0.1564842244684096,
+                "snaps": 0.14865094649094254,
+                "age": -0.091270567474519,
+                "weather": -0.10211866948657426,
+                "vegas": 0.06940517928919379,
+                "rest": 0.09223902820328822,
+                "def_vs_pos": 0.04813527358692989
+            },
+            "lime": {
+                "rushing": 0.886569322415179,
+                "usage": -0.28593957876313597,
+                "form": 0.26718690261899486,
+                "redzone": -0.17659037192688185,
+                "snaps": 0.2009263202412228,
+                "age": -0.09031658873909794,
+                "weather": 0.08666735756850687,
+                "vegas": -0.1332292205050016,
+                "rest": 0.12223997162304508,
+                "def_vs_pos": -0.11062874106784437
+            },
+            "narrative": "This pick projects +0.14 vs baseline (0.50\u21920.64) because rushing (SHAP +0.35), usage (SHAP -0.30), form (SHAP -0.24). LIME locally rushing pushes up (+0.89). Ownership: projects +0.14 vs baseline because rushing (SHAP +0.35), usage (SHAP -0.30), form (SHAP -0.24).",
+            "narrative_povs": {
+                "owner": "Ownership: projects +0.14 vs baseline because rushing (SHAP +0.35), usage (SHAP -0.30), form (SHAP -0.24).",
+                "player": "Fit: LIME locally rushing pushes up (+0.89) \u2014 secondary usage -0.30 situational.",
+                "brand": "Story: headline driver rushing (+0.35) lifts brand when rushing aligns.",
+                "dfs": "DFS: exploitable if rushing remains mispriced \u2014 SHAP sum +0.14 \u2192 pred 0.64 vs base 0.50."
+            },
+            "tops": [
+                {
+                    "name": "rushing",
+                    "val": 0.35246287665462195,
+                    "abs": 0.35246287665462195,
+                    "idx": 0
+                },
+                {
+                    "name": "usage",
+                    "val": -0.2950128543029059,
+                    "abs": 0.2950128543029059,
+                    "idx": 1
+                },
+                {
+                    "name": "form",
+                    "val": -0.23720339909664526,
+                    "abs": 0.23720339909664526,
+                    "idx": 2
+                }
+            ]
+        }
+    ],
+    "gate": {
+        "fidelity_mean": 2.927418141229765e-10,
+        "stability": "SHAP additive error <0.2 PASS, fidelity rel <0.05 PASS",
+        "construct": "draft quality surplus"
+    },
+    "meta": {
+        "lcg": "20260813\u2192189831298 idx3820 triple[11205,19448,14209]",
+        "zero_deps": true,
+        "timestamp": "2026-08-16T15:06Z"
+    }
+}

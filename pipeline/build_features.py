@@ -178,19 +178,29 @@ def game_context(offline: bool) -> dict:
         roof = (r.get("roof") or "outdoors").lower()
         surface = (r.get("surface") or "grass").lower()
         indoor = 1.0 if roof in ("dome", "closed") else 0.0
-        temp = num(r, "temp", 68.0 if indoor else 60.0)
+        # None, not a literal. nflverse leaves temp blank for many games
+        # (notably domes); 68.0/60.0 filled 36.9% of this column with an
+        # invented reading that then asserted mask=1. Audit 2026-08-15.
+        temp = num(r, "temp", None)
         wind = num(r, "wind", 0.0)
         gametime = r.get("gametime", "") or ""
-        hour = int(gametime.split(":")[0]) if ":" in gametime else 13
+        # None, not 13. A missing gametime became an assumed 1pm kickoff for
+        # 51.9% of rows -- more than half the column was invented.
+        hour = int(gametime.split(":")[0]) if ":" in gametime else None
         weekday = (r.get("weekday") or "Sunday")
-        primetime = 1.0 if (hour >= 19 or weekday in ("Thursday", "Monday", "Saturday")) else 0.0
+        # Weekday alone still determines primetime when the kickoff hour is
+        # unknown, so this stays computable rather than becoming missing.
+        primetime = 1.0 if ((hour is not None and hour >= 19)
+                            or weekday in ("Thursday", "Monday", "Saturday")) else 0.0
         gday = r.get("gameday", "")
         home_imp = total / 2 + spread / 2
         away_imp = total / 2 - spread / 2
         base = dict(
             week=week, roof=roof, is_indoor=indoor,
             is_grass=1.0 if "grass" in surface else 0.0,
-            temp=temp, wind=wind, kick_hour=float(hour), is_primetime=primetime,
+            temp=temp, wind=wind,
+            kick_hour=(float(hour) if hour is not None else None),
+            is_primetime=primetime,
             is_thu=1.0 if weekday == "Thursday" else 0.0,
             is_mon=1.0 if weekday == "Monday" else 0.0,
             total_line=total, div=num(r, "div_game", 0.0), gday=gday,
@@ -611,15 +621,20 @@ def assemble_row(
     vals["is_div"] = c["div"]
     vals["is_indoor"] = c["is_indoor"]
     vals["is_grass"] = c["is_grass"]
-    vals["temp"] = c["temp"]
+    # Unobserved conditions carry a 0.0 placeholder in vals and mask=0 below,
+    # so the model is told they are absent rather than being handed a number.
+    vals["temp"] = c["temp"] if c["temp"] is not None else 0.0
     vals["wind"] = c["wind"]
-    vals["kick_hour"] = c["kick_hour"]
+    vals["kick_hour"] = c["kick_hour"] if c["kick_hour"] is not None else 0.0
     vals["is_primetime"] = c["is_primetime"]
     vals["is_thu"] = c["is_thu"]
     vals["is_mon"] = c["is_mon"]
     vals["week_no"] = float(c["week"])
     for k in COND_KEYS:
         mask[k] = 1.0
+    # ...except the two that are genuinely absent in the source for many games.
+    mask["temp"] = 0.0 if c["temp"] is None else 1.0
+    mask["kick_hour"] = 0.0 if c["kick_hour"] is None else 1.0
     vals["team_implied"] = c["team_implied"]
     vals["opp_implied"] = c["opp_implied"]
     vals["spread_team"] = c["spread_team"]
@@ -975,7 +990,7 @@ def build_upcoming(up_season, last_bundle, ctx, meta, league_avg_pos,
             "bye": byes.get(team), "status": m.get("status", ""),
             "opp": c["opp"], "headshot": games[-1]["headshot"],
             "conditions": {
-                "roof": c["roof"], "temp": c["temp"], "wind": c["wind"],
+                "roof": c["roof"], "temp": c["temp"], "wind": c["wind"],  # temp may be None = not reported
                 "is_home": c["is_home"], "team_implied": round(c["team_implied"], 1),
                 "total": c["total_line"], "spread_team": c["spread_team"],
                 "primetime": c["is_primetime"], "gameday": c["gday"],

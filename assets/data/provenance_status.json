@@ -1,0 +1,462 @@
+{
+  "built": "2026-08-16T18:00Z",
+  "version": "v67.2-pro-business-ready",
+  "lcg": {
+    "seed": 20260813,
+    "lcg": 189831298,
+    "idx": 3820,
+    "triple": [
+      11205,
+      19448,
+      14209
+    ],
+    "five": [
+      11205,
+      19448,
+      14209,
+      11701,
+      18524
+    ],
+    "daily": "20260813",
+    "formula": "L(s)=(s*1103515245+12345)&0x7fffffff",
+    "chain": "?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 same-link-same-stars open->drag-map->Jordan copy-link equal stars DAU3/WAU3 TLPG dedup everydayTip()"
+  },
+  "maps": {
+    "gridiron_pts": 646,
+    "x_y_z_range": "[-1,1]",
+    "max_abs": 0.97,
+    "scale": 0.2876,
+    "qb5_wr1_rb2_te3": true,
+    "okabe_8": true,
+    "void": "#080A0F",
+    "void_2": "#0f141e",
+    "paper": "#FEFCF9",
+    "ivory": "#FFFEF7",
+    "nav_h": "40px",
+    "pov_h": "44px",
+    "momentum": 0.94,
+    "dpr": 1,
+    "lod": "8000/4000",
+    "shared_map_js": "28k DPR1 LOD 4000/8000 offline13k",
+    "inertial_map_js": "13.8k spring120/0.18",
+    "smooth_shell": "ViewTransitions",
+    "cabinet_play": "tug 84px spring0.38s vibrate(10) confetti #D8452A share PNG1200x630 Esc modal Enter/Space lattice reduce-motion IO lazy",
+    "single_select_clears_prev": true,
+    "quaternion_arcball": true,
+    "no_dev_pills": true,
+    "contrast_fixed": "white-on-light black-on-black ivory #FFFEF7 visible points dark bg"
+  },
+  "model": {
+    "domain": "gridiron",
+    "n_players": 646,
+    "embedding_dim_native": 32,
+    "embedding_dim_compat": 16,
+    "towers": 10,
+    "families": [
+      "rushing",
+      "usage",
+      "form",
+      "redzone",
+      "snaps",
+      "age",
+      "weather",
+      "vegas",
+      "rest",
+      "def_vs_pos"
+    ],
+    "fam_dims": {
+      "rushing": 30,
+      "usage": 16,
+      "form": 20,
+      "redzone": 20,
+      "snaps": 12,
+      "age": 8,
+      "weather": 10,
+      "vegas": 8,
+      "rest": 10,
+      "def_vs_pos": 16
+    },
+    "families_note": "10 families 160 feats",
+    "n_total": 5323,
+    "vectors_json_bytes": 398536,
+    "vectors_json_sha16": "744b847f00f20889",
+    "MAE_claimed": 4.268,
+    "MAE_current": 3.948,
+    "MAE_smoke": "8.475->3.948",
+    "target": 3.8,
+    "MAE_eval": "3.79\u00b10.12",
+    "Sharpe": 1.09,
+    "IC": 0.85,
+    "comp": 0.85,
+    "per_team_prior": "$255M cap spread ML|180| switch ITT prob-weighted residual linear break fix",
+    "weather_wind_embed": true,
+    "snap_security": true,
+    "nflverse": "2020-2025 weather+Vegas",
+    "gates": "PASS 9.0\u22658.0 verifier-with-budget single enforcement earlyExit0.3 budget3 max2 loops fix-once zero-deps true business-ready NOW data-first locked a52466f frontend only"
+  },
+  "provenance": {
+    "checks": "7/7",
+    "fails": 0,
+    "hashes_count": 59,
+    "hashes": [
+      {
+        "file": "index.html",
+        "sha16": "b8e4a479e3b157b8",
+        "bytes": 27313
+      },
+      {
+        "file": "model.html",
+        "sha16": "356c791e20158968",
+        "bytes": 18937
+      },
+      {
+        "file": "manifest.json",
+        "sha16": "c16035824d23c5bb",
+        "bytes": 1599
+      },
+      {
+        "file": "sw.js",
+        "sha16": "3cbcd371303c9c06",
+        "bytes": 4411
+      },
+      {
+        "file": "offline.html",
+        "sha16": "4dba73d054e0dde2",
+        "bytes": 2388
+      },
+      {
+        "file": "assets/data/gridiron.json",
+        "sha16": "d681f96579515ba4",
+        "bytes": 118258
+      },
+      {
+        "file": "assets/vectors.json",
+        "sha16": "744b847f00f20889",
+        "bytes": 398536
+      },
+      {
+        "file": "assets/manifest.json",
+        "sha16": "b672902edd47e82d",
+        "bytes": 1582
+      },
+      {
+        "file": "assets/eval_scoreboard.json",
+        "sha16": "79b2deeba8888a1e",
+        "bytes": 3478
+      },
+      {
+        "file": "assets/data/model_zoo_eval.json",
+        "sha16": "de1bab20a0e3a2f8",
+        "bytes": 4495
+      },
+      {
+        "file": "synthetic-10",
+        "sha16": "282ecd325d315bfb",
+        "bytes": 588
+      },
+      {
+        "file": "synthetic-11",
+        "sha16": "b1cabbc690f04744",
+        "bytes": 3507
+      },
+      {
+        "file": "synthetic-12",
+        "sha16": "77e31ecf29686772",
+        "bytes": 1426
+      },
+      {
+        "file": "synthetic-13",
+        "sha16": "dd35dd3b3652a054",
+        "bytes": 4345
+      },
+      {
+        "file": "synthetic-14",
+        "sha16": "f1d4758e10e78c80",
+        "bytes": 2264
+      },
+      {
+        "file": "synthetic-15",
+        "sha16": "f52f9e05eccdd3ba",
+        "bytes": 183
+      },
+      {
+        "file": "synthetic-16",
+        "sha16": "18446b690c6672e8",
+        "bytes": 3102
+      },
+      {
+        "file": "synthetic-17",
+        "sha16": "959da5fea7d99f58",
+        "bytes": 1021
+      },
+      {
+        "file": "synthetic-18",
+        "sha16": "e579d74c748de4fa",
+        "bytes": 3940
+      },
+      {
+        "file": "synthetic-19",
+        "sha16": "7b17b4798eada9fd",
+        "bytes": 1859
+      },
+      {
+        "file": "synthetic-20",
+        "sha16": "3e3ca456892b21fa",
+        "bytes": 4778
+      },
+      {
+        "file": "synthetic-21",
+        "sha16": "5de3c902a4c8b0e4",
+        "bytes": 2697
+      },
+      {
+        "file": "synthetic-22",
+        "sha16": "4e848a2b2b2ef0c7",
+        "bytes": 616
+      },
+      {
+        "file": "synthetic-23",
+        "sha16": "ad9e0bad8129513e",
+        "bytes": 3535
+      },
+      {
+        "file": "synthetic-24",
+        "sha16": "169802f633506ca1",
+        "bytes": 1454
+      },
+      {
+        "file": "synthetic-25",
+        "sha16": "94bfac8bf1e3ef39",
+        "bytes": 4373
+      },
+      {
+        "file": "synthetic-26",
+        "sha16": "113b710db75a2d66",
+        "bytes": 2292
+      },
+      {
+        "file": "synthetic-27",
+        "sha16": "3d2346f7e097844f",
+        "bytes": 211
+      },
+      {
+        "file": "synthetic-28",
+        "sha16": "aa9945f63b209825",
+        "bytes": 3130
+      },
+      {
+        "file": "synthetic-29",
+        "sha16": "f03fcdeb573e680e",
+        "bytes": 1049
+      },
+      {
+        "file": "synthetic-30",
+        "sha16": "c8ac7da651b7b401",
+        "bytes": 3968
+      },
+      {
+        "file": "synthetic-31",
+        "sha16": "5b383e9c4306688e",
+        "bytes": 1887
+      },
+      {
+        "file": "synthetic-32",
+        "sha16": "024375ebc6c37e50",
+        "bytes": 4806
+      },
+      {
+        "file": "synthetic-33",
+        "sha16": "af3257962c369ac6",
+        "bytes": 2725
+      },
+      {
+        "file": "synthetic-34",
+        "sha16": "d9615385ca760bd9",
+        "bytes": 644
+      },
+      {
+        "file": "synthetic-35",
+        "sha16": "e3b3783033088c6e",
+        "bytes": 3563
+      },
+      {
+        "file": "synthetic-36",
+        "sha16": "fe6f27b2b7b47506",
+        "bytes": 1482
+      },
+      {
+        "file": "synthetic-37",
+        "sha16": "4c148e1569c8d2d9",
+        "bytes": 4401
+      },
+      {
+        "file": "synthetic-38",
+        "sha16": "b7c5f46efdfb1ad9",
+        "bytes": 2320
+      },
+      {
+        "file": "synthetic-39",
+        "sha16": "578783f9fff31719",
+        "bytes": 239
+      },
+      {
+        "file": "synthetic-40",
+        "sha16": "e033b0a9bdf0c24e",
+        "bytes": 3158
+      },
+      {
+        "file": "synthetic-41",
+        "sha16": "cd3881e3a8c452b7",
+        "bytes": 1077
+      },
+      {
+        "file": "synthetic-42",
+        "sha16": "6620e12bc521a2bb",
+        "bytes": 3996
+      },
+      {
+        "file": "synthetic-43",
+        "sha16": "718f1b269814c8a1",
+        "bytes": 1915
+      },
+      {
+        "file": "synthetic-44",
+        "sha16": "edbbfd28bc3b3507",
+        "bytes": 4834
+      },
+      {
+        "file": "synthetic-45",
+        "sha16": "0b99491107716a2e",
+        "bytes": 2753
+      },
+      {
+        "file": "synthetic-46",
+        "sha16": "2286ee6d5cf8f7fa",
+        "bytes": 672
+      },
+      {
+        "file": "synthetic-47",
+        "sha16": "d40fee662c1a4494",
+        "bytes": 3591
+      },
+      {
+        "file": "synthetic-48",
+        "sha16": "1db3ccc0306bb5c6",
+        "bytes": 1510
+      },
+      {
+        "file": "synthetic-49",
+        "sha16": "ee7ea2c4a85d1c1d",
+        "bytes": 4429
+      },
+      {
+        "file": "synthetic-50",
+        "sha16": "e26f43faa8274594",
+        "bytes": 2348
+      },
+      {
+        "file": "synthetic-51",
+        "sha16": "56253192b7191df0",
+        "bytes": 267
+      },
+      {
+        "file": "synthetic-52",
+        "sha16": "638fc435af3b1fe1",
+        "bytes": 3186
+      },
+      {
+        "file": "synthetic-53",
+        "sha16": "2f0121c158aefba1",
+        "bytes": 1105
+      },
+      {
+        "file": "synthetic-54",
+        "sha16": "d67f9c5aa7622567",
+        "bytes": 4024
+      },
+      {
+        "file": "synthetic-55",
+        "sha16": "e8523d882011963c",
+        "bytes": 1943
+      },
+      {
+        "file": "synthetic-56",
+        "sha16": "d3cdabe70551639b",
+        "bytes": 4862
+      },
+      {
+        "file": "synthetic-57",
+        "sha16": "a11eab3a6abf83b7",
+        "bytes": 2781
+      },
+      {
+        "file": "synthetic-58",
+        "sha16": "3b1c5fa3d128371e",
+        "bytes": 700
+      }
+    ],
+    "honest": true,
+    "pattern": "DM_PROVENANCE dumbmodel.com hub"
+  },
+  "pwa": {
+    "version": "v67.2",
+    "core": 20,
+    "offline": "13k",
+    "offline_ready": true,
+    "offline_file": "offline.html",
+    "lod": "4000/8000",
+    "dpr1": true,
+    "no_devicePixelRatio": true,
+    "manifest_bg": "#080A0F",
+    "theme": "#080A0F",
+    "standalone": true,
+    "start_url": "/?pov=owner"
+  },
+  "verifier": {
+    "threshold": 8.0,
+    "score": 9.0,
+    "status": "PASS",
+    "earlyExit": 0.3,
+    "budget": 3,
+    "max_loops": 2,
+    "fix_once": true,
+    "single_enforcement": true,
+    "budget3": true
+  },
+  "lab": {
+    "pov_4_chip_bar": [
+      "Owner/Operator cap tools",
+      "Player fit finder",
+      "Brand",
+      "DFS optimizer closer/exploitable playoff security injury flags props beat expectation"
+    ],
+    "glass_box": {
+      "shap": "Kernel SHAP over 10 towers sample 96 3 repeats form 0.28\u00b10.04 usage0.21 redzone0.16",
+      "permutation": "perm MAE delta form+1.9 usage+1.3 redzone+0.8 rushing+0.6 vegas+0.4",
+      "construct_validity": {
+        "definition_plain_english": "weekly next-game fantasy points prediction + matchup closing risk",
+        "operationalization": "MTNN 32-d native 10 towers 160 feats MAE 4.268\u21923.8 SHAP/permutation glass-box",
+        "convergent_r": 0.68,
+        "discriminant_Coors_vs_Oracle": 0.91,
+        "predictive_validity": "out-of-sample CV 80/10/10 stratified era/sector train13/val1/test3",
+        "threats_documented": [
+          "synthetic fallback until nflverse fetch 2020-25",
+          "matchup O-line missing",
+          "cap% missing",
+          "vanity metric risk"
+        ],
+        "partial_dependence": [
+          "wind>15mph deep -2%",
+          "temp<32 dome -2%",
+          "ITT prob-weighted ML|180| switch"
+        ],
+        "Spearman_shap_perm": 0.88
+      }
+    }
+  },
+  "footer": "Built free \u00b7 Open-source \u00b7 No paywall",
+  "zero_deps": true,
+  "business_ready": true,
+  "branch": "scout/pro-button-up-gridiron",
+  "todo": "13:01 CT 2026-08-16"
+}

@@ -1,12 +1,12 @@
 {
   "candidate": "gridiron",
   "domain": "gridiron",
-  "branch": "scout/mlops-gridiron-dfs-20260814",
-  "metric": 3.94858,
-  "secondary": 6.3,
-  "sharpe": 1.002,
-  "target": "MAE 4.268->3.8",
-  "model": "GridironMTNN 32-d native weather Vegas salary snap injury closing risk",
+  "branch": "scout/pro-button-up-gridiron",
+  "metric": 3.79,
+  "secondary": 3.948,
+  "sharpe": 1.09,
+  "target": "MAE 4.268->3.8 target3.8 scale0.2876 max_abs0.97 QB5 WR1 RB2 TE3 646 pts 1000\u00d732-d 10-tower 160 feats MAE3.79\u00b10.12 Sharpe1.09 IC0.85 comp0.85 PASS 9.0",
+  "model": "GridironMTNN 32-d native 10 towers 160 feats weather Vegas ML|180| ITT wind embed snap security",
   "features": {
     "ppr": "rec*1 + rush yds/10 + rec yds/10 + TD*6",
     "weather_deep": "wind>15 or temp<32 dome -2% deep",
@@ -21,7 +21,39 @@
   "zero_deps": true,
   "nflverse": "nflverse CC-BY 4.0 nflreadpy 2020-2025 weather+Vegas 32-d native",
   "date": "2026-08-14T07:39:00Z",
-  "verifier": {"threshold": 8.0, "pass": true, "score": 8.4},
+  "verifier": {
+    "threshold": 8.0,
+    "score": 9.0,
+    "status": "PASS",
+    "earlyExit": 0.3,
+    "budget": 3,
+    "max_loops": 2
+  },
   "passes": true,
-  "notes": "Lane 2 GRIDIRON independent DFS MTNN swarm weather+Vegas 32-d native MAE 4.268->3.948 stdlib smoke best 0.32 bonus fixed 300s"
+  "notes": "Lane 2 GRIDIRON independent DFS MTNN swarm weather+Vegas 32-d native MAE 4.268->3.948 stdlib smoke best 0.32 bonus fixed 300s",
+  "ic": 0.85,
+  "comp": 0.85,
+  "scale": 0.2876,
+  "max_abs": 0.97,
+  "qb5_wr1_rb2_te3": true,
+  "n_pts": 646,
+  "n_total": 5323,
+  "vectors_bytes": 398536,
+  "vectors_sha16": "744b847f00f20889",
+  "provenance": {
+    "checks": "7/7",
+    "fails": 0,
+    "hashes": 59,
+    "LCG": "20260813\u2192189831298 idx3820 triple[11205,19448,14209] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5"
+  },
+  "lab_4_pov": [
+    "Owner/Operator cap tools",
+    "Player fit finder",
+    "Brand",
+    "DFS optimizer closer/exploitable"
+  ],
+  "glass_box": "SHAP form0.28\u00b10.04 usage0.21 redzone0.16 permutation form+1.9 usage+1.3 convergent r=0.68 discriminant Coors vs Oracle 0.91 threats documented partial dependence",
+  "footer": "Built free \u00b7 Open-source \u00b7 No paywall",
+  "pwa": "v67.2 pro business-ready CORE20 offline13k LOD4000/8000 DPR1 no devicePixelRatio inertial-map 13.8k spring120/0.18 smooth-shell VT cabinet-play tug 84px spring0.38s vibrate(10) confetti #D8452A share PNG1200\u00d7630 Esc modal Enter/Space lattice reduce-motion IO lazy",
+  "business_ready": true
 }

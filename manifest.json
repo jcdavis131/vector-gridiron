@@ -2,7 +2,7 @@
   "name": "Vector Gridiron \u2014 2,000 NFL weeks Dark Cockpit",
   "short_name": "Gridiron",
   "description": "2,000 player-weeks as 32-d embedding \u2014 16-d compat wrapper \u2014 MTNN weekly MAE 4.268 \u2192 3.8 target \u2014 nflverse-powered weekly fantasy cockpit \u2014 Guess The Player daily",
-  "start_url": "/?utm_source=pwa",
+  "start_url": "/?pov=owner",
   "scope": "/",
   "display": "standalone",
   "display_override": [
@@ -11,9 +11,9 @@
     "browser"
   ],
   "background_color": "#080A0F",
-  "theme_color": "#1A150F",
+  "theme_color": "#080A0F",
   "orientation": "any",
-  "id": "/?utm_source=pwa",
+  "id": "/?pov=owner",
   "lang": "en",
   "dir": "ltr",
   "categories": [

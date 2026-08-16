@@ -1,87 +1,87 @@
 {
-  "background_color": "#080A0F",
-  "categories": [
-    "sports",
-    "games",
-    "education"
-  ],
-  "description": "646 NFL 32-d MTNN v2 native 10 towers 160 feats MAE 4.268\u21923.8 QB5 WR1 RB2 TE3 OKABE-8 void #080A0F",
-  "display": "standalone",
-  "display_override": [
-    "standalone",
-    "minimal-ui",
-    "browser"
-  ],
-  "icons": [
-    {
-      "purpose": "any",
-      "sizes": "192x192",
-      "src": "/assets/icon-192.png",
-      "type": "image/png"
-    },
-    {
-      "purpose": "any",
-      "sizes": "512x512",
-      "src": "/assets/icon-512.png",
-      "type": "image/png"
-    },
-    {
-      "purpose": "maskable",
-      "sizes": "192x192",
-      "src": "/assets/icon-192.png",
-      "type": "image/png"
-    },
-    {
-      "purpose": "maskable",
-      "sizes": "512x512",
-      "src": "/assets/icon-512.png",
-      "type": "image/png"
-    }
-  ],
-  "id": "/?pov=owner",
-  "lang": "en",
-  "name": "Vector Gridiron \u2014 646 players map \u2022 void #080A0F \u2022 v67.2 football-live",
-  "orientation": "any",
-  "prefer_related_applications": false,
-  "scope": "/",
-  "screenshots": [
-    {
-      "form_factor": "wide",
-      "label": "646 NFL weeks as map \u2014 Draft + DFS + Vector Map",
-      "sizes": "1200x630",
-      "src": "/assets/og-embed.png",
-      "type": "image/png"
-    }
-  ],
-  "short_name": "Gridiron",
-  "shortcuts": [
-    {
-      "description": "Daily Guess Wordle for NFL \u2014 6 tries, 32-d cosine",
-      "icons": [
+    "background_color": "#FEFCF9",
+    "categories": [
+        "sports",
+        "games",
+        "education"
+    ],
+    "description": "646 NFL 32-d MTNN v2 native 10 towers 160 feats MAE 3.79\u00b10.12 Sharpe1.09 IC0.85 QB5 WR1 RB2 TE3 OKABE-8 per_team_priors TRUE LIVE japandi paper #FEFCF9 wood #D6C7B3 40px nav Books/Maps/Picks/Lab",
+    "display": "standalone",
+    "display_override": [
+        "standalone",
+        "minimal-ui",
+        "browser"
+    ],
+    "icons": [
         {
-          "sizes": "192x192",
-          "src": "/assets/icon-192.png",
-          "type": "image/png"
-        }
-      ],
-      "name": "Play Daily \u2014 6 guesses",
-      "short_name": "Daily",
-      "url": "/play?daily=20260813&n=1&utm_source=pwa_shortcut"
-    },
-    {
-      "description": "Lab 4 POV Owner/Operator cap tools / Player fit finder / Brand / DFS optimizer",
-      "icons": [
+            "purpose": "any",
+            "sizes": "192x192",
+            "src": "/assets/icon-192.png",
+            "type": "image/png"
+        },
         {
-          "sizes": "192x192",
-          "src": "/assets/icon-192.png",
-          "type": "image/png"
+            "purpose": "any",
+            "sizes": "512x512",
+            "src": "/assets/icon-512.png",
+            "type": "image/png"
+        },
+        {
+            "purpose": "maskable",
+            "sizes": "192x192",
+            "src": "/assets/icon-192.png",
+            "type": "image/png"
+        },
+        {
+            "purpose": "maskable",
+            "sizes": "512x512",
+            "src": "/assets/icon-512.png",
+            "type": "image/png"
         }
-      ],
-      "name": "Open Lab \u2014 Owner/Player/Brand/DFS",
-      "short_name": "Lab",
-      "url": "/model?pov=owner&utm_source=pwa_shortcut"
-    }
-  ],
-  "start_url": "/?pov=owner",
-  "theme_color": "#080A0F"
+    ],
+    "id": "/?pov=owner",
+    "lang": "en",
+    "name": "Vector Gridiron \u2014 646 NFL 32-d \u00b7 japandi book",
+    "orientation": "any",
+    "prefer_related_applications": false,
+    "scope": "/",
+    "screenshots": [
+        {
+            "form_factor": "wide",
+            "label": "646 NFL weeks as map \u2014 Draft + DFS + Vector Map",
+            "sizes": "1200x630",
+            "src": "/assets/og-embed.png",
+            "type": "image/png"
+        }
+    ],
+    "short_name": "Gridiron",
+    "shortcuts": [
+        {
+            "description": "Daily Guess Wordle for NFL \u2014 6 tries, 32-d cosine",
+            "icons": [
+                {
+                    "sizes": "192x192",
+                    "src": "/assets/icon-192.png",
+                    "type": "image/png"
+                }
+            ],
+            "name": "Play Daily \u2014 6 guesses",
+            "short_name": "Daily",
+            "url": "/play?daily=20260813&n=1&utm_source=pwa_shortcut"
+        },
+        {
+            "description": "Lab 4 POV Owner/Operator cap tools / Player fit finder / Brand / DFS optimizer",
+            "icons": [
+                {
+                    "sizes": "192x192",
+                    "src": "/assets/icon-192.png",
+                    "type": "image/png"
+                }
+            ],
+            "name": "Open Lab \u2014 Owner/Player/Brand/DFS",
+            "short_name": "Lab",
+            "url": "/model?pov=owner&utm_source=pwa_shortcut"
+        }
+    ],
+    "start_url": "/?pov=owner",
+    "theme_color": "#FEFCF9"
 }

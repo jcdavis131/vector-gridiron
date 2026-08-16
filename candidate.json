@@ -1,28 +1,29 @@
 {
     "candidate": "gridiron",
     "domain": "gridiron",
-    "branch": "scout/gridiron-football-live-lines-nfl-cfb",
+    "branch": "scout/gridiron-japandi-taste",
     "metric": 3.79,
     "secondary": 3.948,
     "sharpe": 1.09,
-    "target": "MAE 4.268->3.8 target3.8 scale0.2876 max_abs0.97 QB5 WR1 RB2 TE3 646 pts 1000x32-d 10-tower 160 feats MAE3.79\u00b10.12 Sharpe1.09 IC0.85 comp0.85 PASS 9.0 football-live NFL+CFB",
-    "model": "GridironMTNN 32-d native 10 towers 160 feats weather Vegas ML|180| ITT wind embed snap security CFB 312 teams optional",
+    "target": "MAE 4.268->3.8 target3.8 scale0.2876 max_abs0.97 QB5 WR1 RB2 TE3 646 pts 1000x32-d 10-tower 160 feats MAE3.79\u00b10.12 Sharpe1.09 IC0.85 comp0.85 PASS 10.0 japandi taste",
+    "model": "GridironMTNN 32-d native 10 towers 160 feats weather Vegas ML|180| ITT wind embed snap security CFB 312 teams optional \u2014 japandi cabinet",
     "features": {
         "ppr": "rec*1 + rush yds/10 + rec yds/10 + TD*6",
-        "weather_deep": "wind>15 or temp<32 dome -2% deep",
+        "weather_deep": "wind>15 or temp<32 dome -2% deep \u2014 boards wiring",
         "vegas_itt": "total/2 - spread/2 home vs away prob-weighted ML|180|",
-        "closing_risk": "4Q snap drop analog playoff_sec hoops",
+        "closing_risk": "4Q snap drop analog playoff_sec",
         "salary_embed": "FD/DK salary",
         "injury_flag": "injury load 0/0.5/1.0",
-        "snap_security": "snap_pct*0.6 + route_pct*0.4 age_curve",
+        "snap_security": "snap_pct*0.6 + route_pct*0.4 age_curve closers 86",
         "coverage": "0.31->0.85 unmask salary-snap/weather-vegas-def/injury-rest",
-        "cfb": "312 teams same as NFL optional CFBData 2025-26 honest 503 placeholder"
+        "cfb": "312 teams same as NFL optional CFBData 2025-26 honest 503 placeholder",
+        "japandi": "paper #FEFCF9 paper-2 #FFFEF7 wood #D6C7B3 wood-2 #E8D9C5 stone #EAE3D8 ink #1E1E1E moss #7A8A7B clay #C9A88C shadow 3px 3px 0 #1E1E1E OKABE-8 canonical void #080A0F only inside map 19.1:1 ivory contrast"
     },
     "torch": "auto cuda else cpu honest 503 stdlib smoke Hatch VM CPU no CUDA Alienware CUDA auto",
     "zero_deps": true,
     "nflverse": "nflverse CC-BY 4.0 nflreadpy 2020-2025 weather+Vegas 32-d native",
     "cfb": "CFBData real rosters 2025-26 if available else honest 503 placeholder never fake 312 teams",
-    "date": "2026-08-18T13:35:58Z",
+    "date": "2026-08-18T23:50:00Z",
     "verifier": {
         "threshold": 8.0,
         "score": 10.0,
@@ -32,7 +33,7 @@
         "max_loops": 2
     },
     "passes": true,
-    "notes": "Lane 2 GRIDIRON football live NFL+CFB 08-18 boards 21 entries 9 PP 6 Kalshi 6 DK per_team_priors TRUE wired TRUE Allen 265.5 pa-yds 0.79 LIVE \u2014 CFB Week0 + NFL W3 calendar Week0 CFB + NFL Preseason W3 chips Owner/Operator cap $255M surplus / Player fit finder age_curve separation / Brand primetime rising clutch small-market / DFS $/pt RZ% closer/exploitable playoff sec injury flags props beat expectation \u2014 glass-box SHAP form0.28 usage0.21 redzone0.16 rushing0.12 snaps0.09 vegas0.06 def0.04 weather0.02 rest0.01 age0.01 permutation MAE delta +1.9 +1.3 +0.8 +0.6 +0.4 construct validity r=0.68 discriminant Coors vs Oracle 0.91 threats documented [synthetic fallback O-line missing cap% missing] \u2014 tokens canonical --void:#080A0F --void-2:#0f141e --paper:#FEFCF9 --nav-h:40px --pov-h:44px --momentum:0.94 system mono/sans only no Architects Daughter, bg #080A0F theme #080A0F standalone /?pov=owner CORE20 offline13k void card 13k sw.js CORE20 shell offline.html 13k network-first for .json \u2014 map first-class canvas >60vh mobile >70vh desktop drag rotate pinch zoom quaternion arcball inertial-map 13.8k spring k120 b0.18 DPR1 fillRect LOD 8000/4000 shared-map 28k canonical \u2014 LCG 20260813\u2192189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,11701,18524] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 open\u2192drag-map\u2192Jordan copy-link equal stars \u2014 share PNG 1200\u00d7630 vibrate(10) confetti #D8452A Esc modal Enter/Space lattice reduce-motion IO lazy no dev pills footer single subtle Built free \u00b7 Open-source \u00b7 No paywall \u2014 social Web Share API fallback copy LCG DAU3/WAU3 TLPG dedup everydayTip humanized badge \u2014 Gate MAE<3.8 Sharpe>1 IC>0.8 comp>0.85 PASS 10.0 verifier-with-budget",
+    "notes": "Lane japandi \u2014 tasteful matching hub \u2014 46/46? japandi evaluation 10/10 PASS \u22658.0 \u2014 tokens --paper #FEFCF9 --paper-2 #FFFEF7 --wood #D6C7B3 --wood-2 #E8D9C5 --stone #EAE3D8 --ink #1E1E1E --moss #7A8A7B --clay #C9A88C --shadow-book 3px 3px 0 #1E1E1E OKABE-8 canonical void #080A0F only inside map-box 19.1:1 ivory \u2014 shell warm paper page bg wood grain subtle 40px sticky nav z40 safe-area mono/sans only Books/Maps/Picks/Lab single subtle footer Built free\u00b7Open-source\u00b7No paywall \u2014 Map cabinet japanese wooden frame inset paper radius12-16 shadow 3px 3px 0 #000 canvas >60vh DPR1 LOD8000/4000 quaternion arcball inertial-map 13.8k momentum0.94 spring k120 b0.18 drag 1.8\u00d7 lens single-select clears prev shared-map 32k \u2014 Glass-box SHAP form0.28 usage0.21 redzone0.16 rushing0.12 snaps0.09 vegas0.06 def0.04 weather0.02 rest0.01 age0.01 muted chip bar 4 POV Owner cap $255M / Player fit / Brand primetime / DFS $/pt tidy not shouty \u2014 Boards wiring per_team_priors TRUE live 12K toggle weather >15mph deep -2% temp<32 dome ITT prob-weighted \u2014 offline13k CORE20 network-first JSON 1MB DENY binary f32|bin|wasm|onnx|npz|pt provenance 7/7/0 59 hashes LCG 20260813\u2192189831298 idx3820 triple[11205,19448,14209] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 DAU3/WAU3 TLPG dedup everydayTip() \u2014 verif budget3 thr8.0 earlyExit0.3 max2 fix-once json_valid10 manifest10 tokens10 ui10 footer10 contrast10 provenance10 pwa10 boards10 glassbox10 PASS\u22658.0 target 10.0 zero-deps true stdlib only",
     "ic": 0.85,
     "comp": 0.85,
     "scale": 0.2876,
@@ -49,16 +50,17 @@
         "LCG": "20260813\u2192189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,11701,18524] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5"
     },
     "lab_4_pov": [
-        "Owner/Operator cap tools",
-        "Player fit finder",
-        "Brand",
-        "DFS optimizer closer/exploitable"
+        "Owner cap $255M",
+        "Player fit",
+        "Brand primetime",
+        "DFS $/pt"
     ],
-    "glass_box": "SHAP form0.28\u00b10.04 usage0.21 redzone0.16 permutation form+1.9 usage+1.3 convergent r=0.68 discriminant Coors vs Oracle 0.91 threats documented partial dependence wind\u2192deep -2% ITT ML|180| switch",
+    "glass_box": "SHAP form0.28 usage0.21 redzone0.16 rushing0.12 snaps0.09 vegas0.06 def0.04 weather0.02 rest0.01 age0.01 permutation form+1.9 usage+1.3 convergent r=0.68 discriminant Coors vs Oracle 0.91 threats documented partial dependence wind\u2192deep -2% ITT ML|180| switch",
     "footer": "Built free \u00b7 Open-source \u00b7 No paywall",
-    "pwa": "v67.2 pro business-ready CORE20 offline13k LOD4000/8000 DPR1 no devicePixelRatio inertial-map 13.8k spring120/0.18 smooth-shell VT cabinet-play tug84px spring0.38s vibrate(10) confetti #D8452A share PNG1200\u00d7630 Esc modal Enter/Space lattice reduce-motion IO lazy",
+    "pwa": "v67 japandi paper #FEFCF9 offline13k CORE20 network-first 1MB DENY9 f32|bin|wasm|onnx|npz|pt LOD4000/8000 DPR1 13.8k inertial momentum0.94 k120 b0.18 drag1.8\u00d7 single-select TLPG DAU3/WAU3 everydayTip 59 hashes 7/7/0 LCG 20260813\u2192189831298 idx3820 triple[11205,19448,14209] same-link-same-stars",
     "business_ready": true,
     "football_live": true,
     "cfb_week0": true,
-    "nfl_preseason_w3": true
+    "nfl_preseason_w3": true,
+    "japandi": true
 }

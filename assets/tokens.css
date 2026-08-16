@@ -41,7 +41,8 @@
   --ok-5:#CC79A7;
   --ok-6:#E69F00;
   --ok-7:#FFFEF7;
-  --okabe-0:var(--ok-0);
+  --okabe-0:#E69F00;
+  --okabe-0-var:var(--ok-0);
   --okabe-1:var(--ok-1);
   --okabe-2:var(--ok-2);
   --okabe-3:var(--ok-3);
@@ -62,8 +63,8 @@
   --radius-pill:9999px;
   /* shadows — soft japandi 2.5px tactile not brutalist — was 3px mapped to 2.5px for softer feel */
   --shadow-soft: 0 1px 0 #1E1E1E0e, 0 6px 18px #1E1E1E10;
-  --shadow-book: 2.5px 2.5px 0 #1E1E1E, 0 2px 8px #1E1E1E10;
-  --shadow-cabinet: 2.5px 2.5px 0 #1E1E1E, 0 8px 22px #1E1E1E14;
+  --shadow-book:3px 3px 0 #1E1E1E;
+  --shadow-cabinet:3px 3px 0 #1E1E1E, 0 8px 22px #1E1E1E14;
   --shadow-paper: 1.2px 1.2px 0 #1E1E1E, inset 0 1px 0 #fff;
   /* wood grain texture via CSS gradients — tactile spines softer feel */
   --wood-grain: repeating-linear-gradient(90deg, rgba(30,30,30,.05) 0 1px, transparent 1px 18px), linear-gradient(180deg, var(--wood-2) 0%, var(--wood) 100%);

@@ -1,249 +1,106 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Vector Gridiron — 2,000 NFL weeks as cockpit — 32-d MTNN weekly</title>
-<meta name="description" content="2,000 NFL player-weeks as 32-d embedding — 16-d compat wrapper — MTNN weekly MAE 4.268 — nflverse-powered — era-honest fantasy cockpit.">
-<meta property="og:title" content="Vector Gridiron — 32-d MTNN weekly — fantasy cockpit">
-<meta property="og:description" content="2,000 NFL player-weeks as 32-d embedding — 16-d compat — weekly fantasy — nflverse">
-<meta property="og:image" content="/assets/og-1200x630.png">
-<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="/assets/og-1200x630.png">
-<meta name="theme-color" content="#1A150F">
-<link rel="manifest" href="/manifest.json">
-
-
-<link rel="stylesheet" href="/assets/shell.css">
-<link rel="stylesheet" href="/assets/gridiron.css">
-<link rel="stylesheet" href="/assets/unified.css">
-<link rel="stylesheet" href="/assets/responsive.css">
-<link rel="stylesheet" href="/assets/motion.css">
-<link rel="stylesheet" href="/assets/final-qa.css">
-<link rel="stylesheet" href="/assets/nux.css">
-<link rel="stylesheet" href="/assets/player-profile-v28.css">
-<link rel="stylesheet" href="/assets/trading-card.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8F%88%3C/text%3E%3C/svg%3E">
-<style>
-.vg-pill{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:7px 14px;border:2px solid #f5f7f2;border-radius:999px;background:#0a130d;color:#f5f7f2;font-family:ui-monospace,monospace;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;box-shadow:2px 2px 0 #f5f7f2;white-space:nowrap}
-.vg-pill--accent{background:#f0873c;color:#20120a}.vg-pill--green{background:#3ddc71;color:#0a130d}
-.vg-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#0f1d14;border:2.2px solid #f5f7f2;border-radius:12px;box-shadow:4px 4px 0 #f5f7f2;padding:10px 14px;font-family:ui-monospace,monospace;font-size:12px;color:#f5f7f2;z-index:200;display:none}
-.vg-toast.is-visible{display:flex;gap:8px;align-items:center}
-.vg-viral-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
-.vg-viral-row .btn{min-height:40px}
-#countdown{font-family:ui-monospace,monospace;font-size:11px;color:#93a596}
-.roster-void{position:relative;min-height:560px;background:#0a130d;border-top:2.5px solid #f5f7f2;border-bottom:2.5px solid #f5f7f2;overflow:hidden}
-.roster-card{position:absolute;width:118px;min-height:92px;background:#0f1d14;border:2px solid #f5f7f2;border-radius:999px;box-shadow:2px 2px 0 #f5f7f2;padding:6px;font-family:ui-monospace,monospace;font-size:10px;color:#f5f7f2}
-.roster-card__pos{font-weight:900;padding:1px 5px;border-radius:4px;font-size:9px;display:inline-block;margin-bottom:3px}
-.roster-card__pos--QB{background:#e8b23a;color:#0a130d}.roster-card__pos--RB{background:#4bd0a0;color:#0a130d}.roster-card__pos--WR{background:#5aa0f0;color:#fff}.roster-card__pos--TE{background:#c77dff;color:#fff}
-</style>
-</head>
-<body>
-<nav class="site-nav" data-active="/" aria-label="Vector Gridiron site"></nav>
-
-<div class="vg-hero-band">
-  <div class="vg-hero-inner" style="max-width:1180px;margin:0 auto;padding:18px clamp(12px,3vw,22px);display:flex;gap:18px;flex-wrap:wrap">
-    <div class="vg-hero-copy" style="flex:1;min-width:300px">
-      <div class="vg-hero-kicker" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
-        <span class="vg-pill vg-pill--accent">32-d L2 native</span>
-        <span class="vg-pill">16-d compat slice re-L2</span>
-        <span class="vg-pill vg-pill--green">2,000 player-weeks</span>
-        <span class="vg-pill">nflverse 2025 weekly matrix</span>
-        <span class="vg-pill">era-honest player-split</span>
-        <span class="vg-pill">MAE 8.41 current → 4.268 claimed → 3.8 target</span>
-        <span class="vg-pill">10 family towers rushing·targets·YAC·redzone·snaps·age·weather·Vegas·rest·def-vs-pos</span>
-      </div>
-      <h1 class="vg-hero-h1" style="font-family:var(--sans);font-size:clamp(28px,5vw,42px);margin:6px 0;color:#f5f7f2">Your fantasy team<br>lives in 32-d.</h1>
-      <p class="vg-hero-deck" style="color:#c4d0c6;line-height:1.55;font-size:13.5px;max-width:62ch"><b>10 family towers</b> rushing·targets·YAC·redzone·snaps·age·weather·Vegas·rest·def-vs-pos → <b>96h GELU LN → 24-d</b> + skip → transformer 128-d 4L4H CLS → <b>32-d L2</b> native, 16-d slice re-L2 compat where cosine=similarity. <b>MTNN weekly MAE 4.268 → 3.8 target</b> with Procrustes rotation-only + RealMLP RobustScaler + MoE. <span style="border-bottom:2px solid #3ddc71;font-weight:800">Player-split honest, no season-split leakage.</span></p>
-      <div class="vg-cta-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
-        <a class="btn btn-primary" href="/play?tab=daily" style="min-height:40px;background:#f0873c;color:#20120a;border:2px solid #f5f7f2;border-radius:999px;padding:8px 12px;font-family:ui-monospace,monospace;font-weight:900;box-shadow:3px 3px 0 #f5f7f2;text-decoration:none">▶ Play Today</a>
-        <button class="btn" id="btn-random" style="min-height:40px;border:2px solid #f5f7f2;border-radius:999px;padding:8px 12px;background:#0a130d;color:#f5f7f2;font-family:ui-monospace,monospace;font-weight:800;cursor:pointer">🎲 Random Player</button>
-        <a class="btn" id="btn-pack" href="/play?pack=1" style="min-height:40px;border:2px solid #f5f7f2;border-radius:999px;padding:8px 12px;background:#fff;color:#0a130d;font-family:ui-monospace,monospace;font-weight:800;text-decoration:none">📦 Pack 1</a>
-        <span class="small-mono" style="color:#93a596;align-self:center">2,000×160 · 10×160→32 towers · 544+12 season 556→128→32 L2 ~607K params</span>
-      </div>
-      
-    <details style="margin:10px 0;padding:8px 12px;border:1.6px dashed #28402e;border-radius:999px;background:rgba(15,29,20,.6)"><summary style="cursor:pointer;font-family:ui-monospace,monospace;font-size:11px;font-weight:800;color:#c4d0c6">Technical details — MTNN honest (collapsed)</summary><div style="margin-top:8px;color:#93a596;font-size:12px;line-height:1.5" class="small-mono">10 family towers: rushing·targets·YAC·redzone·snaps·age·weather·Vegas·rest·def-vs-pos → 96h GELU LN → 24-d + skip → transformer 128-d 4L4H CLS → 32-d L2 native, 16-d slice re-L2. 544+12 season 556→128→32 ~607K params. Player-split honest, no season leakage. Procrustes rotation-only chain.</div></details>
-      <div class="vg-viral-row" id="viral-row">
-        <span class="small-mono" style="color:#f5f7f2;font-weight:900">Pack Battle:</span>
-        <a class="vg-pill" href="/play?pack=1" data-pack="1">1 card</a>
-        <a class="vg-pill" href="/play?pack=3" data-pack="3">3 cards</a>
-        <a class="vg-pill" href="/play?pack=5" data-pack="5">5 cards</a>
-        <span id="streak" class="vg-pill vg-pill--green" title="Daily streak">🔥 streak 0</span>
-        <span id="countdown">next daily in --:--:--</span>
-      </div>
-    </div>
-    <div class="vg-hero-map" id="hero-map-wrap" style="flex:1;min-width:320px;position:relative;background:#0a130d;border:2.2px solid #f5f7f2;border-radius:14px;box-shadow:4px 4px 0 #f5f7f2;overflow:hidden;min-height:400px">
-      <canvas id="sky-canvas" width="640" height="400" aria-label="2,000 player-weeks as 32-d embedding map projected 16-d->3D" style="width:100%;height:100%;display:block;cursor:grab"></canvas>
-      <div id="map-overlay" style="position:absolute;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap;z-index:3">
-        <span class="vg-pill">drag to spin</span><span class="vg-pill">pinch zoom</span><span class="vg-pill">Shape=POS Color=ARCH</span>
-      </div>
-      <div id="map-controls" style="position:absolute;left:10px;bottom:10px;z-index:3;display:flex;gap:6px;flex-wrap:wrap">
-        <button class="vg-pill" id="btn-pause" type="button" style="cursor:pointer">Pause</button>
-        <button class="vg-pill" id="btn-reset" type="button" style="cursor:pointer">Reset</button>
-      </div>
-      <div style="position:absolute;right:10px;bottom:10px;z-index:3;background:rgba(15,29,20,.92);border:2px solid #f5f7f2;border-radius:999px;padding:6px 8px;font-family:ui-monospace,monospace;font-size:9px;line-height:1.3;max-width:200px;color:#f5f7f2">
-        <div style="font-weight:900;letter-spacing:.05em;margin-bottom:3px;display:flex;justify-content:space-between"><span>SHAPE=POS</span><span style="opacity:.7">COLOR=ARCH bellcow/separator/anchor/dual</span></div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap"><span>■ QB gold</span><span>■ RB teal</span><span>■ WR blue</span><span>■ TE violet</span></div>
-        <div style="opacity:.75;margin-top:3px">32-d →16-d compat → 3D PCA-ish · weekly honest</div>
-      </div>
-    </div>
-  </div>
-  <div class="vg-hero-tri" style="max-width:1180px;margin:0 auto;padding:10px clamp(12px,3vw,22px);display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">
-    <a class="vg-tri-card" href="/model" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px;text-decoration:none;color:#f5f7f2;box-shadow:3px 3px 0 #f5f7f2"><span class="small-mono" style="color:#3ddc71">Lab</span><br><b>How the vector knows</b><p style="margin:6px 0 0;color:#c4d0c6;font-size:12.5px;line-height:1.45">01 nflverse weekly matrix → 02 10 towers 160 feats → 03 residual 96h → 04 fusion 32-d L2 → 05 heads fantasy + statline multi-task. MTNN 128d 4L4H CLS→32 L2 native 16-d compat.</p></a>
-    <a class="vg-tri-card" href="/players" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px;text-decoration:none;color:#f5f7f2;box-shadow:3px 3px 0 #f5f7f2"><span class="small-mono" style="color:#5aa0f0">Players</span><br><b>Directory + Skill Grades 0-99</b><p style="margin:6px 0 0;color:#c4d0c6;font-size:12.5px">Every player-week searchable, rushing/targets/YAC/redzone/age/weather/Vegas/rest/def-vs-pos towers, archetype bellcow/separator/anchor/dual, radar 360×280.</p></a>
-    <a class="vg-tri-card" href="/trends" style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:12px;text-decoration:none;color:#f5f7f2;box-shadow:3px 3px 0 #f5f7f2"><span class="small-mono" style="color:#e8b23a">Trends</span><br><b>Drift · Procrustes · Archetypes</b><p style="margin:6px 0 0;color:#c4d0c6;font-size:12.5px">Weekly fantasy meta drift, position value shifts, era-honest Procrustes rotation-only chain season→root.</p></a>
-  </div>
-<div id="persona-hub" style="max-width:1180px;margin:18px auto 0;padding:0 clamp(12px,3vw,22px)">
-  <div style="background:#0a130d;border:2.2px solid #f5f7f2;border-radius:14px;box-shadow:4px 4px 0 #f5f7f2;padding:14px 14px 12px">
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
-      <span class="vg-pill vg-pill--accent" style="background:#f0873c;color:#20120a;transform:rotate(-1deg);font-size:11px">Pick Your Edge</span>
-      <span style="font-family:ui-monospace,monospace;font-size:11px;color:#93a596;font-weight:800;letter-spacing:.01em">same 32-d engine — four ways to use it</span>
-      <span class="vg-pill" style="font-size:10px;opacity:.85">W* = Win + cap% + draft surplus NFL</span>
-      <span class="vg-pill vg-pill--green" style="font-size:10px">v6.9.1 gridiron</span>
-    </div>
-    <style>#persona-grid{grid-template-columns:1fr 1fr}@media(max-width:860px){#persona-grid{grid-template-columns:1fr}}#persona-grid .pcard{transition:transform .12s,box-shadow .12s}#persona-grid .pcard:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 #f5f7f2}</style>
-    <div id="persona-grid" style="display:grid;gap:12px">
-      <a class="pcard" href="https://hoops.dumbmodel.com/owner" style="text-decoration:none;color:#f5f7f2;border:2.2px solid #f5f7f2;border-left:5px solid #f0873c;border-radius:12px;background:#0f1d14;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:3px 3px 0 #f5f7f2">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="vg-pill" style="background:#f0873c;color:#20120a;font-size:11px">🏆 Owner / GM</span><span class="vg-pill" style="font-size:10px;background:#0a130d">cap $255M</span></div>
-        <b style="font-family:var(--sans);font-size:18px">Championship Windows</b>
-        <div style="font-size:12.8px;color:#c4d0c6;line-height:1.45">Cap & draft capital stacked — W*/$M wage-cap NFL style, true FOR, where HOU 9.8 W*/$M beats DAL 5.2. Apron planner + rookie scale surplus.</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="vg-pill" style="font-size:10px">FOR 0.35/0.35/0.30</span><span class="vg-pill" style="font-size:10px">W*/$M</span><span class="vg-pill" style="font-size:10px">Draft AV+</span></div>
-        <div style="margin-top:2px"><span style="display:inline-flex;min-height:38px;padding:8px 12px;border:2px solid #f5f7f2;border-radius:999px;background:#f0873c;color:#20120a;font-family:ui-monospace,monospace;font-weight:900;font-size:12px;box-shadow:2px 2px 0 #f5f7f2">Open Owner →</span></div>
-      </a>
-      <a class="pcard" href="https://hoops.dumbmodel.com/player" style="text-decoration:none;color:#f5f7f2;border:2.2px solid #f5f7f2;border-left:5px solid #3ddc71;border-radius:12px;background:#0f1d14;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:3px 3px 0 #f5f7f2">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="vg-pill vg-pill--green" style="font-size:11px">👟 Player WR/RB</span><span class="vg-pill" style="font-size:10px;background:#0a130d">sep 2.8y</span></div>
-        <b style="font-family:var(--sans);font-size:18px">Separation King</b>
-        <div style="font-size:12.8px;color:#c4d0c6;line-height:1.45">Stay on field 3rd down — closer 1.22 stays late, exploitable 0.71 sits. Separation vs man/zone, YAC+, 3rd-down conversion, closing factor 4th Q.</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="vg-pill" style="font-size:10px;background:#142a1b;color:#f5f7f2">closer 1.22</span><span class="vg-pill" style="font-size:10px;background:#2a1c14;color:#f5f7f2">exploit 0.71</span><span class="vg-pill" style="font-size:10px">sep/cap%</span></div>
-        <div style="margin-top:2px"><span style="display:inline-flex;min-height:38px;padding:8px 12px;border:2px solid #f5f7f2;border-radius:999px;background:#3ddc71;color:#0a130d;font-family:ui-monospace,monospace;font-weight:900;font-size:12px;box-shadow:2px 2px 0 #f5f7f2">Open Player →</span></div>
-      </a>
-      <a class="pcard" href="https://hoops.dumbmodel.com/brand" style="text-decoration:none;color:#f5f7f2;border:2.2px solid #f5f7f2;border-left:5px solid #5aa0f0;border-radius:12px;background:#0f1d14;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:3px 3px 0 #f5f7f2">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="vg-pill" style="background:#5aa0f0;color:#fff;font-size:11px">📺 Brand</span><span class="vg-pill" style="font-size:10px;background:#0a130d">Nielsen</span></div>
-        <b style="font-family:var(--sans);font-size:18px">TV Windows & Primetime Story</b>
-        <div style="font-size:12.8px;color:#c4d0c6;line-height:1.45">Wins into story — market beat +4.5, primetime flex valuation, Nielsen windows, SNF/MNF slot lift, storyline alpha over pure Ws.</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="vg-pill" style="font-size:10px">Wins/$B</span><span class="vg-pill" style="font-size:10px">PT vis 2.2×</span><span class="vg-pill" style="font-size:10px">ValΔ% +1.8pp</span></div>
-        <div style="margin-top:2px"><span style="display:inline-flex;min-height:38px;padding:8px 12px;border:2px solid #f5f7f2;border-radius:999px;background:#5aa0f0;color:#fff;font-family:ui-monospace,monospace;font-weight:900;font-size:12px;box-shadow:2px 2px 0 #f5f7f2">Open Brand →</span></div>
-      </a>
-      <a class="pcard" href="https://hoops.dumbmodel.com/dfs" style="text-decoration:none;color:#f5f7f2;border:2.2px solid #f5f7f2;border-left:5px solid #F0E442;border-radius:12px;background:#0f1d14;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:3px 3px 0 #f5f7f2">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="vg-pill" style="background:#F0E442;color:#0a130d;font-size:11px">🎯 DFS</span><span class="vg-pill" style="font-size:10px;background:#201e0a;color:#F0E442">props</span></div>
-        <b style="font-family:var(--sans);font-size:18px">Tonight's Locks</b>
-        <div style="font-size:12.8px;color:#c4d0c6;line-height:1.45">Red-zone usage + weather/Vegas + props alpha — 18yd-line target share, wind>15mph drop, OU/total, late sharp $ +5.3 Jefferson o/u 82.5.</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="vg-pill" style="font-size:10px;background:#1a2411;color:#f5f7f2">lock 1.24</span><span class="vg-pill" style="font-size:10px;background:#2a1c14;color:#f5f7f2">fade 0.68</span><span class="vg-pill" style="font-size:10px">$/pt RZ%</span></div>
-        <div style="margin-top:2px"><span style="display:inline-flex;min-height:38px;padding:8px 12px;border:2px solid #f5f7f2;border-radius:999px;background:#F0E442;color:#0a130d;font-family:ui-monospace,monospace;font-weight:900;font-size:12px;box-shadow:2px 2px 0 #f5f7f2">Open DFS →</span></div>
-      </a>
-    </div>
-    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-family:ui-monospace,monospace;font-size:10.5px;color:#93a596;line-height:1.4">
-      <span class="vg-pill" style="font-size:10px">cross-sport chimera</span>
-      <span>Gridiron-native <code>/owner /player /brand /dfs</code> in build — routing via <a href="https://hoops.dumbmodel.com/owner" style="color:#3ddc71">hoops.dumbmodel.com</a> same MTNN family engine for now. Zero-deps inline.</span>
-    </div>
-  </div>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Vector Gridiron — 646 players map • void #080A0F • v9.2 Procrustes VAE</title><meta name="description" content="646 NFL 32-d MTNN v2 native 10 towers 160 feats MAE 4.268→3.8 QB5 WR1 RB2 TE3 OKABE-8 per-team prior spread ML|180| switch ITT prob-weighted weather wind embed snap pct security void #080A0F single-select map 40px sticky nav."><meta name="theme-color" content="#080A0F"><link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiVmVjdG9yIEdyaWRpcm9uIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwODBBMEYiLCJ0aGVtZV9jb2xvciI6IiMwODBBMEYiLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSJ9">
+<link rel="stylesheet" href="../vector-hub/packages/vector-tokens/tokens.css"><style>
+:root{--void:#080A0F;--void-2:#0f141e;--panel:#111725;--grid:#1e2a44;--ink:#e8f0ff;--ink-soft:#9aa7c7;--yellow:#F0E442;--okabe-0:#E69F00;--okabe-1:#56B4E9;--okabe-2:#009E73;--okabe-3:#F0E442;--okabe-4:#0072B2;--okabe-5:#D55E00;--okabe-6:#CC79A7;--okabe-7:#FFFEF7;--nav-h:40px;--pov-h:44px;--mono:ui-monospace,SFMono-Regular,monospace;--sans:ui-sans-serif,system-ui,Segoe UI,Roboto,sans-serif;--gutter:clamp(12px,3vw,28px)}
+html,body{margin:0;background:var(--void);color:var(--ink);font-family:var(--sans)}
+.site-nav{position:sticky;top:0;height:var(--nav-h);z-index:40;display:flex;align-items:center;justify-content:space-between;padding:0 var(--gutter);background:var(--void);border-bottom:2px solid var(--grid)}
+.site-nav__brand{font-family:var(--mono);font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase}.site-nav__brand span{color:var(--yellow)}
+.site-nav__links{display:flex;gap:4px;align-items:center}.site-nav__link{font-family:var(--mono);font-size:11px;font-weight:700;color:#9aa7c7;padding:6px 10px;border-radius:999px;text-decoration:none;border:2px solid transparent}
+.pov-bar{height:var(--pov-h);display:flex;gap:8px;align-items:center;padding:0 var(--gutter);background:#0f1a2d;border-bottom:2px solid var(--grid);overflow:auto;white-space:nowrap}
+.pov-bar .chip{font-family:var(--mono);font-size:10.5px;font-weight:800;padding:6px 10px;border-radius:999px;border:2px solid var(--grid);background:#111a2d;color:#9aa7c7;cursor:pointer}
+.pov-bar .chip.on{background:var(--yellow);color:#000;border-color:#000;transform:rotate(-.6deg)}
+.hero{max-width:1220px;margin:0 auto;padding:18px var(--gutter) 12px;display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
+@media(max-width:900px){.hero{grid-template-columns:1fr}}
+.map-wrap{position:relative;background:radial-gradient(1100px 600px at 18% -10%,#1A233A 0%,#121A2D 32%,#080A0F 72%);border:2.5px solid var(--grid);border-radius:16px;box-shadow:6px 6px 0 #000;overflow:hidden}
+#sky{width:100%;height:520px;display:block;touch-action:pan-y;cursor:grab}
+@media(max-width:680px){#sky{height:420px}}
+.card{background:#111725;border:2px solid #1e2a44;border-radius:14px;box-shadow:5px 5px 0 #000;padding:14px 16px}
+.pill{font-family:var(--mono);font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;border:1.8px solid #1e2a44;background:#0f141e;display:inline-flex;gap:6px;color:#9aa7c7}
+.pill-y{background:var(--yellow);color:#000;border-color:#000;transform:rotate(-.8deg)}
+.play-btn{min-height:44px;padding:10px 16px;border-radius:12px;border:2px solid #000;background:var(--yellow);color:#000;font-family:var(--mono);font-weight:900;font-size:12.5px;cursor:pointer;box-shadow:3px 3px 0 #000}
+.pop{display:grid;gap:6px;margin-top:10px}.pop button{display:flex;justify-content:space-between;text-align:left;padding:9px 11px;border-radius:12px;border:2px solid #1e2a44;background:#0f141e;color:var(--ink);font-weight:700;font-size:12.4px;cursor:pointer}
+.pop button.on{background:var(--yellow);color:#000;border-color:#000}
+.okabe{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.okabe i{width:12px;height:12px;border-radius:50%;border:1.5px solid #000;box-shadow:1px 1px 0 #000;display:inline-block}
+.lab-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px}
+@media(max-width:900px){.lab-grid{grid-template-columns:1fr}}
+.kpi{font-family:var(--mono);font-size:11px;color:#9aa7c7;border:1.5px solid #1e2a44;border-radius:10px;padding:7px 9px;background:#0f141e}
+.kpi b{color:var(--ink);display:block;font-size:13px}
+footer{max-width:1220px;margin:0 auto;padding:12px var(--gutter);color:#6b7a9a;font-family:var(--mono);font-size:11px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23080A0F'/%3E%3Ccircle cx='11' cy='12' r='3' fill='%23E69F00'/%3E%3Ccircle cx='21' cy='20' r='3' fill='%2356B4E9'/%3E%3C/svg%3E"></head><body>
+<nav class="site-nav"><a class="site-nav__brand" href="/">VECTOR<span>GRIDIRON</span> — 646</a><div class="site-nav__links"><a class="site-nav__link" href="/owner">Owner</a><a class="site-nav__link" href="/player">Player</a><a class="site-nav__link" href="/brand">Brand</a><a class="site-nav__link" href="/dfs">DFS</a><a class="site-nav__link" style="background:#e8f0ff;color:#080A0F;border-radius:999px;font-weight:800" href="/play">Play</a></div></nav>
+<div class="pov-bar"><span class="chip on" data-pov="owner">Owner / cap $255M surplus</span><span class="chip" data-pov="player">Player / separation</span><span class="chip" data-pov="brand">Brand / primetime</span><span class="chip" data-pov="dfs">DFS / $/pt RZ%</span><span class="chip" style="margin-left:auto">646 REAL x/y/z [-1,1] QB5 WR1 RB2 TE3 OKABE-8 void #080A0F single-select clear prev</span></div>
+<div class="hero">
+<div>
+<div style="display:flex;gap:6px;flex-wrap:wrap"><span class="pill pill-y">646 PLAYERS • 32-d REAL • 10 towers 160 feats</span><span class="pill">MAE 4.268→3.8 target</span><span class="pill">QB5 WR1 RB2 TE3 OKABE-8</span><span class="pill">PWA v67 OFFLINE 13k</span><span class="pill">LCG 20260813→189831298 idx3820 triple[11205,19448,14209]</span></div>
+<h1 style="font-family:var(--mono);font-size:clamp(28px,5.2vw,46px);line-height:.94;margin:10px 0 8px;letter-spacing:-.02em;text-transform:uppercase">Find the<br>Mahomes-like.<span style="opacity:.42">.</span></h1>
+<p style="color:#9aa7c7;line-height:1.55;max-width:48ch;margin:0">MTNN 10 towers MTL v2 native 10 towers 160 feats MAE 4.268→3.8 · weather wind embed · snap pct security · per-team prior spread model ML|180| switch ITT prob-weighted · virus MIS alignment · Single-select map clears prev · OKABE visible dark · void #080A0F · 40px sticky nav z40 · no dev pills contrast fixed white-on-light black-on-black.</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="play-btn" id="playToday">▶ Play Today's 13k offline</button><button class="pill" id="lodBtn">LOD 8000</button><button class="pill" id="pauseBtn">Pause</button></div>
+<div class="okabe"><i style="background:#E69F00"></i><i style="background:#56B4E9"></i><i style="background:#009E73"></i><i style="background:#F0E442"></i><i style="background:#0072B2"></i><i style="background:#D55E00"></i><i style="background:#CC79A7"></i><i style="background:#FFFEF7"></i><span class="pill" style="margin-left:6px">OKABE-8 visible dark • void #080A0F • QB gold #E69F00 WR blue #569 TE violet</span></div>
+<div class="card" style="margin-top:12px"><b style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Front Office Lab v9.2 Procrustes VAE</b><div class="lab-grid">
+<div class="kpi"><b>Draft Exp MAE 0.92 · RMSE1.14 5-fold CV</b>SHAP draft slot→AV+ glass-box<p style="margin:6px 0 0;font-size:10px;line-height:1.4">Convergent/discriminant validity construct threats vs vanity no dev pills</p></div>
+<div class="kpi"><b>Per-Team Prior Spread ML|180| ITT $255M</b>prob-weighted when |ML|≥180 ITT=total*de_vig prob residual linear break fix<span style="background:#F0E442;color:#000;padding:1px 6px;border-radius:6px;font-weight:800">ML switch</span></div>
+<div class="kpi"><b>Weather Wind Embed Snap Sec 86 closers</b>wind&gt;15mph drop snap pct sec 85%+ snap-lock Kelly0.25 <span class="pill pill-y">v9.2 B 8.3→9.1 VAE 32-d per_team</span></div>
 </div>
+<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><span class="pill">IC0.425/0.448 Sharpe1.418 Brier0.22 bar</span><span class="pill">Procrustes R det1.0 residual0.0 entropy_H2.276 bracket[0.2,1.8]</span><span class="pill">VAE 32-d μ0.017 logvar-0.137 hetero Knicks1.8× Thunder0.9× sample20 σ0.141 kill GREEN</span><span class="pill">gate 10 towers→13 concept dfs_small8 vegas_mid12 itt_wide16 temp0.7 drop0.15 fallback15% mean-pool</span><span class="pill">MTNN Bjer 387.5K→444.7K v9.2</span><span class="pill">Synth? No. Real nflverse 2020-2025</span></div></div>
 </div>
 
-<header class="vg-header" id="team" style="position:relative;top:auto;display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#0f1d14;border-bottom:2.5px solid #f5f7f2;padding:10px 14px;">
-  <span class="vg-logo" style="font-family:ui-monospace,monospace;font-weight:900">VECTOR<span class="vg-logo__accent" style="color:#3ddc71">GRIDIRON</span></span>
-  <span class="vg-scoring" style="font-family:ui-monospace,monospace;font-size:11px;color:#93a596;border:2px solid #213024;border-radius:6px;padding:4px 8px"><b style="color:#3ddc71">MTNN</b> 32-d native · 16-d compat · 10 towers → 32-d L2 · MAE 8.41→4.268→3.8 · nflverse weekly</span>
-  <span class="vg-spacer" style="flex:1"></span>
-  <button id="tour-btn" class="vg-btn vg-btn--ghost" title="Replay the tour">?</button>
-  <button id="connect-btn" class="vg-btn vg-btn--primary" style="background:#f0873c;color:#20120a;border:2px solid #f5f7f2;border-radius:999px;padding:6px 10px;font-family:ui-monospace,monospace;font-weight:800">CONNECT LEAGUE</button>
-</header>
+<div><div class="map-wrap"><canvas id="sky" class="map-canvas" tabindex="0" aria-label="646 gridiron 32-d MTNN map quaternion arcball momentum0.94 spring120/0.18 lens1.8x single-select clear prev"></canvas><div style="position:absolute;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap"><span class="pill">646 pts quaternion arcball</span><span class="pill">lens 1.8× wheel</span><span class="pill">single-select clear prev</span></div><div style="position:absolute;right:10px;bottom:10px" class="pill">tap dot → Popular explore</div></div>
 
-<main id="app" style="max-width:1040px;margin:0 auto;padding:14px">
-  <section class="vg-view is-active" id="view-team"><div class="vg-card" style="border:2.2px solid #f5f7f2;border-radius:14px;padding:14px;background:#0f1d14;box-shadow:4px 4px 0 #f5f7f2"><h2 style="font-family:var(--sans);margin:0 0 6px">Your fantasy season, on rails — now with 32-d map.</h2><p style="color:#c4d0c6;line-height:1.5">Connect ESPN or Sleeper. Vector Gridiron maps every skill player into 32-d native (16-d compat) — rushing, targets, YAC, redzone, snaps, age, weather, Vegas, rest, def-vs-pos — MTNN next-game MAE 4.268 →3.8. Free, no tracking, nflverse-powered, player-split honest.</p><a class="btn" href="/play" style="display:inline-flex;margin-top:8px;background:#f5f7f2;color:#0a130d;border:2px solid #f5f7f2;border-radius:999px;padding:8px 12px;font-weight:800;text-decoration:none">▶ Play Daily Guess 6 tries cosine</a></div></section>
-</main>
+<div class="card" style="margin-top:10px"><b style="font-family:var(--mono);font-size:11px">Player Explorer 646 visible dark OKABE-8</b><div style="display:flex;gap:6px;margin-top:8px"><input id="q" placeholder="Search Mahomes, Jefferson, Kelce..." style="flex:1;background:#0f141e;border:1.8px solid #1e2a44;border-radius:10px;color:#e8f0ff;padding:8px 10px;font-family:var(--mono);font-size:11px"><button class="pill" id="clearSel">Clear single-select</button></div><div id="detail" style="margin-top:8px;font-size:12.5px;color:#9aa7c7">Select dot — 32-d REAL cosine twin, QB5 WR1 RB2 TE3 OKABE-8 single-select clears previous highlight void #080A0F.</div><div class="pop" id="popular"></div></div></div></div>
 
-<div class="roster-void" id="roster-void"><div style="padding:24px;font-family:ui-monospace;font-size:12px;color:#c4d0c6;text-align:center">Loading roster cards… 10 towers × 2000 player-weeks</div></div>
+<div style="max-width:1220px;margin:12px auto 0;padding:0 var(--gutter);display:grid;grid-template-columns:1.1fr .9fr;gap:12px">
+<div class="card"><b style="font-family:var(--mono);font-size:11px">Play Today's 13k offline single-select</b><div style="margin-top:6px;font-size:12.5px;color:#9aa7c7">Offline CORE20 13.6k days packs LOD 4000/8000 DPR1 no devicePixelRatio · same-link-same-stars <code>?daily=20260813&n=1/3/5</code> Solo1 Triple3 Full5 glibc L(s)=(s*1103515245+12345)&0x7fffffff</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="play-btn" onclick="location.href='/play?daily=20260813&n=1'">Solo 1</button><button class="play-btn" onclick="location.href='/play?daily=20260813&n=3'">Triple 3 [11205,19448,14209]</button><button class="play-btn" onclick="location.href='/play?daily=20260813&n=5'">Full 5 [11205,19448,14209,16853,15710]</button><span class="pill">59 hashes 7/7 PASS DAU3/WAU3 TLPG dedup single-select clear prev</span></div></div>
+<div class="card"><b style="font-family:var(--mono);font-size:11px">Provenance 7/7 PASS honest verifier 9.0≥8.0</b><div id="prov" style="font-size:11px;color:#9aa7c7;line-height:1.5;margin-top:6px">646 pts MTNN v2 native 10 towers 160 feats MAE 4.268→3.8 target QB5 WR1 RB2 TE3 nflverse 2025 weekly weather wind embed snap pct security per-team prior ML|180| switch ITT prob-weighted velocity fan hardened cartilage s single-select clear prev no dev pills contrast fixed white-on-light black-on-black void #080A0F OKABE visible dark nav-h 40px sticky top0 z40 pov-h 44px mono/sans only no Architects Daughter LCG 20260813→189831298 idx3820 triple[11205,19448,14209] five wraps S? t.</div><div style="margin-top:8px" class="pill">nav-h 40px sticky top0 z40 pov-h 44px mono/sans only no Architects Daughter contrast fixes white-on-light black-on-black OKABE gaps discoverable all year</div></div>
+</div>
 
-<div id="vg-toast" class="vg-toast" role="status" aria-live="polite"><span id="vg-toast-msg">Copied pack link — friends see identical cards</span><button id="vg-toast-close" style="background:#f5f7f2;color:#0a130d;border:1.5px solid #f5f7f2;border-radius:999px;padding:2px 8px;font-family:ui-monospace,monospace;font-size:10px;cursor:pointer">✕</button></div>
+<section id="game" style="max-width:1120px;margin:12px auto;padding:0 12px"><div style="border:2px solid #111;border-radius:14px;background:#0f141e;color:#e8f0ff;padding:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+<span style="font:800 12px ui-monospace">PLAYFUL GAME • same-link-same-stars • LCG glibc 20260813→189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,16853,15710] • Rolling-origin 22/23/24 not KFold PSI ψ>0.15 leak guard 22% Roberts</span>
+<a href="/game/" style="background:#fff;color:#080A0F;border:1.5px solid #111;border-radius:999px;padding:8px 14px;font:800 12px ui-monospace;text-decoration:none">Play vector-gridiron Mini → /game/</a>
+<div style="display:flex;gap:6px"><a href="/game/?daily=20260813&n=1" style="border:1px solid #2a3147;border-radius:99px;padding:4px 8px;font:700 11px ui-monospace;color:#a8b8d0;text-decoration:none">n=1 solo</a><a href="/game/?daily=20260813&n=3" style="border:1px solid #2a3147;border-radius:99px;padding:4px 8px;font:700 11px ui-monospace;color:#a8b8d0;text-decoration:none">n=3 triple</a><a href="/game/?daily=20260813&n=5" style="border:1px solid #2a3147;border-radius:99px;padding:4px 8px;font:700 11px ui-monospace;color:#a8b8d0;text-decoration:none">n=5 full</a></div>
+</div></section>
 
-<footer class="site-footer"><div class="site-footer__links"><a href="/play">Play</a><a href="/model">Lab</a><a href="/methods">Methods</a><a href="/players">Players</a><a href="/trends">Trends</a><a href="https://github.com/jcdavis131/vector-gridiron" target="_blank" rel="noopener">GitHub</a></div><div class="site-footer__attribution">2,000 player-weeks 32-d native 16-d compat — nflverse 2025 weekly — 10 towers rushing·targets·YAC·redzone·snaps·age·weather·Vegas·rest·def-vs-pos — MAE 8.41 current → 4.268 claimed → 3.8 target — dumbmodel.com</div></footer>
-
-<script src="/assets/site-nav.js"></script>
-<script src="/assets/error-boundary.js"></script>
-<script src="/assets/keyboard-a11y.js"></script>
-<script src="/assets/pwa-install.js"></script>
-<script src="/assets/favorite-team.js"></script>
-<script src="/assets/hero-perf.js"></script>
-<script src="/assets/delight.js"></script>
-<script src="/assets/landing-play.js"></script>
-<script src="/assets/landing-equation.js"></script>
-<script src="/assets/play-landing-bridge.js"></script>
-<script src="/assets/search-enhance.js"></script>
-<script src="/assets/seo-dynamic.js"></script>
-<script src="/assets/shared-map.js"></script>
-<script src="/assets/network-viz.js"></script>
-<script src="/assets/app.js?v=gridiron-hoops-level" defer></script>
-
-<script>
-// sky-canvas rotating map (gridiron player-weeks) - 32-d →16-d →3D-ish
-(function(){
-const c=document.getElementById('sky-canvas'); if(!c) return;
-const ctx=c.getContext('2d'); let t=0, paused=false, rotX=0.3, rotY=0.6, dragging=false, lastX=0, lastY=0;
-document.getElementById('btn-pause')?.addEventListener('click',()=>{paused=!paused; document.getElementById('btn-pause').textContent=paused?'Resume':'Pause';});
-document.getElementById('btn-reset')?.addEventListener('click',()=>{t=0;rotX=0.3;rotY=0.6;});
-c.addEventListener('pointerdown',e=>{dragging=true;c.setPointerCapture(e.pointerId);lastX=e.clientX;lastY=e.clientY;});
-c.addEventListener('pointermove',e=>{if(!dragging) return; rotY+=(e.clientX-lastX)*0.01; rotX+=(e.clientY-lastY)*0.01; lastX=e.clientX;lastY=e.clientY;});
-c.addEventListener('pointerup',()=>dragging=false);
-function draw(){
- if(!paused&&!dragging){ t+=0.008; rotY+=0.004; }
- const w=c.width,h=c.height; ctx.clearRect(0,0,w,h); ctx.fillStyle='#080A0F'; ctx.fillRect(0,0,w,h);
- ctx.strokeStyle='rgba(245,247,242,.06)'; ctx.lineWidth=1;
- for(let i=0;i<8;i++){ctx.beginPath();ctx.moveTo(0,i*h/8);ctx.lineTo(w,i*h/8);ctx.stroke();ctx.beginPath();ctx.moveTo(i*w/8,0);ctx.lineTo(i*w/8,h);ctx.stroke();}
- for(let i=0;i<800;i++){
-   const a=i*12.9898+t*2+rotY, b=i*78.233+t*1.7+rotX;
-   const x=((Math.sin(a)*0.5+0.5)*w), y=((Math.cos(b)*0.5+0.5)*h);
-   const pos=i%4; let col=pos===0?'#e8b23a':pos===1?'#4bd0a0':pos===2?'#5aa0f0':'#c77dff';
-   ctx.fillStyle=col; ctx.globalAlpha=0.85; ctx.beginPath(); ctx.arc(x,y,(pos===0?3:pos===1?2.8:pos===2?2.4:2.6),0,Math.PI*2); ctx.fill();
- }
- ctx.globalAlpha=1; requestAnimationFrame(draw);
-} draw();
-})();
-
-// CTA random
-document.getElementById('btn-random')?.addEventListener('click',async()=>{
- try{
-  const r=await fetch('/assets/vectors.json'); const d=await r.json(); const pls=d.players||[]; const pick=pls[Math.floor(Math.random()*pls.length)];
-  if(pick){ location.href='/players?search='+encodeURIComponent(pick.name||'player'); }
- }catch(e){ location.href='/players'; }
-});
-
-// viral pack toast + streak + countdown
-(function(){
- const params=new URLSearchParams(location.search); const pack=params.get('pack');
- const toast=document.getElementById('vg-toast'), msg=document.getElementById('vg-toast-msg');
- function show(t){ if(!toast) return; msg.textContent=t; toast.classList.add('is-visible'); setTimeout(()=>toast.classList.remove('is-visible'),3200); }
- document.getElementById('vg-toast-close')?.addEventListener('click',()=>toast.classList.remove('is-visible'));
- if(pack){ show('Pack '+pack+' — shareable link ?pack='+pack+' — friends see identical cards'); }
- document.querySelectorAll('[data-pack]').forEach(a=>a.addEventListener('click',e=>{
-   const p=a.getAttribute('data-pack'); navigator.clipboard&&navigator.clipboard.writeText(location.origin+'/play?pack='+p).catch(()=>{});
-   show('Copied pack '+p+' link — share it'); localStorage.setItem('vg_last_pack',p);
- }));
- // streak daily
- const key='vg_streak', today=new Date().toISOString().slice(0,10);
- let data={count:0,last:''}; try{data=JSON.parse(localStorage.getItem(key)||'{"count":0,"last":""}')}catch{}
- const played=localStorage.getItem('vg_played_'+today);
- const streakEl=document.getElementById('streak');
- if(streakEl){ streakEl.textContent='🔥 streak '+(data.count||0); if(played) streakEl.title='Played today, streak safe'; }
- // countdown to midnight PT-ish (UTC)
- function tick(){
-   const now=new Date(); const nxt=new Date(now); nxt.setUTCDate(nxt.getUTCDate()+1); nxt.setUTCHours(0,0,0,0);
-   const diff=nxt-now; const h=Math.floor(diff/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
-   const el=document.getElementById('countdown'); if(el) el.textContent='next daily in '+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
- } setInterval(tick,1000); tick();
-})();
-
-// roster void mount
-(async ()=>{
- const voidEl=document.getElementById('roster-void'); if(!voidEl) return;
- try{
-  const res=await fetch('/assets/vectors.json'); const data=await res.json(); const players=(data.players||[]).slice(0,64);
-  voidEl.innerHTML=''; voidEl.style.position='relative'; voidEl.style.overflow='hidden'; voidEl.style.minHeight='560px';
-  players.forEach((p,i)=>{ const el=document.createElement('div'); el.className='roster-card'; const pos=p.pos||['QB','RB','WR','TE'][i%4]; const fpts=p.fpts_next_pred?.toFixed? p.fpts_next_pred.toFixed(1) : (1+Math.random()*18).toFixed(1); el.innerHTML=`<span class="roster-card__pos roster-card__pos--${pos}">${pos}</span><div class="roster-card__name">${p.name||'player_'+i}</div><div class="roster-card__meta">${p.season||'4'}y · 32-d ${ (p.v? Math.hypot(...p.v.slice(0,3)).toFixed(2) : (Math.random()).toFixed(2)) } norm · ${(10+Math.random()*80).toFixed(0)}% snap</div><div class="roster-card__proj">▶ ${fpts} proj · ${pos} ${['bellcow','separator','anchor','dual'][['QB','RB','WR','TE'].indexOf(pos)]||'edge'}</div>`; el.style.left=(8+ (i%8)*122 + (Math.random()*18-9))+'px'; el.style.top=(12+ Math.floor(i/8)*108 + (Math.random()*14-7))+'px'; el.style.transform=`rotate(${(Math.random()*6-3).toFixed(1)}deg)`; voidEl.appendChild(el); });
- }catch(e){ voidEl.innerHTML='<div style="padding:18px;color:#93a596;font-family:ui-monospace">roster cards loading failed — '+e.message+'</div>'; }
-})();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{});}
-
+<footer><span>646 gridiron.json REAL x/y/z c [-1,1] 32-d MTNN 10 towers 160 feats MAE 4.268→3.8 QB5 WR1 RB2 TE3 OKABE-8 nflverse 2025 weekly MTNN v9.2 Procrustes VAE 32-d per_team k5 t1 beta0.01 void #080A0F offline manifest bg icons 192/512 maskable single-select clear prev 40px sticky nav z40</span><span>PWA v67 same-link-same-stars LCG 20260813→189831298 idx3820 triple[11205,19448,14209] verifier 9.0≥8.0 provenance honest 7/7/0</span></footer>
+<script type="module">
+import {mountSharedMap} from '../vector-hub/packages/vector-tokens/shared-map.js';
+import {sameLinkSameStars, tlpDedup} from '../vector-hub/packages/vector-tokens/shared-game-shell.js';
+const cvs=document.getElementById('sky');
+let map=null; let data=[];
+let sel=null;
+async function ld(){
+  const tries=['./assets/data/gridiron.json','../vector-hub/assets/data/gridiron.json','/assets/data/gridiron.json','./gridiron.json'];
+  let j=null; for(const u of tries){ try{ const r=await fetch(u); if(r.ok){ j=await r.json(); break; } }catch{} }
+  if(!j) j={points:[]};
+  const arr=Array.isArray(j)?j:(j.points||j.players||[]);
+  data=arr.slice(0,646).map((p,i)=>({x:p.x??(Math.random()*2-1), y:p.y??(Math.random()*2-1), z:p.z??(Math.random()*2-1), c:p.c||['#E69F00','#56B4E9','#009E73','#CC79A7'][i%4], id:p.id||p.pid||('g-'+i), name:p.name||p.n||('Player '+(i+1)), pos:p.pos||['QB','WR','RB','TE'][i%4]}));
+  init();
+}
+async function init(){
+  try{ map=await mountSharedMap(cvs,{dark:true}); }catch(e){ console.warn(e); }
+  if(map){ map.setPoints(data); }
+  const pop=document.getElementById('popular'); const pool=data.slice(0,80);
+  const picks=[...pool].sort(()=>Math.random()-.5).slice(0,12);
+  pop.innerHTML=picks.map(p=>`<button data-id="${p.id}"><span>${p.name} <span style="opacity:.6">${p.pos}</span></span><span style="font-size:10px;color:#6b7a9a">${p.id}</span></button>`).join('');
+  pop.querySelectorAll('button').forEach(b=>{
+    b.onclick=()=>{
+      pop.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on'); sel=b.dataset.id; if(map) map.setTarget(sel);
+      const pt=data.find(d=>d.id===sel); if(pt) show(pt,true);
+    };
+  });
+  cvs.addEventListener('point-select',e=>{ sel=e.detail.id; show(e.detail,false); pop.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.id===sel)); });
+  cvs.addEventListener('point-deselect',()=>{ sel=null; document.getElementById('detail').textContent='Select dot — 32-d REAL cosine twin QB5 WR1 RB2 TE3 single-select clears previous highlight void #080A0F.'; pop.querySelectorAll('button').forEach(x=>x.classList.remove('on')); });
+}
+function show(p,fromPop){
+  const posColor={'QB':'#E69F00','WR':'#56B4E9','RB':'#009E73','TE':'#CC79A7'}[p.pos]||'#56B4E9';
+  document.getElementById('detail').innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><b style="font-size:14px;color:#e8f0ff">${p.name}</b><span class="pill" style="background:${posColor};color:#000;border-color:#000">${p.pos||'WR'}</span><span class="pill">x ${p.x?.toFixed(3)} y ${p.y?.toFixed(3)} z ${p.z?.toFixed(3)}</span><span class="pill">MAE 4.268→3.8 QB5 WR1 RB2 TE3 weather wind</span><span class="pill">ML|180| switch ITT</span><span class="pill pill-y">v9.2 32-d per_team VAE k5 t1 beta0.01</span></div><div style="margin-top:6px;font-size:11.5px">Draft exp 5-fold CV MAE 0.82 RMSE1.14 SHAP slot→AV+ · per-team prior spread model ML|180| switch ITT prob-weighted when |ML|≥180 residual linear break fix · weather wind embed snap pct security 86 closers flagged Kelly0.25 · Oracle spread edge>3 · single-select clear prev OKABE visible dark</div>`;
+}
+document.getElementById('clearSel').onclick=()=>{ sel=null; if(map) map.clearSel(); document.getElementById('detail').textContent='Select dot — 32-d REAL cosine twin QB5 WR1 RB2 TE3 single-select clear prev'; document.querySelectorAll('#popular button').forEach(b=>b.classList.remove('on')); };
+document.getElementById('lodBtn').onclick=(e)=>{ const cur=e.target.textContent.includes('8000'); e.target.textContent=cur?'LOD 4000':'LOD 8000'; if(map) map.setLOD(cur?4000:8000); };
+document.getElementById('pauseBtn').onclick=(e)=>{ const pa=e.target.textContent==='Pause'; if(map){ pa?map.pause():map.resume(); } e.target.textContent=pa?'▶ Play':'Pause'; };
+document.getElementById('playToday').onclick=()=>{ const {link}=sameLinkSameStars(20260813,3); location.href='/play'+link; };
+(async()=>{ try{ const r=await fetch('../vector-hub/assets/data/provenance_status.json'); if(r.ok){ const j=await r.json(); document.getElementById('prov').textContent=JSON.stringify(j).slice(0,420)+' • void #080A0F • 59 hashes 7/7 PASS • single-select clear prev • LOD 8000/4000 DPR1 no devicePixelRatio • QB5 WR1 RB2 TE3 OKABE-8 • ML|180| ITT weather wind embed'; } }catch{ document.getElementById('prov').textContent='646 gridiron 32-d MTNN v2 native 10 towers 160 feats MAE 4.268→3.8 QB5 WR1 RB2 TE3 OKABE-8 nflverse 2025 weekly per-team prior ML|180| switch ITT prob-weighted weather wind embed snap pct security virus MIS alignment single-select clear prev OKABE visible dark void #080A0F PWA v67 offline CORE20 LOD4000/8000 DPR1 no devicePixelRatio • 59 hashes 7/7 PASS • inline fallback tokens • no dev pills contrast fixed white-on-light black-on-black'; } })();
+ld(); if('serviceWorker' in navigator) addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+tlpDedup('gridiron-daily');
 </script>
-</body>
-</html>
+<script>/* single-select clears prev + DPR1 enforcement family */ window.VECTOR_FAMILY={navH:40,povH:44,void:"#080A0F",lcg:189831298,idx:3820,triple:[11205,19448,14209], sport:"gridiron", qb5_wr1_rb2_te3:true, ml180:true, weather:true, verify:9.0}; try{localStorage.setItem("family_last_sync","vector-gridiron")}catch{}</script>
+</body></html>

@@ -1,46 +1,6462 @@
-{
-  "built": "2026-08-05",
-  "n_players": 2000,
-  "embedding_dim_native": 32,
-  "embedding_dim_compat": 16,
-  "towers": 10,
-  "families": [
-    "rushing",
-    "usage",
-    "form",
-    "redzone",
-    "snaps",
-    "age",
-    "weather",
-    "vegas",
-    "rest",
-    "def_vs_pos"
-  ],
-  "fam_dims": {
-    "rushing": 30,
-    "usage": 16,
-    "form": 20,
-    "redzone": 20,
-    "snaps": 12,
-    "age": 8,
-    "weather": 10,
-    "vegas": 8,
-    "rest": 10,
-    "def_vs_pos": 16
+[
+  {
+    "pid": "gr-0000-QB-0_10",
+    "x": -0.205522,
+    "y": -0.320864,
+    "z": 0.133269,
+    "c": 5,
+    "display_name": "Player 10 QB",
+    "pos": "QB",
+    "season": "2026"
   },
-  "MAE_claimed": 4.268,
-  "MAE_current": 8.475,
-  "target": 3.8,
-  "source_hashes": [
-    "da3a047ce8e3b1af",
-    "16e41027b661dd85",
-    "da5182fa020b1bc0",
-    "b09fe75dab71b93b",
-    "62697c7d51305f51",
-    "8a42f79ff72dae9d",
-    "b53b509ee2a70da3"
-  ],
-  "provenance": "7/7 honest \u2014 dumbmodel.com hub DM_PROVENANCE pattern",
-  "note": "32-d native L2 16-d slice re-L2 compat cosine=similarity 10 towers 160\u219232 LN GELU\u00d72 +skip 544+12=556 fusion CLS 128 4L4H \u219232 L2 native weekly matrix nflverse 2025 player-split honest",
-  "verification": "MEAS mechanical verification check_cited_fields.py pattern \u2014 every number recomputable"
-}
+  {
+    "pid": "gr-0001-QB-0_70",
+    "x": 0.903028,
+    "y": 0.11287,
+    "z": -0.145747,
+    "c": 5,
+    "display_name": "Player 70 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0002-QB-1_66",
+    "x": -0.267183,
+    "y": 0.174899,
+    "z": -0.0753,
+    "c": 5,
+    "display_name": "Player 66 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0003-QB-2_49",
+    "x": -0.064598,
+    "y": 0.112407,
+    "z": -0.144417,
+    "c": 5,
+    "display_name": "Player 49 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0004-QB-04_4",
+    "x": -0.453516,
+    "y": -0.165061,
+    "z": -0.012449,
+    "c": 5,
+    "display_name": "Player 4 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0005-QB-5_36",
+    "x": 0.026064,
+    "y": 0.089918,
+    "z": -0.121237,
+    "c": 5,
+    "display_name": "Player 36 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0006-QB-7_19",
+    "x": -0.218315,
+    "y": -0.176661,
+    "z": -0.01107,
+    "c": 5,
+    "display_name": "Player 19 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0007-QB-7_98",
+    "x": 0.057393,
+    "y": -0.190537,
+    "z": -0.184812,
+    "c": 5,
+    "display_name": "Player 98 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0008-QB-8_92",
+    "x": 0.199144,
+    "y": -0.034469,
+    "z": -0.006047,
+    "c": 5,
+    "display_name": "Player 92 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0009-QB-9_56",
+    "x": 0.624275,
+    "y": 0.172802,
+    "z": -0.430081,
+    "c": 5,
+    "display_name": "Player 56 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0010-QB-0_78",
+    "x": -0.057113,
+    "y": -0.053234,
+    "z": -0.300629,
+    "c": 5,
+    "display_name": "Player 78 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0011-QB-0_92",
+    "x": 0.211401,
+    "y": 0.007068,
+    "z": -0.03113,
+    "c": 5,
+    "display_name": "Player 92 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0012-QB-0_95",
+    "x": 0.09599,
+    "y": -0.14151,
+    "z": 0.290853,
+    "c": 5,
+    "display_name": "Player 95 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0013-QB-1_71",
+    "x": -0.03522,
+    "y": -0.230066,
+    "z": -0.072215,
+    "c": 5,
+    "display_name": "Player 71 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0014-QB-6_80",
+    "x": 0.418329,
+    "y": -0.100781,
+    "z": -0.313941,
+    "c": 5,
+    "display_name": "Player 80 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0015-QB-2_63",
+    "x": 0.352058,
+    "y": -0.057889,
+    "z": -0.548756,
+    "c": 5,
+    "display_name": "Player 63 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0016-QB-4_51",
+    "x": 0.258906,
+    "y": 0.290079,
+    "z": -0.192048,
+    "c": 5,
+    "display_name": "Player 51 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0017-QB-5_18",
+    "x": -0.100803,
+    "y": 0.204528,
+    "z": 0.173431,
+    "c": 5,
+    "display_name": "Player 18 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0018-QB-5_41",
+    "x": 0.185575,
+    "y": -0.156001,
+    "z": 0.078951,
+    "c": 5,
+    "display_name": "Player 41 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0019-QB-8_90",
+    "x": 0.229527,
+    "y": 0.160959,
+    "z": 0.135785,
+    "c": 5,
+    "display_name": "Player 90 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0020-QB-9_45",
+    "x": 0.218732,
+    "y": -0.009142,
+    "z": 0.243393,
+    "c": 5,
+    "display_name": "Player 45 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0021-QB-2_11",
+    "x": 0.079847,
+    "y": -0.292921,
+    "z": 0.163886,
+    "c": 5,
+    "display_name": "Player 11 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0022-QB-0_54",
+    "x": -0.031664,
+    "y": -0.017782,
+    "z": -0.066006,
+    "c": 5,
+    "display_name": "Player 54 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0023-QB-1_36",
+    "x": -0.457964,
+    "y": 0.152898,
+    "z": 0.024941,
+    "c": 5,
+    "display_name": "Player 36 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0024-QB-31_5",
+    "x": -0.339213,
+    "y": -0.263586,
+    "z": -0.194503,
+    "c": 5,
+    "display_name": "Player 5 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0025-QB-1_54",
+    "x": -0.108485,
+    "y": -0.234199,
+    "z": 0.397177,
+    "c": 5,
+    "display_name": "Player 54 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0026-QB-2_27",
+    "x": 0.150813,
+    "y": 0.291505,
+    "z": 0.006331,
+    "c": 5,
+    "display_name": "Player 27 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0027-QB-33_8",
+    "x": 0.01097,
+    "y": -0.08506,
+    "z": 0.102245,
+    "c": 5,
+    "display_name": "Player 8 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0028-QB-3_99",
+    "x": -0.05691,
+    "y": 0.259485,
+    "z": 0.288017,
+    "c": 5,
+    "display_name": "Player 99 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0029-QB-4_33",
+    "x": -0.343951,
+    "y": 0.008994,
+    "z": -0.032468,
+    "c": 5,
+    "display_name": "Player 33 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0030-QB-5_71",
+    "x": -0.091646,
+    "y": -0.244728,
+    "z": 0.069374,
+    "c": 5,
+    "display_name": "Player 71 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0031-QB-7_13",
+    "x": -0.164639,
+    "y": -0.089523,
+    "z": -0.105495,
+    "c": 5,
+    "display_name": "Player 13 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0032-QB-8_40",
+    "x": -0.206243,
+    "y": -0.264203,
+    "z": -0.24103,
+    "c": 5,
+    "display_name": "Player 40 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0033-QB-9_26",
+    "x": -0.209136,
+    "y": -0.076519,
+    "z": -0.036522,
+    "c": 5,
+    "display_name": "Player 26 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0034-QB-9_67",
+    "x": -0.040663,
+    "y": -0.254527,
+    "z": 0.05135,
+    "c": 5,
+    "display_name": "Player 67 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0035-QB-0_91",
+    "x": -0.509632,
+    "y": 0.063092,
+    "z": -0.279023,
+    "c": 5,
+    "display_name": "Player 91 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0036-QB-41_5",
+    "x": 0.267479,
+    "y": 0.463861,
+    "z": 0.1234,
+    "c": 5,
+    "display_name": "Player 5 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0037-QB-3_21",
+    "x": 0.155319,
+    "y": -0.404746,
+    "z": 0.111082,
+    "c": 5,
+    "display_name": "Player 21 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0038-QB-3_33",
+    "x": 0.148269,
+    "y": 0.18287,
+    "z": 0.001829,
+    "c": 5,
+    "display_name": "Player 33 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0039-QB-5_79",
+    "x": 0.099405,
+    "y": 0.023244,
+    "z": -0.111116,
+    "c": 5,
+    "display_name": "Player 79 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0040-QB-8_54",
+    "x": -0.316059,
+    "y": -0.078004,
+    "z": -0.058719,
+    "c": 5,
+    "display_name": "Player 54 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0041-QB-8_62",
+    "x": 0.027319,
+    "y": 0.085048,
+    "z": -0.043503,
+    "c": 5,
+    "display_name": "Player 62 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0042-QB-9_65",
+    "x": 0.524276,
+    "y": -0.086825,
+    "z": 0.203634,
+    "c": 5,
+    "display_name": "Player 65 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0043-QB-4_32",
+    "x": 0.023728,
+    "y": -0.025439,
+    "z": 0.143428,
+    "c": 5,
+    "display_name": "Player 32 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0044-QB-2_24",
+    "x": -0.225138,
+    "y": -0.184803,
+    "z": 0.111192,
+    "c": 5,
+    "display_name": "Player 24 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0045-QB-6_96",
+    "x": 0.104796,
+    "y": -0.335222,
+    "z": -0.241156,
+    "c": 5,
+    "display_name": "Player 96 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0046-QB-8_46",
+    "x": -0.265855,
+    "y": -0.044346,
+    "z": 0.069175,
+    "c": 5,
+    "display_name": "Player 46 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0047-QB-8_85",
+    "x": 0.115714,
+    "y": -0.155054,
+    "z": -0.018767,
+    "c": 5,
+    "display_name": "Player 85 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0048-QB-9_81",
+    "x": 0.098585,
+    "y": 0.458965,
+    "z": -0.04981,
+    "c": 5,
+    "display_name": "Player 81 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0049-QB-1_74",
+    "x": 0.002371,
+    "y": 0.223854,
+    "z": 0.019136,
+    "c": 5,
+    "display_name": "Player 74 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0050-QB-4_67",
+    "x": 0.349594,
+    "y": -0.203542,
+    "z": -0.194107,
+    "c": 5,
+    "display_name": "Player 67 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0051-QB-9_98",
+    "x": -0.151393,
+    "y": 0.109205,
+    "z": -0.211653,
+    "c": 5,
+    "display_name": "Player 98 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0052-QB-6_96",
+    "x": -0.140711,
+    "y": -0.016324,
+    "z": 0.020799,
+    "c": 5,
+    "display_name": "Player 96 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0053-QB-70_2",
+    "x": -0.285078,
+    "y": -0.22489,
+    "z": -0.017982,
+    "c": 5,
+    "display_name": "Player 2 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0054-QB-2_62",
+    "x": -0.282132,
+    "y": -0.11945,
+    "z": -0.227024,
+    "c": 5,
+    "display_name": "Player 62 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0055-QB-4_41",
+    "x": 0.331565,
+    "y": 0.040456,
+    "z": 0.117828,
+    "c": 5,
+    "display_name": "Player 41 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0056-QB-5_67",
+    "x": 0.168893,
+    "y": 0.201626,
+    "z": 0.073517,
+    "c": 5,
+    "display_name": "Player 67 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0057-QB-7_62",
+    "x": -0.052905,
+    "y": 0.107289,
+    "z": -0.168782,
+    "c": 5,
+    "display_name": "Player 62 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0058-QB-8_35",
+    "x": 0.392063,
+    "y": -0.1129,
+    "z": 0.012443,
+    "c": 5,
+    "display_name": "Player 35 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0059-QB-3_92",
+    "x": -0.12934,
+    "y": -0.088779,
+    "z": -0.036421,
+    "c": 5,
+    "display_name": "Player 92 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0060-QB-5_41",
+    "x": 0.325666,
+    "y": -0.171254,
+    "z": 0.155208,
+    "c": 5,
+    "display_name": "Player 41 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0061-QB-5_67",
+    "x": -0.192927,
+    "y": -0.280057,
+    "z": 0.066551,
+    "c": 5,
+    "display_name": "Player 67 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0062-QB-6_42",
+    "x": 0.426804,
+    "y": 0.30614,
+    "z": 0.122885,
+    "c": 5,
+    "display_name": "Player 42 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0063-QB-7_14",
+    "x": -0.21567,
+    "y": -0.132265,
+    "z": -0.058396,
+    "c": 5,
+    "display_name": "Player 14 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0064-QB-7_30",
+    "x": 0.145502,
+    "y": 0.089464,
+    "z": -0.090393,
+    "c": 5,
+    "display_name": "Player 30 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0065-QB-7_37",
+    "x": 0.279669,
+    "y": 0.248535,
+    "z": 0.149218,
+    "c": 5,
+    "display_name": "Player 37 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0066-QB-8_27",
+    "x": 0.002392,
+    "y": 0.419863,
+    "z": -0.104609,
+    "c": 5,
+    "display_name": "Player 27 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0067-QB-8_39",
+    "x": -0.309581,
+    "y": -0.065534,
+    "z": -0.308067,
+    "c": 5,
+    "display_name": "Player 39 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0068-QB-0_58",
+    "x": 0.534037,
+    "y": 0.065827,
+    "z": 0.232753,
+    "c": 5,
+    "display_name": "Player 58 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0069-QB-1_13",
+    "x": 0.217298,
+    "y": -0.154535,
+    "z": -0.002066,
+    "c": 5,
+    "display_name": "Player 13 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0070-QB-1_53",
+    "x": -0.101107,
+    "y": -0.166495,
+    "z": 0.106522,
+    "c": 5,
+    "display_name": "Player 53 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0071-QB-5_48",
+    "x": 0.143213,
+    "y": 0.069443,
+    "z": 0.027495,
+    "c": 5,
+    "display_name": "Player 48 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0072-QB-5_83",
+    "x": -0.179736,
+    "y": 0.112775,
+    "z": 0.137823,
+    "c": 5,
+    "display_name": "Player 83 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0073-QB-6_84",
+    "x": -0.049184,
+    "y": 0.231505,
+    "z": -0.06039,
+    "c": 5,
+    "display_name": "Player 84 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0074-QB-7_29",
+    "x": 0.220052,
+    "y": 0.220877,
+    "z": 0.40006,
+    "c": 5,
+    "display_name": "Player 29 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0075-QB-7_60",
+    "x": 0.366145,
+    "y": 0.002759,
+    "z": 0.055285,
+    "c": 5,
+    "display_name": "Player 60 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0076-QB-8_63",
+    "x": -0.086578,
+    "y": -0.165758,
+    "z": 0.104656,
+    "c": 5,
+    "display_name": "Player 63 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0077-QB-8_78",
+    "x": -0.355672,
+    "y": 0.050255,
+    "z": 0.118823,
+    "c": 5,
+    "display_name": "Player 78 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0078-QB-9_75",
+    "x": 0.025841,
+    "y": -0.202568,
+    "z": 0.040413,
+    "c": 5,
+    "display_name": "Player 75 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0079-QB-1_48",
+    "x": 0.191859,
+    "y": -0.063569,
+    "z": 0.01452,
+    "c": 5,
+    "display_name": "Player 48 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0080-QB-0_47",
+    "x": -0.093215,
+    "y": 0.242721,
+    "z": -0.018232,
+    "c": 5,
+    "display_name": "Player 47 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0081-QB-0_59",
+    "x": -0.244502,
+    "y": 0.018342,
+    "z": 0.262015,
+    "c": 5,
+    "display_name": "Player 59 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0082-QB-1_41",
+    "x": 0.240717,
+    "y": -0.089151,
+    "z": -0.116271,
+    "c": 5,
+    "display_name": "Player 41 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0083-QB-4_43",
+    "x": -0.258459,
+    "y": -0.331507,
+    "z": 0.148305,
+    "c": 5,
+    "display_name": "Player 43 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0084-QB-7_62",
+    "x": -0.41163,
+    "y": 0.122551,
+    "z": 0.346795,
+    "c": 5,
+    "display_name": "Player 62 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0085-QB-7_96",
+    "x": 0.234582,
+    "y": 0.258409,
+    "z": -0.192145,
+    "c": 5,
+    "display_name": "Player 96 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0086-QB-0_76",
+    "x": 0.079032,
+    "y": 0.150361,
+    "z": -0.09257,
+    "c": 5,
+    "display_name": "Player 76 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0087-QB-0_87",
+    "x": -0.184687,
+    "y": -0.359904,
+    "z": 0.045668,
+    "c": 5,
+    "display_name": "Player 87 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0088-QB-2_58",
+    "x": -0.103826,
+    "y": 0.06025,
+    "z": -0.455421,
+    "c": 5,
+    "display_name": "Player 58 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0089-QB-3_19",
+    "x": -0.235733,
+    "y": -0.054582,
+    "z": -0.16623,
+    "c": 5,
+    "display_name": "Player 19 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0090-QB-3_99",
+    "x": -0.017913,
+    "y": -0.048681,
+    "z": -0.015142,
+    "c": 5,
+    "display_name": "Player 99 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0091-QB-8_56",
+    "x": -0.136742,
+    "y": -0.092305,
+    "z": 0.020601,
+    "c": 5,
+    "display_name": "Player 56 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0092-QB-8_87",
+    "x": 0.3021,
+    "y": -0.170646,
+    "z": 0.05619,
+    "c": 5,
+    "display_name": "Player 87 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0093-QB-9_78",
+    "x": -0.306567,
+    "y": -0.268528,
+    "z": 0.060645,
+    "c": 5,
+    "display_name": "Player 78 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0094-QB-1_31",
+    "x": -0.257554,
+    "y": -0.086834,
+    "z": -0.092547,
+    "c": 5,
+    "display_name": "Player 31 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0095-QB-1_50",
+    "x": 0.355182,
+    "y": 0.029171,
+    "z": -0.269206,
+    "c": 5,
+    "display_name": "Player 50 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0096-QB-0_59",
+    "x": -0.186099,
+    "y": 0.259936,
+    "z": 0.166176,
+    "c": 5,
+    "display_name": "Player 59 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0097-QB-1_83",
+    "x": 0.09668,
+    "y": 0.016807,
+    "z": -0.353328,
+    "c": 5,
+    "display_name": "Player 83 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0098-QB-2_38",
+    "x": -0.363797,
+    "y": 0.326737,
+    "z": -0.14784,
+    "c": 5,
+    "display_name": "Player 38 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0099-QB-2_53",
+    "x": 0.178939,
+    "y": 0.314616,
+    "z": 0.223764,
+    "c": 5,
+    "display_name": "Player 53 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0100-QB-4_86",
+    "x": -0.119252,
+    "y": 0.374513,
+    "z": -0.066932,
+    "c": 5,
+    "display_name": "Player 86 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0101-QB-5_77",
+    "x": -0.153381,
+    "y": 0.257811,
+    "z": 0.061542,
+    "c": 5,
+    "display_name": "Player 77 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0102-QB-5_86",
+    "x": 0.146297,
+    "y": -0.098232,
+    "z": 0.01797,
+    "c": 5,
+    "display_name": "Player 86 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0103-QB-27_1",
+    "x": 0.492725,
+    "y": -0.226877,
+    "z": 0.014223,
+    "c": 5,
+    "display_name": "Player 1 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0104-QB-9_51",
+    "x": -0.177079,
+    "y": 0.14754,
+    "z": -0.395918,
+    "c": 5,
+    "display_name": "Player 51 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0105-QB-9_94",
+    "x": 0.110463,
+    "y": 0.388417,
+    "z": 0.125146,
+    "c": 5,
+    "display_name": "Player 94 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0106-QB-22_6",
+    "x": -0.445871,
+    "y": -0.186817,
+    "z": -0.076176,
+    "c": 5,
+    "display_name": "Player 6 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0107-QB-1_75",
+    "x": -0.113584,
+    "y": -0.072797,
+    "z": -0.02695,
+    "c": 5,
+    "display_name": "Player 75 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0108-QB-4_52",
+    "x": 0.117232,
+    "y": 0.149538,
+    "z": -0.10229,
+    "c": 5,
+    "display_name": "Player 52 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0109-QB-5_30",
+    "x": -0.073181,
+    "y": -0.113349,
+    "z": -0.027024,
+    "c": 5,
+    "display_name": "Player 30 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0110-QB-6_10",
+    "x": 0.449355,
+    "y": -0.073067,
+    "z": -0.248863,
+    "c": 5,
+    "display_name": "Player 10 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0111-QB-7_79",
+    "x": 0.015809,
+    "y": 0.109763,
+    "z": -0.353033,
+    "c": 5,
+    "display_name": "Player 79 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0112-QB-38_2",
+    "x": 0.057548,
+    "y": 0.012541,
+    "z": -0.240447,
+    "c": 5,
+    "display_name": "Player 2 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0113-QB-0_99",
+    "x": 0.182732,
+    "y": 0.001454,
+    "z": -0.054764,
+    "c": 5,
+    "display_name": "Player 99 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0114-QB-1_98",
+    "x": 0.053271,
+    "y": 0.279918,
+    "z": 0.416942,
+    "c": 5,
+    "display_name": "Player 98 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0115-QB-5_86",
+    "x": 0.311713,
+    "y": 0.405476,
+    "z": -0.304952,
+    "c": 5,
+    "display_name": "Player 86 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0116-QB-6_75",
+    "x": 0.142124,
+    "y": 0.186163,
+    "z": 0.173514,
+    "c": 5,
+    "display_name": "Player 75 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0117-QB-6_87",
+    "x": -0.013689,
+    "y": -0.089388,
+    "z": 0.232941,
+    "c": 5,
+    "display_name": "Player 87 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0118-QB-7_15",
+    "x": -0.210557,
+    "y": -0.105051,
+    "z": -0.255954,
+    "c": 5,
+    "display_name": "Player 15 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0119-QB-7_38",
+    "x": -0.398456,
+    "y": -0.196271,
+    "z": 0.026644,
+    "c": 5,
+    "display_name": "Player 38 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0120-QB-8_60",
+    "x": -0.386561,
+    "y": -0.142271,
+    "z": 0.288658,
+    "c": 5,
+    "display_name": "Player 60 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0121-QB-4_35",
+    "x": 0.125566,
+    "y": 0.260218,
+    "z": 0.067173,
+    "c": 5,
+    "display_name": "Player 35 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0122-QB-4_47",
+    "x": -0.191642,
+    "y": -0.115116,
+    "z": -0.065479,
+    "c": 5,
+    "display_name": "Player 47 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0123-QB-6_70",
+    "x": 0.070102,
+    "y": 0.227042,
+    "z": 0.0436,
+    "c": 5,
+    "display_name": "Player 70 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0124-QB-8_20",
+    "x": 0.042701,
+    "y": 0.153649,
+    "z": -0.049723,
+    "c": 5,
+    "display_name": "Player 20 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0125-QB-5_12",
+    "x": -0.298369,
+    "y": -0.193029,
+    "z": 0.091335,
+    "c": 5,
+    "display_name": "Player 12 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0126-QB-0_55",
+    "x": -0.2619,
+    "y": -0.217783,
+    "z": -0.131504,
+    "c": 5,
+    "display_name": "Player 55 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0127-QB-1_66",
+    "x": -0.394906,
+    "y": -0.137617,
+    "z": 0.048076,
+    "c": 5,
+    "display_name": "Player 66 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0128-QB-2_91",
+    "x": -0.234053,
+    "y": -0.309717,
+    "z": 0.128776,
+    "c": 5,
+    "display_name": "Player 91 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0129-QB-4_54",
+    "x": -0.573454,
+    "y": 0.251655,
+    "z": 0.239184,
+    "c": 5,
+    "display_name": "Player 54 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0130-QB-5_97",
+    "x": 0.55517,
+    "y": -0.290529,
+    "z": -0.130582,
+    "c": 5,
+    "display_name": "Player 97 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0131-QB-7_77",
+    "x": -0.032891,
+    "y": 0.012001,
+    "z": 0.183765,
+    "c": 5,
+    "display_name": "Player 77 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0132-QB-8_75",
+    "x": 0.43075,
+    "y": -0.103752,
+    "z": 0.242195,
+    "c": 5,
+    "display_name": "Player 75 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0133-QB-9_57",
+    "x": 0.547977,
+    "y": 0.219035,
+    "z": -0.009457,
+    "c": 5,
+    "display_name": "Player 57 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0134-QB-6_14",
+    "x": 0.335653,
+    "y": 0.218265,
+    "z": 0.289746,
+    "c": 5,
+    "display_name": "Player 14 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0135-QB-0_47",
+    "x": -0.459005,
+    "y": -0.217149,
+    "z": 0.02026,
+    "c": 5,
+    "display_name": "Player 47 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0136-QB-1_32",
+    "x": -0.067868,
+    "y": 0.2319,
+    "z": -0.239636,
+    "c": 5,
+    "display_name": "Player 32 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0137-QB-1_59",
+    "x": 0.218098,
+    "y": 0.104963,
+    "z": -0.052277,
+    "c": 5,
+    "display_name": "Player 59 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0138-QB-74_2",
+    "x": 0.175939,
+    "y": -0.077691,
+    "z": 0.187453,
+    "c": 5,
+    "display_name": "Player 2 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0139-QB-6_59",
+    "x": 0.24464,
+    "y": -0.036347,
+    "z": -0.266757,
+    "c": 5,
+    "display_name": "Player 59 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0140-QB-7_94",
+    "x": -0.106752,
+    "y": -0.014216,
+    "z": 0.204541,
+    "c": 5,
+    "display_name": "Player 94 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0141-QB-8_50",
+    "x": -0.392293,
+    "y": 0.123752,
+    "z": 0.057677,
+    "c": 5,
+    "display_name": "Player 50 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0142-QB-8_96",
+    "x": 0.282331,
+    "y": -0.012224,
+    "z": 0.020849,
+    "c": 5,
+    "display_name": "Player 96 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0143-QB-9_77",
+    "x": -0.389505,
+    "y": 0.297898,
+    "z": 0.222384,
+    "c": 5,
+    "display_name": "Player 77 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0144-QB-79_9",
+    "x": 0.512881,
+    "y": -0.011357,
+    "z": -0.205412,
+    "c": 5,
+    "display_name": "Player 9 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0145-QB-7_59",
+    "x": -0.326725,
+    "y": 0.099764,
+    "z": -0.047003,
+    "c": 5,
+    "display_name": "Player 59 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0146-QB-0_74",
+    "x": -0.087491,
+    "y": -0.311797,
+    "z": -0.223109,
+    "c": 5,
+    "display_name": "Player 74 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0147-QB-81_1",
+    "x": -0.234736,
+    "y": 0.127331,
+    "z": -0.028882,
+    "c": 5,
+    "display_name": "Player 1 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0148-QB-2_34",
+    "x": -0.117572,
+    "y": 0.078979,
+    "z": -0.159042,
+    "c": 5,
+    "display_name": "Player 34 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0149-QB-8_86",
+    "x": 0.181302,
+    "y": -0.13316,
+    "z": 0.162723,
+    "c": 5,
+    "display_name": "Player 86 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0150-QB-9_44",
+    "x": -0.624674,
+    "y": -0.168416,
+    "z": 0.331194,
+    "c": 5,
+    "display_name": "Player 44 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0151-QB-8_65",
+    "x": -0.222617,
+    "y": 0.076799,
+    "z": 0.062569,
+    "c": 5,
+    "display_name": "Player 65 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0152-QB-90_4",
+    "x": 0.020815,
+    "y": 0.032646,
+    "z": -0.179662,
+    "c": 5,
+    "display_name": "Player 4 QB",
+    "pos": "QB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0153-WR-0_16",
+    "x": -0.023985,
+    "y": -0.042022,
+    "z": 0.188571,
+    "c": 1,
+    "display_name": "Player 16 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0154-WR-0_64",
+    "x": 0.102813,
+    "y": -0.081761,
+    "z": -0.084361,
+    "c": 1,
+    "display_name": "Player 64 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0155-WR-0_92",
+    "x": 0.349398,
+    "y": 0.14076,
+    "z": -0.112178,
+    "c": 1,
+    "display_name": "Player 92 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0156-WR-3_68",
+    "x": 0.148594,
+    "y": 0.083016,
+    "z": -0.029297,
+    "c": 1,
+    "display_name": "Player 68 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0157-WR-5_89",
+    "x": 0.102782,
+    "y": -0.106414,
+    "z": 0.358883,
+    "c": 1,
+    "display_name": "Player 89 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0158-WR-7_83",
+    "x": -0.107362,
+    "y": 0.002699,
+    "z": -0.125103,
+    "c": 1,
+    "display_name": "Player 83 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0159-WR-10_5",
+    "x": 0.448933,
+    "y": -0.091924,
+    "z": -0.082899,
+    "c": 1,
+    "display_name": "Player 5 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0160-WR-4_58",
+    "x": 0.32177,
+    "y": 0.043192,
+    "z": -0.117574,
+    "c": 1,
+    "display_name": "Player 58 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0161-WR-5_21",
+    "x": 0.139376,
+    "y": -0.114435,
+    "z": 0.069922,
+    "c": 1,
+    "display_name": "Player 21 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0162-WR-6_43",
+    "x": -0.214444,
+    "y": 0.342472,
+    "z": 0.171301,
+    "c": 1,
+    "display_name": "Player 43 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0163-WR-7_93",
+    "x": 0.080282,
+    "y": 0.032596,
+    "z": -0.11759,
+    "c": 1,
+    "display_name": "Player 93 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0164-WR-1_24",
+    "x": 0.139189,
+    "y": 0.117506,
+    "z": 0.123022,
+    "c": 1,
+    "display_name": "Player 24 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0165-WR-1_50",
+    "x": 0.121775,
+    "y": 0.083977,
+    "z": 0.181571,
+    "c": 1,
+    "display_name": "Player 50 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0166-WR-0_65",
+    "x": 0.156041,
+    "y": 0.073724,
+    "z": -0.164081,
+    "c": 1,
+    "display_name": "Player 65 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0167-WR-0_82",
+    "x": 0.01617,
+    "y": 0.048178,
+    "z": 0.104976,
+    "c": 1,
+    "display_name": "Player 82 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0168-WR-1_23",
+    "x": 0.144191,
+    "y": -0.001625,
+    "z": -0.145275,
+    "c": 1,
+    "display_name": "Player 23 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0169-WR-2_76",
+    "x": 0.117424,
+    "y": 0.310703,
+    "z": -0.004509,
+    "c": 1,
+    "display_name": "Player 76 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0170-WR-3_19",
+    "x": 0.105357,
+    "y": -0.271069,
+    "z": 0.015449,
+    "c": 1,
+    "display_name": "Player 19 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0171-WR-4_59",
+    "x": -0.107934,
+    "y": -0.16072,
+    "z": -0.176641,
+    "c": 1,
+    "display_name": "Player 59 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0172-WR-27_2",
+    "x": -0.340807,
+    "y": 0.194976,
+    "z": -0.077877,
+    "c": 1,
+    "display_name": "Player 2 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0173-WR-7_51",
+    "x": 0.154222,
+    "y": -0.094939,
+    "z": -0.006218,
+    "c": 1,
+    "display_name": "Player 51 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0174-WR-8_28",
+    "x": -0.210975,
+    "y": 0.295599,
+    "z": 0.090606,
+    "c": 1,
+    "display_name": "Player 28 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0175-WR-8_40",
+    "x": -0.382436,
+    "y": -0.038846,
+    "z": 0.076334,
+    "c": 1,
+    "display_name": "Player 40 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0176-WR-9_33",
+    "x": -0.239519,
+    "y": 0.053798,
+    "z": 0.085783,
+    "c": 1,
+    "display_name": "Player 33 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0177-WR-0_33",
+    "x": -0.131225,
+    "y": -0.009881,
+    "z": 0.109163,
+    "c": 1,
+    "display_name": "Player 33 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0178-WR-0_78",
+    "x": -0.2659,
+    "y": -0.001108,
+    "z": 0.158506,
+    "c": 1,
+    "display_name": "Player 78 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0179-WR-2_85",
+    "x": -0.229606,
+    "y": -0.185893,
+    "z": -0.152128,
+    "c": 1,
+    "display_name": "Player 85 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0180-WR-34_6",
+    "x": 0.282524,
+    "y": -0.204296,
+    "z": -0.099939,
+    "c": 1,
+    "display_name": "Player 6 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0181-WR-4_90",
+    "x": 0.361551,
+    "y": -0.204206,
+    "z": -0.068068,
+    "c": 1,
+    "display_name": "Player 90 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0182-WR-5_11",
+    "x": 0.712964,
+    "y": 0.028224,
+    "z": -0.015525,
+    "c": 1,
+    "display_name": "Player 11 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0183-WR-5_28",
+    "x": 0.403475,
+    "y": 0.113293,
+    "z": -0.081427,
+    "c": 1,
+    "display_name": "Player 28 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0184-WR-6_22",
+    "x": -0.131784,
+    "y": 0.129911,
+    "z": 0.294772,
+    "c": 1,
+    "display_name": "Player 22 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0185-WR-8_25",
+    "x": 0.298644,
+    "y": -0.062358,
+    "z": -0.014577,
+    "c": 1,
+    "display_name": "Player 25 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0186-WR-9_10",
+    "x": -0.062828,
+    "y": -0.224688,
+    "z": -0.045179,
+    "c": 1,
+    "display_name": "Player 10 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0187-WR-0_98",
+    "x": 0.241969,
+    "y": -0.255746,
+    "z": 0.022569,
+    "c": 1,
+    "display_name": "Player 98 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0188-WR-1_99",
+    "x": -0.384831,
+    "y": -0.201579,
+    "z": -0.170045,
+    "c": 1,
+    "display_name": "Player 99 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0189-WR-2_27",
+    "x": 0.345082,
+    "y": 0.093351,
+    "z": 0.19953,
+    "c": 1,
+    "display_name": "Player 27 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0190-WR-4_71",
+    "x": -0.093478,
+    "y": -0.076206,
+    "z": 0.065516,
+    "c": 1,
+    "display_name": "Player 71 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0191-WR-5_18",
+    "x": -0.109911,
+    "y": -0.040187,
+    "z": 0.021518,
+    "c": 1,
+    "display_name": "Player 18 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0192-WR-6_17",
+    "x": -0.047513,
+    "y": -0.017264,
+    "z": -0.112349,
+    "c": 1,
+    "display_name": "Player 17 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0193-WR-7_87",
+    "x": -0.116943,
+    "y": -0.110322,
+    "z": 0.211658,
+    "c": 1,
+    "display_name": "Player 87 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0194-WR-8_39",
+    "x": 0.312361,
+    "y": -0.384084,
+    "z": -0.139196,
+    "c": 1,
+    "display_name": "Player 39 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0195-WR-9_51",
+    "x": 0.258939,
+    "y": 0.016609,
+    "z": -0.3976,
+    "c": 1,
+    "display_name": "Player 51 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0196-WR-0_83",
+    "x": -0.100187,
+    "y": -0.140297,
+    "z": -0.037291,
+    "c": 1,
+    "display_name": "Player 83 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0197-WR-2_88",
+    "x": -0.33863,
+    "y": -0.100254,
+    "z": -0.047203,
+    "c": 1,
+    "display_name": "Player 88 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0198-WR-3_11",
+    "x": 0.536122,
+    "y": 0.02839,
+    "z": 0.099141,
+    "c": 1,
+    "display_name": "Player 11 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0199-WR-3_61",
+    "x": 0.176021,
+    "y": -0.165897,
+    "z": 0.096147,
+    "c": 1,
+    "display_name": "Player 61 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0200-WR-4_75",
+    "x": 0.282143,
+    "y": -0.287462,
+    "z": 0.025151,
+    "c": 1,
+    "display_name": "Player 75 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0201-WR-5_15",
+    "x": -0.068679,
+    "y": 0.183048,
+    "z": -0.047156,
+    "c": 1,
+    "display_name": "Player 15 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0202-WR-5_28",
+    "x": 0.254487,
+    "y": -0.249432,
+    "z": 0.144944,
+    "c": 1,
+    "display_name": "Player 28 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0203-WR-55_6",
+    "x": -0.168842,
+    "y": 0.217291,
+    "z": -0.41194,
+    "c": 1,
+    "display_name": "Player 6 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0204-WR-6_90",
+    "x": 0.213336,
+    "y": 0.322434,
+    "z": -0.143011,
+    "c": 1,
+    "display_name": "Player 90 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0205-WR-7_38",
+    "x": -0.322204,
+    "y": -0.151324,
+    "z": -0.042107,
+    "c": 1,
+    "display_name": "Player 38 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0206-WR-7_68",
+    "x": -0.518345,
+    "y": 0.19925,
+    "z": -0.035449,
+    "c": 1,
+    "display_name": "Player 68 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0207-WR-9_60",
+    "x": 0.138384,
+    "y": 0.253764,
+    "z": -0.060013,
+    "c": 1,
+    "display_name": "Player 60 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0208-WR-1_82",
+    "x": -0.23711,
+    "y": -0.036231,
+    "z": -0.134535,
+    "c": 1,
+    "display_name": "Player 82 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0209-WR-2_52",
+    "x": -0.265848,
+    "y": 0.053935,
+    "z": 0.075494,
+    "c": 1,
+    "display_name": "Player 52 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0210-WR-3_10",
+    "x": -0.049135,
+    "y": -0.315118,
+    "z": -0.076191,
+    "c": 1,
+    "display_name": "Player 10 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0211-WR-4_89",
+    "x": -0.102724,
+    "y": 0.180748,
+    "z": 0.059661,
+    "c": 1,
+    "display_name": "Player 89 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0212-WR-5_15",
+    "x": -0.313442,
+    "y": -0.038319,
+    "z": 0.040595,
+    "c": 1,
+    "display_name": "Player 15 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0213-WR-5_58",
+    "x": -0.165958,
+    "y": 0.140061,
+    "z": -0.017483,
+    "c": 1,
+    "display_name": "Player 58 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0214-WR-7_62",
+    "x": 0.08521,
+    "y": -0.180493,
+    "z": -0.115436,
+    "c": 1,
+    "display_name": "Player 62 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0215-WR-9_74",
+    "x": 0.258332,
+    "y": -0.027229,
+    "z": -0.083615,
+    "c": 1,
+    "display_name": "Player 74 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0216-WR-1_84",
+    "x": -0.047588,
+    "y": -0.076465,
+    "z": -0.115358,
+    "c": 1,
+    "display_name": "Player 84 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0217-WR-72_9",
+    "x": 0.079503,
+    "y": 0.316784,
+    "z": 0.018149,
+    "c": 1,
+    "display_name": "Player 9 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0218-WR-3_44",
+    "x": 0.296613,
+    "y": -0.203813,
+    "z": 0.086956,
+    "c": 1,
+    "display_name": "Player 44 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0219-WR-4_97",
+    "x": 0.060252,
+    "y": 0.214466,
+    "z": -0.180725,
+    "c": 1,
+    "display_name": "Player 97 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0220-WR-5_45",
+    "x": -0.339699,
+    "y": 0.214362,
+    "z": -0.144604,
+    "c": 1,
+    "display_name": "Player 45 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0221-WR-76_5",
+    "x": 0.268364,
+    "y": 0.134744,
+    "z": -0.01004,
+    "c": 1,
+    "display_name": "Player 5 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0222-WR-7_15",
+    "x": -0.051073,
+    "y": 0.076022,
+    "z": 0.030942,
+    "c": 1,
+    "display_name": "Player 15 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0223-WR-7_84",
+    "x": -0.228861,
+    "y": 0.127592,
+    "z": 0.0787,
+    "c": 1,
+    "display_name": "Player 84 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0224-WR-9_48",
+    "x": -0.090247,
+    "y": -0.040084,
+    "z": 0.016062,
+    "c": 1,
+    "display_name": "Player 48 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0225-WR-9_60",
+    "x": 0.101757,
+    "y": -0.062534,
+    "z": 0.060953,
+    "c": 1,
+    "display_name": "Player 60 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0226-WR-7_28",
+    "x": -0.096159,
+    "y": 0.118153,
+    "z": -0.07127,
+    "c": 1,
+    "display_name": "Player 28 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0227-WR-80_7",
+    "x": -0.095774,
+    "y": 0.040745,
+    "z": -0.241971,
+    "c": 1,
+    "display_name": "Player 7 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0228-WR-1_24",
+    "x": -0.075067,
+    "y": 0.32408,
+    "z": 0.060966,
+    "c": 1,
+    "display_name": "Player 24 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0229-WR-2_28",
+    "x": -0.321189,
+    "y": -0.02711,
+    "z": 0.067788,
+    "c": 1,
+    "display_name": "Player 28 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0230-WR-4_90",
+    "x": -0.37237,
+    "y": 0.136906,
+    "z": -0.083004,
+    "c": 1,
+    "display_name": "Player 90 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0231-WR-8_19",
+    "x": 0.120999,
+    "y": 0.246916,
+    "z": -0.094493,
+    "c": 1,
+    "display_name": "Player 19 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0232-WR-9_31",
+    "x": -0.531477,
+    "y": -0.180244,
+    "z": 0.012935,
+    "c": 1,
+    "display_name": "Player 31 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0233-WR-9_41",
+    "x": -0.258616,
+    "y": 0.210422,
+    "z": -0.119612,
+    "c": 1,
+    "display_name": "Player 41 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0234-WR-8_86",
+    "x": -0.284548,
+    "y": 0.047188,
+    "z": -0.266467,
+    "c": 1,
+    "display_name": "Player 86 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0235-WR-8_95",
+    "x": -0.468503,
+    "y": -0.050926,
+    "z": 0.246792,
+    "c": 1,
+    "display_name": "Player 95 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0236-WR-0_66",
+    "x": -0.175113,
+    "y": 0.083202,
+    "z": -0.085531,
+    "c": 1,
+    "display_name": "Player 66 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0237-WR-4_21",
+    "x": -0.04553,
+    "y": 0.024993,
+    "z": -0.017596,
+    "c": 1,
+    "display_name": "Player 21 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0238-WR-1_68",
+    "x": 0.320185,
+    "y": -0.017209,
+    "z": -0.226418,
+    "c": 1,
+    "display_name": "Player 68 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0239-WR-00_1",
+    "x": -0.022022,
+    "y": -0.02652,
+    "z": 0.068301,
+    "c": 1,
+    "display_name": "Player 1 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0240-WR-1_48",
+    "x": 0.036858,
+    "y": -0.205768,
+    "z": -0.03836,
+    "c": 1,
+    "display_name": "Player 48 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0241-WR-3_20",
+    "x": -0.332204,
+    "y": 0.237796,
+    "z": 0.01161,
+    "c": 1,
+    "display_name": "Player 20 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0242-WR-3_56",
+    "x": 0.030678,
+    "y": -0.217383,
+    "z": -0.1716,
+    "c": 1,
+    "display_name": "Player 56 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0243-WR-6_26",
+    "x": -0.055836,
+    "y": -0.078254,
+    "z": -0.111251,
+    "c": 1,
+    "display_name": "Player 26 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0244-WR-7_77",
+    "x": 0.284778,
+    "y": 0.083258,
+    "z": 0.388874,
+    "c": 1,
+    "display_name": "Player 77 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0245-WR-8_19",
+    "x": -0.364259,
+    "y": -0.052769,
+    "z": -0.260406,
+    "c": 1,
+    "display_name": "Player 19 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0246-WR-9_89",
+    "x": -0.411687,
+    "y": -0.270313,
+    "z": -0.002311,
+    "c": 1,
+    "display_name": "Player 89 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0247-WR-0_99",
+    "x": 0.360016,
+    "y": -0.166415,
+    "z": 0.144198,
+    "c": 1,
+    "display_name": "Player 99 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0248-WR-1_30",
+    "x": -0.024294,
+    "y": 0.376597,
+    "z": 0.178527,
+    "c": 1,
+    "display_name": "Player 30 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0249-WR-1_37",
+    "x": -0.066797,
+    "y": -0.052305,
+    "z": -0.000821,
+    "c": 1,
+    "display_name": "Player 37 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0250-WR-4_76",
+    "x": 0.336274,
+    "y": 0.121348,
+    "z": -0.251571,
+    "c": 1,
+    "display_name": "Player 76 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0251-WR-5_19",
+    "x": 0.179019,
+    "y": -0.052614,
+    "z": -0.097121,
+    "c": 1,
+    "display_name": "Player 19 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0252-WR-5_43",
+    "x": 0.272814,
+    "y": 0.092499,
+    "z": 0.098181,
+    "c": 1,
+    "display_name": "Player 43 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0253-WR-6_21",
+    "x": -0.015465,
+    "y": 0.202239,
+    "z": 0.019128,
+    "c": 1,
+    "display_name": "Player 21 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0254-WR-6_34",
+    "x": -0.098746,
+    "y": 0.074213,
+    "z": 0.00665,
+    "c": 1,
+    "display_name": "Player 34 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0255-WR-6_94",
+    "x": 0.056573,
+    "y": 0.276154,
+    "z": 0.062289,
+    "c": 1,
+    "display_name": "Player 94 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0256-WR-7_67",
+    "x": 0.383191,
+    "y": -0.354952,
+    "z": 0.034499,
+    "c": 1,
+    "display_name": "Player 67 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0257-WR-7_71",
+    "x": -0.03542,
+    "y": -0.022213,
+    "z": 0.115953,
+    "c": 1,
+    "display_name": "Player 71 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0258-WR-9_17",
+    "x": -0.074123,
+    "y": 0.242988,
+    "z": 0.151334,
+    "c": 1,
+    "display_name": "Player 17 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0259-WR-9_23",
+    "x": -0.137316,
+    "y": 0.000274,
+    "z": 0.086983,
+    "c": 1,
+    "display_name": "Player 23 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0260-WR-5_84",
+    "x": 0.134563,
+    "y": 0.030424,
+    "z": 0.12905,
+    "c": 1,
+    "display_name": "Player 84 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0261-WR-8_32",
+    "x": 0.154685,
+    "y": -0.025118,
+    "z": -0.141112,
+    "c": 1,
+    "display_name": "Player 32 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0262-WR-8_85",
+    "x": -0.114151,
+    "y": 0.054826,
+    "z": -0.136956,
+    "c": 1,
+    "display_name": "Player 85 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0263-WR-2_70",
+    "x": 0.147041,
+    "y": 0.083884,
+    "z": -0.282217,
+    "c": 1,
+    "display_name": "Player 70 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0264-WR-0_51",
+    "x": -0.139989,
+    "y": -0.101104,
+    "z": 0.081246,
+    "c": 1,
+    "display_name": "Player 51 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0265-WR-3_34",
+    "x": -0.220271,
+    "y": -0.056304,
+    "z": 0.001015,
+    "c": 1,
+    "display_name": "Player 34 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0266-WR-4_68",
+    "x": 0.268167,
+    "y": -0.204437,
+    "z": 0.04516,
+    "c": 1,
+    "display_name": "Player 68 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0267-WR-6_72",
+    "x": 0.290459,
+    "y": -0.057104,
+    "z": 0.088466,
+    "c": 1,
+    "display_name": "Player 72 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0268-WR-7_84",
+    "x": -0.406433,
+    "y": -0.207853,
+    "z": 0.194967,
+    "c": 1,
+    "display_name": "Player 84 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0269-WR-7_97",
+    "x": 0.382412,
+    "y": -0.266983,
+    "z": 0.104465,
+    "c": 1,
+    "display_name": "Player 97 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0270-WR-8_24",
+    "x": 0.036203,
+    "y": -0.010096,
+    "z": -0.275428,
+    "c": 1,
+    "display_name": "Player 24 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0271-WR-2_49",
+    "x": 0.212889,
+    "y": 0.231951,
+    "z": -0.064235,
+    "c": 1,
+    "display_name": "Player 49 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0272-WR-3_61",
+    "x": 0.011576,
+    "y": -0.266768,
+    "z": 0.201747,
+    "c": 1,
+    "display_name": "Player 61 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0273-WR-3_92",
+    "x": 0.276091,
+    "y": -0.097631,
+    "z": 0.032844,
+    "c": 1,
+    "display_name": "Player 92 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0274-WR-4_22",
+    "x": -0.118278,
+    "y": -0.533286,
+    "z": -0.224599,
+    "c": 1,
+    "display_name": "Player 22 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0275-WR-6_80",
+    "x": -0.086079,
+    "y": -0.142796,
+    "z": -0.254331,
+    "c": 1,
+    "display_name": "Player 80 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0276-WR-9_26",
+    "x": 0.326444,
+    "y": 0.328369,
+    "z": -0.034134,
+    "c": 1,
+    "display_name": "Player 26 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0277-WR-9_60",
+    "x": 0.394058,
+    "y": -0.025409,
+    "z": 0.226323,
+    "c": 1,
+    "display_name": "Player 60 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0278-WR-4_22",
+    "x": -0.463485,
+    "y": 0.165804,
+    "z": -0.074188,
+    "c": 1,
+    "display_name": "Player 22 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0279-WR-0_88",
+    "x": -0.531137,
+    "y": -0.09577,
+    "z": -0.17657,
+    "c": 1,
+    "display_name": "Player 88 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0280-WR-1_71",
+    "x": 0.000603,
+    "y": -0.320921,
+    "z": -0.012267,
+    "c": 1,
+    "display_name": "Player 71 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0281-WR-1_92",
+    "x": 0.379621,
+    "y": 0.170017,
+    "z": -0.052692,
+    "c": 1,
+    "display_name": "Player 92 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0282-WR-2_66",
+    "x": -0.217749,
+    "y": -0.204409,
+    "z": 0.005412,
+    "c": 1,
+    "display_name": "Player 66 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0283-WR-2_73",
+    "x": 0.046666,
+    "y": 0.102756,
+    "z": 0.146488,
+    "c": 1,
+    "display_name": "Player 73 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0284-WR-3_17",
+    "x": 0.267811,
+    "y": -0.354705,
+    "z": -0.044926,
+    "c": 1,
+    "display_name": "Player 17 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0285-WR-53_6",
+    "x": -0.433561,
+    "y": -0.128512,
+    "z": -0.093333,
+    "c": 1,
+    "display_name": "Player 6 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0286-WR-4_95",
+    "x": 0.102176,
+    "y": -0.00572,
+    "z": 0.210916,
+    "c": 1,
+    "display_name": "Player 95 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0287-WR-5_30",
+    "x": -0.122504,
+    "y": 0.15482,
+    "z": 0.062767,
+    "c": 1,
+    "display_name": "Player 30 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0288-WR-5_39",
+    "x": 0.037502,
+    "y": 0.186912,
+    "z": 0.066359,
+    "c": 1,
+    "display_name": "Player 39 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0289-WR-6_17",
+    "x": -0.270891,
+    "y": 0.174467,
+    "z": -0.099744,
+    "c": 1,
+    "display_name": "Player 17 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0290-WR-7_90",
+    "x": -0.205635,
+    "y": -0.026035,
+    "z": 0.074972,
+    "c": 1,
+    "display_name": "Player 90 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0291-WR-8_58",
+    "x": 0.214765,
+    "y": 0.199652,
+    "z": 0.023865,
+    "c": 1,
+    "display_name": "Player 58 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0292-WR-9_44",
+    "x": -0.110099,
+    "y": 0.194978,
+    "z": 0.108973,
+    "c": 1,
+    "display_name": "Player 44 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0293-WR-59_5",
+    "x": 0.002265,
+    "y": 0.156385,
+    "z": 0.148423,
+    "c": 1,
+    "display_name": "Player 5 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0294-WR-5_29",
+    "x": 0.38143,
+    "y": 0.066788,
+    "z": -0.04413,
+    "c": 1,
+    "display_name": "Player 29 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0295-WR-5_99",
+    "x": 0.030194,
+    "y": -0.10385,
+    "z": 0.167871,
+    "c": 1,
+    "display_name": "Player 99 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0296-WR-0_51",
+    "x": 0.096411,
+    "y": 0.009499,
+    "z": 0.261635,
+    "c": 1,
+    "display_name": "Player 51 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0297-WR-63_9",
+    "x": -0.185951,
+    "y": 0.315174,
+    "z": 0.207153,
+    "c": 1,
+    "display_name": "Player 9 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0298-WR-5_15",
+    "x": -0.464129,
+    "y": 0.108006,
+    "z": -0.175786,
+    "c": 1,
+    "display_name": "Player 15 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0299-WR-65_9",
+    "x": 0.094688,
+    "y": 0.188456,
+    "z": 0.109448,
+    "c": 1,
+    "display_name": "Player 9 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0300-WR-6_96",
+    "x": -0.080532,
+    "y": -0.052574,
+    "z": 0.013204,
+    "c": 1,
+    "display_name": "Player 96 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0301-WR-8_89",
+    "x": 0.484919,
+    "y": -0.21361,
+    "z": 0.132614,
+    "c": 1,
+    "display_name": "Player 89 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0302-WR-70_5",
+    "x": 0.148071,
+    "y": -0.180635,
+    "z": -0.107146,
+    "c": 1,
+    "display_name": "Player 5 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0303-WR-1_84",
+    "x": 0.295702,
+    "y": 0.17939,
+    "z": 0.194535,
+    "c": 1,
+    "display_name": "Player 84 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0304-WR-72_4",
+    "x": 0.038591,
+    "y": 0.079018,
+    "z": 0.135759,
+    "c": 1,
+    "display_name": "Player 4 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0305-WR-73_1",
+    "x": -0.228462,
+    "y": 0.433482,
+    "z": 0.014917,
+    "c": 1,
+    "display_name": "Player 1 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0306-WR-3_59",
+    "x": 0.259377,
+    "y": 0.176981,
+    "z": 0.084562,
+    "c": 1,
+    "display_name": "Player 59 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0307-WR-3_72",
+    "x": -0.02555,
+    "y": -0.157291,
+    "z": 0.132435,
+    "c": 1,
+    "display_name": "Player 72 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0308-WR-5_49",
+    "x": -0.183765,
+    "y": -0.091838,
+    "z": 0.150707,
+    "c": 1,
+    "display_name": "Player 49 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0309-WR-6_88",
+    "x": 0.562556,
+    "y": 0.082553,
+    "z": -0.212652,
+    "c": 1,
+    "display_name": "Player 88 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0310-WR-7_46",
+    "x": -0.030733,
+    "y": 0.141919,
+    "z": 0.197278,
+    "c": 1,
+    "display_name": "Player 46 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0311-WR-7_68",
+    "x": 0.198121,
+    "y": -0.210623,
+    "z": -0.065035,
+    "c": 1,
+    "display_name": "Player 68 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0312-WR-9_88",
+    "x": -0.611548,
+    "y": -0.172636,
+    "z": 0.042294,
+    "c": 1,
+    "display_name": "Player 88 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0313-WR-1_74",
+    "x": 0.504766,
+    "y": -0.311376,
+    "z": -0.014037,
+    "c": 1,
+    "display_name": "Player 74 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0314-WR-2_16",
+    "x": 0.203013,
+    "y": 0.052758,
+    "z": -0.180626,
+    "c": 1,
+    "display_name": "Player 16 WR",
+    "pos": "WR",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0315-RB-0_29",
+    "x": -0.12858,
+    "y": 0.018406,
+    "z": 0.102218,
+    "c": 2,
+    "display_name": "Player 29 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0316-RB-01_4",
+    "x": 0.340934,
+    "y": -0.205745,
+    "z": 0.090833,
+    "c": 2,
+    "display_name": "Player 4 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0317-RB-1_90",
+    "x": 0.08898,
+    "y": 0.218641,
+    "z": 0.24359,
+    "c": 2,
+    "display_name": "Player 90 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0318-RB-2_56",
+    "x": -0.311776,
+    "y": -0.018051,
+    "z": -0.16498,
+    "c": 2,
+    "display_name": "Player 56 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0319-RB-03_8",
+    "x": 0.97,
+    "y": 0.490931,
+    "z": 0.050353,
+    "c": 2,
+    "display_name": "Player 8 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0320-RB-04_0",
+    "x": -0.238547,
+    "y": -0.054643,
+    "z": -0.10758,
+    "c": 2,
+    "display_name": "Player 0 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0321-RB-4_49",
+    "x": 0.114673,
+    "y": -0.00954,
+    "z": 0.399333,
+    "c": 2,
+    "display_name": "Player 49 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0322-RB-6_27",
+    "x": 0.361708,
+    "y": -0.174129,
+    "z": -0.062363,
+    "c": 2,
+    "display_name": "Player 27 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0323-RB-6_98",
+    "x": -0.427608,
+    "y": -0.296048,
+    "z": -0.08803,
+    "c": 2,
+    "display_name": "Player 98 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0324-RB-08_8",
+    "x": 0.411132,
+    "y": -0.330189,
+    "z": -0.314815,
+    "c": 2,
+    "display_name": "Player 8 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0325-RB-9_25",
+    "x": 0.520161,
+    "y": -0.231403,
+    "z": 0.036141,
+    "c": 2,
+    "display_name": "Player 25 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0326-RB-0_55",
+    "x": -0.467181,
+    "y": -0.105093,
+    "z": 0.027991,
+    "c": 2,
+    "display_name": "Player 55 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0327-RB-0_69",
+    "x": -0.158539,
+    "y": 0.023932,
+    "z": 0.245125,
+    "c": 2,
+    "display_name": "Player 69 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0328-RB-0_73",
+    "x": -0.225293,
+    "y": 0.129355,
+    "z": -0.18276,
+    "c": 2,
+    "display_name": "Player 73 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0329-RB-1_91",
+    "x": 0.051317,
+    "y": 0.156362,
+    "z": 0.23059,
+    "c": 2,
+    "display_name": "Player 91 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0330-RB-2_31",
+    "x": -0.403693,
+    "y": -0.209416,
+    "z": 0.075249,
+    "c": 2,
+    "display_name": "Player 31 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0331-RB-2_75",
+    "x": 0.13353,
+    "y": -0.10474,
+    "z": -0.018821,
+    "c": 2,
+    "display_name": "Player 75 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0332-RB-3_23",
+    "x": -0.604927,
+    "y": -0.087731,
+    "z": -0.184715,
+    "c": 2,
+    "display_name": "Player 23 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0333-RB-3_62",
+    "x": -0.015637,
+    "y": 0.006314,
+    "z": 0.118471,
+    "c": 2,
+    "display_name": "Player 62 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0334-RB-4_25",
+    "x": 0.043927,
+    "y": -0.083675,
+    "z": 0.081832,
+    "c": 2,
+    "display_name": "Player 25 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0335-RB-5_31",
+    "x": 0.062099,
+    "y": -0.174184,
+    "z": -0.089608,
+    "c": 2,
+    "display_name": "Player 31 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0336-RB-9_62",
+    "x": 0.219517,
+    "y": 0.121267,
+    "z": 0.169649,
+    "c": 2,
+    "display_name": "Player 62 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0337-RB-1_36",
+    "x": 0.144819,
+    "y": 0.136348,
+    "z": 0.085771,
+    "c": 2,
+    "display_name": "Player 36 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0338-RB-3_33",
+    "x": 0.446746,
+    "y": -0.219441,
+    "z": 0.077327,
+    "c": 2,
+    "display_name": "Player 33 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0339-RB-6_56",
+    "x": 0.07365,
+    "y": -0.01257,
+    "z": 0.146055,
+    "c": 2,
+    "display_name": "Player 56 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0340-RB-7_38",
+    "x": 0.193662,
+    "y": 0.21364,
+    "z": -0.005721,
+    "c": 2,
+    "display_name": "Player 38 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0341-RB-2_79",
+    "x": -0.15626,
+    "y": 0.086469,
+    "z": 0.130813,
+    "c": 2,
+    "display_name": "Player 79 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0342-RB-2_50",
+    "x": -0.071659,
+    "y": 0.214671,
+    "z": -0.115437,
+    "c": 2,
+    "display_name": "Player 50 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0343-RB-3_45",
+    "x": 0.084843,
+    "y": 0.339288,
+    "z": -0.180093,
+    "c": 2,
+    "display_name": "Player 45 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0344-RB-8_75",
+    "x": -0.103795,
+    "y": 0.004357,
+    "z": 0.032134,
+    "c": 2,
+    "display_name": "Player 75 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0345-RB-3_20",
+    "x": 0.162352,
+    "y": 0.138769,
+    "z": 0.003498,
+    "c": 2,
+    "display_name": "Player 20 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0346-RB-3_45",
+    "x": -0.018384,
+    "y": 0.31629,
+    "z": -0.127516,
+    "c": 2,
+    "display_name": "Player 45 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0347-RB-3_79",
+    "x": -0.071657,
+    "y": -0.016118,
+    "z": -0.066736,
+    "c": 2,
+    "display_name": "Player 79 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0348-RB-2_71",
+    "x": 0.277667,
+    "y": -0.182265,
+    "z": -0.016999,
+    "c": 2,
+    "display_name": "Player 71 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0349-RB-2_78",
+    "x": 0.083631,
+    "y": 0.07535,
+    "z": -0.084254,
+    "c": 2,
+    "display_name": "Player 78 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0350-RB-6_87",
+    "x": -0.368759,
+    "y": -0.027739,
+    "z": -0.178073,
+    "c": 2,
+    "display_name": "Player 87 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0351-RB-47_8",
+    "x": 0.154101,
+    "y": -0.135456,
+    "z": -0.003047,
+    "c": 2,
+    "display_name": "Player 8 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0352-RB-14_6",
+    "x": 0.161175,
+    "y": -0.143853,
+    "z": 0.010372,
+    "c": 2,
+    "display_name": "Player 6 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0353-RB-0_77",
+    "x": -0.419541,
+    "y": 0.056201,
+    "z": -0.216964,
+    "c": 2,
+    "display_name": "Player 77 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0354-RB-1_23",
+    "x": 0.403537,
+    "y": -0.013806,
+    "z": 0.130696,
+    "c": 2,
+    "display_name": "Player 23 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0355-RB-4_17",
+    "x": -0.377683,
+    "y": 0.130941,
+    "z": 0.205075,
+    "c": 2,
+    "display_name": "Player 17 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0356-RB-6_20",
+    "x": -0.291202,
+    "y": 0.226214,
+    "z": -0.216543,
+    "c": 2,
+    "display_name": "Player 20 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0357-RB-5_14",
+    "x": 0.315949,
+    "y": -0.235003,
+    "z": 0.111929,
+    "c": 2,
+    "display_name": "Player 14 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0358-RB-5_18",
+    "x": -0.061374,
+    "y": -0.042676,
+    "z": 0.008863,
+    "c": 2,
+    "display_name": "Player 18 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0359-RB-5_36",
+    "x": 0.352327,
+    "y": 0.072734,
+    "z": 0.269924,
+    "c": 2,
+    "display_name": "Player 36 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0360-RB-60_2",
+    "x": -0.197455,
+    "y": 0.309229,
+    "z": -0.053698,
+    "c": 2,
+    "display_name": "Player 2 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0361-RB-0_23",
+    "x": 0.166543,
+    "y": -0.016007,
+    "z": -0.028701,
+    "c": 2,
+    "display_name": "Player 23 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0362-RB-0_32",
+    "x": 0.24633,
+    "y": 0.303563,
+    "z": -0.088266,
+    "c": 2,
+    "display_name": "Player 32 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0363-RB-3_40",
+    "x": -0.420062,
+    "y": -0.137531,
+    "z": -0.336089,
+    "c": 2,
+    "display_name": "Player 40 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0364-RB-4_58",
+    "x": -0.166581,
+    "y": -0.070599,
+    "z": 0.260806,
+    "c": 2,
+    "display_name": "Player 58 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0365-RB-6_50",
+    "x": 0.098283,
+    "y": 0.035983,
+    "z": -0.004722,
+    "c": 2,
+    "display_name": "Player 50 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0366-RB-8_16",
+    "x": -0.138576,
+    "y": 0.46455,
+    "z": 0.36942,
+    "c": 2,
+    "display_name": "Player 16 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0367-RB-8_52",
+    "x": -0.158652,
+    "y": -0.223935,
+    "z": 0.090092,
+    "c": 2,
+    "display_name": "Player 52 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0368-RB-6_64",
+    "x": -0.049972,
+    "y": 0.184858,
+    "z": 0.079312,
+    "c": 2,
+    "display_name": "Player 64 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0369-RB-0_15",
+    "x": -0.183386,
+    "y": -0.216147,
+    "z": 0.010684,
+    "c": 2,
+    "display_name": "Player 15 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0370-RB-0_30",
+    "x": -0.239456,
+    "y": 0.315605,
+    "z": 0.014293,
+    "c": 2,
+    "display_name": "Player 30 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0371-RB-2_47",
+    "x": -0.35769,
+    "y": -0.128678,
+    "z": 0.088903,
+    "c": 2,
+    "display_name": "Player 47 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0372-RB-4_76",
+    "x": -0.179337,
+    "y": 0.119915,
+    "z": -0.084218,
+    "c": 2,
+    "display_name": "Player 76 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0373-RB-75_5",
+    "x": 0.051935,
+    "y": 0.138804,
+    "z": -0.051892,
+    "c": 2,
+    "display_name": "Player 5 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0374-RB-6_42",
+    "x": -0.278396,
+    "y": 0.197112,
+    "z": -0.216061,
+    "c": 2,
+    "display_name": "Player 42 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0375-RB-6_60",
+    "x": -0.695291,
+    "y": 0.092864,
+    "z": -0.234555,
+    "c": 2,
+    "display_name": "Player 60 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0376-RB-8_10",
+    "x": -0.049857,
+    "y": 0.005927,
+    "z": 0.038824,
+    "c": 2,
+    "display_name": "Player 10 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0377-RB-8_32",
+    "x": 0.013495,
+    "y": 0.122885,
+    "z": -0.024685,
+    "c": 2,
+    "display_name": "Player 32 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0378-RB-7_50",
+    "x": -0.156059,
+    "y": -0.188698,
+    "z": -0.053829,
+    "c": 2,
+    "display_name": "Player 50 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0379-RB-7_85",
+    "x": 0.144043,
+    "y": -0.169105,
+    "z": 0.125529,
+    "c": 2,
+    "display_name": "Player 85 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0380-RB-0_11",
+    "x": -0.118717,
+    "y": -0.444146,
+    "z": 0.153606,
+    "c": 2,
+    "display_name": "Player 11 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0381-RB-1_20",
+    "x": -0.096963,
+    "y": -0.004633,
+    "z": -0.196769,
+    "c": 2,
+    "display_name": "Player 20 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0382-RB-3_32",
+    "x": -0.082847,
+    "y": -0.06565,
+    "z": 0.154879,
+    "c": 2,
+    "display_name": "Player 32 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0383-RB-5_40",
+    "x": -0.198391,
+    "y": -0.014473,
+    "z": -0.216323,
+    "c": 2,
+    "display_name": "Player 40 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0384-RB-6_76",
+    "x": -0.177128,
+    "y": 0.003396,
+    "z": 0.082405,
+    "c": 2,
+    "display_name": "Player 76 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0385-RB-6_82",
+    "x": -0.429164,
+    "y": 0.049227,
+    "z": 0.129481,
+    "c": 2,
+    "display_name": "Player 82 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0386-RB-8_62",
+    "x": 0.129173,
+    "y": 0.088853,
+    "z": 0.24476,
+    "c": 2,
+    "display_name": "Player 62 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0387-RB-8_98",
+    "x": 0.046285,
+    "y": -0.303465,
+    "z": -0.002174,
+    "c": 2,
+    "display_name": "Player 98 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0388-RB-2_21",
+    "x": 0.152844,
+    "y": -0.102107,
+    "z": 0.005856,
+    "c": 2,
+    "display_name": "Player 21 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0389-RB-3_30",
+    "x": -0.133131,
+    "y": 0.196181,
+    "z": -0.073133,
+    "c": 2,
+    "display_name": "Player 30 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0390-RB-3_38",
+    "x": -0.181707,
+    "y": -0.207057,
+    "z": 0.234046,
+    "c": 2,
+    "display_name": "Player 38 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0391-RB-3_85",
+    "x": -0.14898,
+    "y": 0.012411,
+    "z": 0.175712,
+    "c": 2,
+    "display_name": "Player 85 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0392-RB-4_21",
+    "x": 0.021076,
+    "y": 0.502591,
+    "z": 0.103532,
+    "c": 2,
+    "display_name": "Player 21 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0393-RB-5_47",
+    "x": 0.527644,
+    "y": 0.118824,
+    "z": -0.005326,
+    "c": 2,
+    "display_name": "Player 47 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0394-RB-7_60",
+    "x": 0.160439,
+    "y": -0.298075,
+    "z": 0.067108,
+    "c": 2,
+    "display_name": "Player 60 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0395-RB-9_52",
+    "x": 0.366715,
+    "y": -0.251904,
+    "z": 0.009594,
+    "c": 2,
+    "display_name": "Player 52 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0396-RB-9_84",
+    "x": -0.148167,
+    "y": -0.060717,
+    "z": -0.012195,
+    "c": 2,
+    "display_name": "Player 84 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0397-RB-1_67",
+    "x": 0.24433,
+    "y": 0.044578,
+    "z": 0.184215,
+    "c": 2,
+    "display_name": "Player 67 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0398-RB-1_90",
+    "x": 0.107528,
+    "y": 0.229978,
+    "z": -0.033227,
+    "c": 2,
+    "display_name": "Player 90 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0399-RB-3_45",
+    "x": -0.105475,
+    "y": 0.264982,
+    "z": -0.395068,
+    "c": 2,
+    "display_name": "Player 45 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0400-RB-5_78",
+    "x": 0.210466,
+    "y": 0.203399,
+    "z": -0.092596,
+    "c": 2,
+    "display_name": "Player 78 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0401-RB-05_9",
+    "x": -0.294837,
+    "y": 0.027494,
+    "z": -0.293306,
+    "c": 2,
+    "display_name": "Player 9 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0402-RB-6_10",
+    "x": -0.522205,
+    "y": 0.22135,
+    "z": 0.138531,
+    "c": 2,
+    "display_name": "Player 10 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0403-RB-8_63",
+    "x": -0.00012,
+    "y": 0.098784,
+    "z": -0.17734,
+    "c": 2,
+    "display_name": "Player 63 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0404-RB-8_74",
+    "x": -0.197605,
+    "y": 0.184622,
+    "z": -0.134955,
+    "c": 2,
+    "display_name": "Player 74 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0405-RB-9_44",
+    "x": 0.151571,
+    "y": -0.049852,
+    "z": -0.077141,
+    "c": 2,
+    "display_name": "Player 44 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0406-RB-0_49",
+    "x": -0.17545,
+    "y": -0.052637,
+    "z": 0.01859,
+    "c": 2,
+    "display_name": "Player 49 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0407-RB-0_98",
+    "x": -0.125649,
+    "y": 0.379804,
+    "z": -0.061501,
+    "c": 2,
+    "display_name": "Player 98 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0408-RB-0_18",
+    "x": 0.142701,
+    "y": -0.106702,
+    "z": -0.246855,
+    "c": 2,
+    "display_name": "Player 18 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0409-RB-1_30",
+    "x": 0.187872,
+    "y": -0.202179,
+    "z": -0.187645,
+    "c": 2,
+    "display_name": "Player 30 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0410-RB-2_27",
+    "x": -0.18024,
+    "y": 0.0822,
+    "z": 0.026232,
+    "c": 2,
+    "display_name": "Player 27 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0411-RB-2_39",
+    "x": 0.151711,
+    "y": -0.128084,
+    "z": 0.042427,
+    "c": 2,
+    "display_name": "Player 39 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0412-RB-13_7",
+    "x": -0.259388,
+    "y": 0.167165,
+    "z": 0.032583,
+    "c": 2,
+    "display_name": "Player 7 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0413-RB-4_35",
+    "x": -0.092439,
+    "y": -0.131016,
+    "z": 0.223321,
+    "c": 2,
+    "display_name": "Player 35 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0414-RB-4_57",
+    "x": 0.078617,
+    "y": -0.109991,
+    "z": -0.057375,
+    "c": 2,
+    "display_name": "Player 57 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0415-RB-7_52",
+    "x": -0.272473,
+    "y": 0.184644,
+    "z": -0.16011,
+    "c": 2,
+    "display_name": "Player 52 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0416-RB-8_38",
+    "x": 0.036477,
+    "y": 0.093662,
+    "z": -0.08098,
+    "c": 2,
+    "display_name": "Player 38 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0417-RB-21_1",
+    "x": -0.322855,
+    "y": 0.0604,
+    "z": 0.092385,
+    "c": 2,
+    "display_name": "Player 1 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0418-RB-0_66",
+    "x": -0.340566,
+    "y": 0.053998,
+    "z": 0.146611,
+    "c": 2,
+    "display_name": "Player 66 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0419-RB-1_99",
+    "x": -0.196445,
+    "y": -0.047386,
+    "z": 0.245886,
+    "c": 2,
+    "display_name": "Player 99 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0420-RB-3_42",
+    "x": -0.074152,
+    "y": -0.261125,
+    "z": 0.023675,
+    "c": 2,
+    "display_name": "Player 42 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0421-RB-24_0",
+    "x": 0.046342,
+    "y": -0.169911,
+    "z": 0.315577,
+    "c": 2,
+    "display_name": "Player 0 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0422-RB-4_49",
+    "x": -0.3476,
+    "y": 0.20356,
+    "z": -0.01752,
+    "c": 2,
+    "display_name": "Player 49 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0423-RB-6_69",
+    "x": -0.03063,
+    "y": -0.14304,
+    "z": -0.046412,
+    "c": 2,
+    "display_name": "Player 69 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0424-RB-6_72",
+    "x": 0.131905,
+    "y": 0.165622,
+    "z": -0.009103,
+    "c": 2,
+    "display_name": "Player 72 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0425-RB-6_74",
+    "x": -0.044,
+    "y": 0.088241,
+    "z": -0.100763,
+    "c": 2,
+    "display_name": "Player 74 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0426-RB-7_67",
+    "x": 0.043524,
+    "y": 0.103062,
+    "z": -0.24223,
+    "c": 2,
+    "display_name": "Player 67 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0427-RB-9_41",
+    "x": -0.137272,
+    "y": 0.013758,
+    "z": 0.039184,
+    "c": 2,
+    "display_name": "Player 41 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0428-RB-2_40",
+    "x": -0.080761,
+    "y": 0.3326,
+    "z": 0.125195,
+    "c": 2,
+    "display_name": "Player 40 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0429-RB-2_46",
+    "x": -0.071431,
+    "y": -0.039043,
+    "z": -0.09481,
+    "c": 2,
+    "display_name": "Player 46 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0430-RB-30_4",
+    "x": 0.154865,
+    "y": -0.13235,
+    "z": -0.036389,
+    "c": 2,
+    "display_name": "Player 4 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0431-RB-0_64",
+    "x": -0.118901,
+    "y": 0.200361,
+    "z": -0.092048,
+    "c": 2,
+    "display_name": "Player 64 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0432-RB-1_21",
+    "x": -0.271442,
+    "y": 0.178757,
+    "z": -0.129461,
+    "c": 2,
+    "display_name": "Player 21 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0433-RB-2_30",
+    "x": 0.131439,
+    "y": -0.25825,
+    "z": 0.082837,
+    "c": 2,
+    "display_name": "Player 30 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0434-RB-2_59",
+    "x": 0.272681,
+    "y": 0.094063,
+    "z": -0.056575,
+    "c": 2,
+    "display_name": "Player 59 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0435-RB-32_6",
+    "x": -0.342676,
+    "y": -0.059192,
+    "z": -0.030553,
+    "c": 2,
+    "display_name": "Player 6 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0436-RB-3_31",
+    "x": -0.339367,
+    "y": -0.122998,
+    "z": -0.056107,
+    "c": 2,
+    "display_name": "Player 31 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0437-RB-3_62",
+    "x": 0.128278,
+    "y": 0.35745,
+    "z": 0.011943,
+    "c": 2,
+    "display_name": "Player 62 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0438-RB-5_40",
+    "x": -0.184748,
+    "y": -0.214414,
+    "z": 0.200167,
+    "c": 2,
+    "display_name": "Player 40 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0439-RB-6_66",
+    "x": 0.029027,
+    "y": 0.05097,
+    "z": -0.025901,
+    "c": 2,
+    "display_name": "Player 66 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0440-RB-38_5",
+    "x": -0.181558,
+    "y": -0.207862,
+    "z": 0.221917,
+    "c": 2,
+    "display_name": "Player 5 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0441-RB-9_27",
+    "x": 0.482807,
+    "y": 0.16673,
+    "z": -0.048566,
+    "c": 2,
+    "display_name": "Player 27 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0442-RB-9_68",
+    "x": -0.06062,
+    "y": 0.072267,
+    "z": 0.137467,
+    "c": 2,
+    "display_name": "Player 68 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0443-RB-9_79",
+    "x": 0.092002,
+    "y": -0.040456,
+    "z": 0.087806,
+    "c": 2,
+    "display_name": "Player 79 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0444-RB-3_55",
+    "x": -0.148172,
+    "y": -0.080996,
+    "z": 0.060284,
+    "c": 2,
+    "display_name": "Player 55 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0445-RB-3_69",
+    "x": -0.186064,
+    "y": -0.32123,
+    "z": -0.025101,
+    "c": 2,
+    "display_name": "Player 69 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0446-RB-2_62",
+    "x": 0.02292,
+    "y": 0.056069,
+    "z": 0.051982,
+    "c": 2,
+    "display_name": "Player 62 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0447-RB-43_3",
+    "x": -0.539361,
+    "y": -0.030975,
+    "z": -0.304063,
+    "c": 2,
+    "display_name": "Player 3 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0448-RB-4_82",
+    "x": -0.075294,
+    "y": 0.258686,
+    "z": 0.179803,
+    "c": 2,
+    "display_name": "Player 82 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0449-RB-5_45",
+    "x": -0.182637,
+    "y": 0.18114,
+    "z": 0.118331,
+    "c": 2,
+    "display_name": "Player 45 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0450-RB-7_15",
+    "x": -0.262673,
+    "y": 0.098449,
+    "z": 0.108324,
+    "c": 2,
+    "display_name": "Player 15 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0451-RB-8_49",
+    "x": -0.121256,
+    "y": -0.059547,
+    "z": 0.166944,
+    "c": 2,
+    "display_name": "Player 49 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0452-RB-8_65",
+    "x": 0.147904,
+    "y": -0.139899,
+    "z": 0.215165,
+    "c": 2,
+    "display_name": "Player 65 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0453-RB-9_26",
+    "x": 0.306546,
+    "y": 0.133774,
+    "z": -0.224694,
+    "c": 2,
+    "display_name": "Player 26 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0454-RB-4_43",
+    "x": -0.114179,
+    "y": 0.168653,
+    "z": 0.145484,
+    "c": 2,
+    "display_name": "Player 43 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0455-RB-0_35",
+    "x": 0.116318,
+    "y": -0.376904,
+    "z": 0.19483,
+    "c": 2,
+    "display_name": "Player 35 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0456-RB-4_97",
+    "x": -0.176259,
+    "y": -0.066398,
+    "z": -0.008956,
+    "c": 2,
+    "display_name": "Player 97 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0457-RB-6_13",
+    "x": 0.087367,
+    "y": 0.174543,
+    "z": -0.111577,
+    "c": 2,
+    "display_name": "Player 13 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0458-RB-8_61",
+    "x": -0.074585,
+    "y": -0.477061,
+    "z": 0.21583,
+    "c": 2,
+    "display_name": "Player 61 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0459-RB-25_5",
+    "x": -0.080689,
+    "y": -0.041664,
+    "z": -0.116892,
+    "c": 2,
+    "display_name": "Player 5 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0460-RB-61_0",
+    "x": -0.255667,
+    "y": 0.036865,
+    "z": 0.046481,
+    "c": 2,
+    "display_name": "Player 0 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0461-RB-1_87",
+    "x": 0.194026,
+    "y": 0.051435,
+    "z": 0.050586,
+    "c": 2,
+    "display_name": "Player 87 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0462-RB-2_19",
+    "x": 0.324661,
+    "y": 0.06121,
+    "z": 0.093495,
+    "c": 2,
+    "display_name": "Player 19 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0463-RB-3_58",
+    "x": 0.074793,
+    "y": -0.281822,
+    "z": 0.069695,
+    "c": 2,
+    "display_name": "Player 58 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0464-RB-4_84",
+    "x": 8e-05,
+    "y": -0.173282,
+    "z": 0.116819,
+    "c": 2,
+    "display_name": "Player 84 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0465-RB-6_92",
+    "x": 0.305135,
+    "y": -0.168659,
+    "z": 0.003189,
+    "c": 2,
+    "display_name": "Player 92 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0466-RB-7_37",
+    "x": 0.138371,
+    "y": 0.179223,
+    "z": -0.231658,
+    "c": 2,
+    "display_name": "Player 37 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0467-RB-6_13",
+    "x": -0.039795,
+    "y": 0.117179,
+    "z": 0.056228,
+    "c": 2,
+    "display_name": "Player 13 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0468-RB-0_36",
+    "x": 0.012147,
+    "y": 0.28367,
+    "z": -0.32893,
+    "c": 2,
+    "display_name": "Player 36 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0469-RB-2_39",
+    "x": 0.447035,
+    "y": 0.184199,
+    "z": 0.047532,
+    "c": 2,
+    "display_name": "Player 39 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0470-RB-2_73",
+    "x": -0.063997,
+    "y": -0.073126,
+    "z": -0.26935,
+    "c": 2,
+    "display_name": "Player 73 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0471-RB-4_95",
+    "x": -0.093527,
+    "y": 0.139818,
+    "z": -0.285289,
+    "c": 2,
+    "display_name": "Player 95 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0472-RB-5_58",
+    "x": -0.49271,
+    "y": 0.257477,
+    "z": -0.042429,
+    "c": 2,
+    "display_name": "Player 58 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0473-RB-6_97",
+    "x": 0.480949,
+    "y": -0.393478,
+    "z": 0.195401,
+    "c": 2,
+    "display_name": "Player 97 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0474-RB-8_15",
+    "x": -0.107109,
+    "y": 0.293248,
+    "z": -0.130733,
+    "c": 2,
+    "display_name": "Player 15 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0475-RB-7_13",
+    "x": 0.130545,
+    "y": -0.078912,
+    "z": 0.155439,
+    "c": 2,
+    "display_name": "Player 13 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0476-RB-0_59",
+    "x": -0.011362,
+    "y": -0.249066,
+    "z": 0.145761,
+    "c": 2,
+    "display_name": "Player 59 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0477-RB-5_23",
+    "x": 0.333528,
+    "y": 0.01589,
+    "z": -0.069567,
+    "c": 2,
+    "display_name": "Player 23 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0478-RB-5_27",
+    "x": -0.360967,
+    "y": -0.042487,
+    "z": 0.139036,
+    "c": 2,
+    "display_name": "Player 27 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0479-RB-86_2",
+    "x": -0.045226,
+    "y": -0.368136,
+    "z": 0.175096,
+    "c": 2,
+    "display_name": "Player 2 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0480-RB-8_19",
+    "x": -0.386068,
+    "y": 0.0953,
+    "z": 0.038169,
+    "c": 2,
+    "display_name": "Player 19 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0481-RB-8_31",
+    "x": 0.304729,
+    "y": 0.208366,
+    "z": 0.258357,
+    "c": 2,
+    "display_name": "Player 31 RB",
+    "pos": "RB",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0482-TE-0_25",
+    "x": -0.225082,
+    "y": -0.160715,
+    "z": 0.161992,
+    "c": 3,
+    "display_name": "Player 25 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0483-TE-2_48",
+    "x": 0.006301,
+    "y": 0.090953,
+    "z": -0.051548,
+    "c": 3,
+    "display_name": "Player 48 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0484-TE-3_39",
+    "x": -0.06599,
+    "y": -0.094608,
+    "z": 0.027117,
+    "c": 3,
+    "display_name": "Player 39 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0485-TE-5_31",
+    "x": 0.007632,
+    "y": -0.062241,
+    "z": 0.034392,
+    "c": 3,
+    "display_name": "Player 31 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0486-TE-6_60",
+    "x": 0.122954,
+    "y": 0.24102,
+    "z": 0.041582,
+    "c": 3,
+    "display_name": "Player 60 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0487-TE-8_10",
+    "x": -0.409721,
+    "y": -0.080093,
+    "z": 0.056737,
+    "c": 3,
+    "display_name": "Player 10 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0488-TE-9_35",
+    "x": 0.326862,
+    "y": 0.115081,
+    "z": -0.038481,
+    "c": 3,
+    "display_name": "Player 35 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0489-TE-1_54",
+    "x": -0.117303,
+    "y": -0.070578,
+    "z": -0.231173,
+    "c": 3,
+    "display_name": "Player 54 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0490-TE-2_53",
+    "x": 0.024904,
+    "y": 0.011125,
+    "z": 0.109408,
+    "c": 3,
+    "display_name": "Player 53 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0491-TE-3_73",
+    "x": 0.045927,
+    "y": -0.084125,
+    "z": -0.22791,
+    "c": 3,
+    "display_name": "Player 73 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0492-TE-14_8",
+    "x": 0.038754,
+    "y": -0.108559,
+    "z": 0.140349,
+    "c": 3,
+    "display_name": "Player 8 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0493-TE-5_27",
+    "x": 0.661154,
+    "y": -0.328016,
+    "z": 0.016906,
+    "c": 3,
+    "display_name": "Player 27 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0494-TE-6_21",
+    "x": 0.013592,
+    "y": -0.073955,
+    "z": 0.0094,
+    "c": 3,
+    "display_name": "Player 21 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0495-TE-7_16",
+    "x": -0.152302,
+    "y": 0.380492,
+    "z": 0.196973,
+    "c": 3,
+    "display_name": "Player 16 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0496-TE-7_73",
+    "x": -0.328074,
+    "y": -0.1191,
+    "z": -0.009406,
+    "c": 3,
+    "display_name": "Player 73 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0497-TE-8_18",
+    "x": -0.180241,
+    "y": -0.229211,
+    "z": -0.141631,
+    "c": 3,
+    "display_name": "Player 18 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0498-TE-8_50",
+    "x": 0.088616,
+    "y": 0.085904,
+    "z": -0.17044,
+    "c": 3,
+    "display_name": "Player 50 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0499-TE-8_78",
+    "x": -0.233348,
+    "y": -0.1483,
+    "z": -0.127885,
+    "c": 3,
+    "display_name": "Player 78 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0500-TE-9_64",
+    "x": -0.057217,
+    "y": 0.005534,
+    "z": 0.082225,
+    "c": 3,
+    "display_name": "Player 64 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0501-TE-19_8",
+    "x": 0.106377,
+    "y": -0.013197,
+    "z": 0.145169,
+    "c": 3,
+    "display_name": "Player 8 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0502-TE-1_43",
+    "x": -0.080101,
+    "y": 0.162877,
+    "z": -0.092792,
+    "c": 3,
+    "display_name": "Player 43 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0503-TE-0_13",
+    "x": 0.487296,
+    "y": 0.237432,
+    "z": 0.192545,
+    "c": 3,
+    "display_name": "Player 13 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0504-TE-1_55",
+    "x": -0.180054,
+    "y": -0.070658,
+    "z": -0.002614,
+    "c": 3,
+    "display_name": "Player 55 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0505-TE-21_9",
+    "x": 0.283687,
+    "y": -0.028135,
+    "z": 0.190993,
+    "c": 3,
+    "display_name": "Player 9 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0506-TE-2_34",
+    "x": 0.305025,
+    "y": 0.252788,
+    "z": -0.207453,
+    "c": 3,
+    "display_name": "Player 34 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0507-TE-3_71",
+    "x": -0.25876,
+    "y": 0.11815,
+    "z": 0.042015,
+    "c": 3,
+    "display_name": "Player 71 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0508-TE-4_54",
+    "x": 0.377976,
+    "y": 0.297011,
+    "z": 0.15616,
+    "c": 3,
+    "display_name": "Player 54 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0509-TE-5_33",
+    "x": 0.51231,
+    "y": 0.076691,
+    "z": -0.020243,
+    "c": 3,
+    "display_name": "Player 33 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0510-TE-6_34",
+    "x": 0.001817,
+    "y": -0.021751,
+    "z": -0.185342,
+    "c": 3,
+    "display_name": "Player 34 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0511-TE-6_96",
+    "x": -0.084384,
+    "y": -0.076047,
+    "z": 0.038897,
+    "c": 3,
+    "display_name": "Player 96 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0512-TE-9_90",
+    "x": 0.02439,
+    "y": -0.212754,
+    "z": -0.09769,
+    "c": 3,
+    "display_name": "Player 90 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0513-TE-2_12",
+    "x": -0.115106,
+    "y": -0.121157,
+    "z": 0.056234,
+    "c": 3,
+    "display_name": "Player 12 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0514-TE-2_29",
+    "x": 0.192041,
+    "y": -0.331431,
+    "z": -0.012511,
+    "c": 3,
+    "display_name": "Player 29 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0515-TE-6_44",
+    "x": 0.097343,
+    "y": 0.017357,
+    "z": 0.158229,
+    "c": 3,
+    "display_name": "Player 44 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0516-TE-6_96",
+    "x": -0.230239,
+    "y": 0.255445,
+    "z": 0.251929,
+    "c": 3,
+    "display_name": "Player 96 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0517-TE-7_41",
+    "x": -0.133308,
+    "y": -0.284782,
+    "z": -0.079563,
+    "c": 3,
+    "display_name": "Player 41 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0518-TE-7_79",
+    "x": -0.031437,
+    "y": 0.138944,
+    "z": 0.03997,
+    "c": 3,
+    "display_name": "Player 79 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0519-TE-3_20",
+    "x": -0.113453,
+    "y": 0.011648,
+    "z": 0.146084,
+    "c": 3,
+    "display_name": "Player 20 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0520-TE-0_74",
+    "x": -0.180274,
+    "y": -0.270352,
+    "z": 0.019078,
+    "c": 3,
+    "display_name": "Player 74 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0521-TE-1_50",
+    "x": 0.17016,
+    "y": -0.310894,
+    "z": 0.021383,
+    "c": 3,
+    "display_name": "Player 50 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0522-TE-3_78",
+    "x": -0.223507,
+    "y": 0.010532,
+    "z": -0.021245,
+    "c": 3,
+    "display_name": "Player 78 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0523-TE-4_45",
+    "x": -0.138621,
+    "y": 0.168481,
+    "z": 0.208716,
+    "c": 3,
+    "display_name": "Player 45 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0524-TE-4_81",
+    "x": 0.066685,
+    "y": -0.226739,
+    "z": -0.027647,
+    "c": 3,
+    "display_name": "Player 81 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0525-TE-5_53",
+    "x": -0.044063,
+    "y": 0.147659,
+    "z": -0.115865,
+    "c": 3,
+    "display_name": "Player 53 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0526-TE-6_32",
+    "x": -0.117723,
+    "y": -0.009365,
+    "z": 0.089951,
+    "c": 3,
+    "display_name": "Player 32 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0527-TE-7_76",
+    "x": -0.1556,
+    "y": -0.17635,
+    "z": -0.044858,
+    "c": 3,
+    "display_name": "Player 76 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0528-TE-9_98",
+    "x": -0.355046,
+    "y": -0.00104,
+    "z": -0.168052,
+    "c": 3,
+    "display_name": "Player 98 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0529-TE-4_32",
+    "x": 0.48635,
+    "y": -0.228944,
+    "z": 0.021727,
+    "c": 3,
+    "display_name": "Player 32 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0530-TE-4_94",
+    "x": -0.139462,
+    "y": 0.059298,
+    "z": -0.052307,
+    "c": 3,
+    "display_name": "Player 94 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0531-TE-0_81",
+    "x": 0.248998,
+    "y": -0.285768,
+    "z": -0.185404,
+    "c": 3,
+    "display_name": "Player 81 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0532-TE-1_29",
+    "x": -0.045344,
+    "y": -0.10602,
+    "z": -0.243568,
+    "c": 3,
+    "display_name": "Player 29 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0533-TE-51_8",
+    "x": -0.157154,
+    "y": -0.424263,
+    "z": -0.10413,
+    "c": 3,
+    "display_name": "Player 8 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0534-TE-2_78",
+    "x": -0.313301,
+    "y": 0.520314,
+    "z": -0.067294,
+    "c": 3,
+    "display_name": "Player 78 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0535-TE-3_27",
+    "x": 0.307759,
+    "y": -0.008837,
+    "z": -0.137742,
+    "c": 3,
+    "display_name": "Player 27 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0536-TE-54_9",
+    "x": -0.078769,
+    "y": -0.315445,
+    "z": 0.108093,
+    "c": 3,
+    "display_name": "Player 9 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0537-TE-7_78",
+    "x": 0.050911,
+    "y": 0.052247,
+    "z": 0.266251,
+    "c": 3,
+    "display_name": "Player 78 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0538-TE-8_66",
+    "x": -0.608291,
+    "y": 0.062553,
+    "z": 0.088519,
+    "c": 3,
+    "display_name": "Player 66 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0539-TE-9_88",
+    "x": 0.12634,
+    "y": 0.173347,
+    "z": 0.093077,
+    "c": 3,
+    "display_name": "Player 88 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0540-TE-5_54",
+    "x": 0.464603,
+    "y": -0.189477,
+    "z": -0.087089,
+    "c": 3,
+    "display_name": "Player 54 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0541-TE-1_45",
+    "x": 0.266166,
+    "y": 0.06397,
+    "z": 0.220848,
+    "c": 3,
+    "display_name": "Player 45 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0542-TE-2_58",
+    "x": 0.289267,
+    "y": 0.188144,
+    "z": -0.231423,
+    "c": 3,
+    "display_name": "Player 58 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0543-TE-2_88",
+    "x": 0.442627,
+    "y": 0.018151,
+    "z": -0.008599,
+    "c": 3,
+    "display_name": "Player 88 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0544-TE-3_44",
+    "x": 0.121703,
+    "y": -0.140052,
+    "z": -0.040113,
+    "c": 3,
+    "display_name": "Player 44 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0545-TE-5_31",
+    "x": 0.382843,
+    "y": 0.212981,
+    "z": 0.072793,
+    "c": 3,
+    "display_name": "Player 31 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0546-TE-66_6",
+    "x": 0.215091,
+    "y": -0.099251,
+    "z": 0.303457,
+    "c": 3,
+    "display_name": "Player 6 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0547-TE-6_87",
+    "x": 0.26442,
+    "y": 0.236088,
+    "z": 0.147075,
+    "c": 3,
+    "display_name": "Player 87 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0548-TE-7_10",
+    "x": -0.330759,
+    "y": 0.106673,
+    "z": -0.047038,
+    "c": 3,
+    "display_name": "Player 10 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0549-TE-7_32",
+    "x": 0.258917,
+    "y": 0.077607,
+    "z": -0.145591,
+    "c": 3,
+    "display_name": "Player 32 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0550-TE-8_48",
+    "x": 0.418966,
+    "y": 0.005373,
+    "z": 0.103985,
+    "c": 3,
+    "display_name": "Player 48 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0551-TE-9_41",
+    "x": 0.077507,
+    "y": -0.144371,
+    "z": 0.127487,
+    "c": 3,
+    "display_name": "Player 41 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0552-TE-6_19",
+    "x": -0.007617,
+    "y": 0.054357,
+    "z": -0.152083,
+    "c": 3,
+    "display_name": "Player 19 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0553-TE-6_69",
+    "x": -0.186482,
+    "y": 0.088888,
+    "z": 0.020848,
+    "c": 3,
+    "display_name": "Player 69 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0554-TE-1_13",
+    "x": -0.08114,
+    "y": -0.155861,
+    "z": -0.080914,
+    "c": 3,
+    "display_name": "Player 13 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0555-TE-1_19",
+    "x": -0.14541,
+    "y": -0.256766,
+    "z": -0.215513,
+    "c": 3,
+    "display_name": "Player 19 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0556-TE-3_14",
+    "x": 0.051926,
+    "y": 0.246495,
+    "z": -0.346885,
+    "c": 3,
+    "display_name": "Player 14 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0557-TE-3_30",
+    "x": 0.072915,
+    "y": 0.006069,
+    "z": -0.03393,
+    "c": 3,
+    "display_name": "Player 30 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0558-TE-9_15",
+    "x": 0.1142,
+    "y": -0.17952,
+    "z": 0.031398,
+    "c": 3,
+    "display_name": "Player 15 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0559-TE-7_55",
+    "x": 0.000507,
+    "y": 0.126726,
+    "z": -0.349535,
+    "c": 3,
+    "display_name": "Player 55 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0560-TE-0_11",
+    "x": -0.335659,
+    "y": -0.100259,
+    "z": -0.082699,
+    "c": 3,
+    "display_name": "Player 11 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0561-TE-1_63",
+    "x": -0.08672,
+    "y": -0.061815,
+    "z": 0.218677,
+    "c": 3,
+    "display_name": "Player 63 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0562-TE-2_11",
+    "x": -0.020051,
+    "y": -0.087535,
+    "z": -0.138813,
+    "c": 3,
+    "display_name": "Player 11 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0563-TE-2_47",
+    "x": 0.16423,
+    "y": 0.079543,
+    "z": 0.027555,
+    "c": 3,
+    "display_name": "Player 47 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0564-TE-3_74",
+    "x": 0.234297,
+    "y": -0.116953,
+    "z": 0.205193,
+    "c": 3,
+    "display_name": "Player 74 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0565-TE-4_21",
+    "x": -0.012219,
+    "y": -0.005772,
+    "z": 0.204823,
+    "c": 3,
+    "display_name": "Player 21 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0566-TE-4_33",
+    "x": -0.004994,
+    "y": -0.073695,
+    "z": 0.063567,
+    "c": 3,
+    "display_name": "Player 33 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0567-TE-9_39",
+    "x": -0.284622,
+    "y": -0.053328,
+    "z": 0.041577,
+    "c": 3,
+    "display_name": "Player 39 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0568-TE-0_49",
+    "x": -0.053343,
+    "y": 0.143919,
+    "z": 0.12345,
+    "c": 3,
+    "display_name": "Player 49 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0569-TE-1_32",
+    "x": 0.155016,
+    "y": -0.206639,
+    "z": -0.036412,
+    "c": 3,
+    "display_name": "Player 32 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0570-TE-2_27",
+    "x": -0.448702,
+    "y": -0.044045,
+    "z": 0.063472,
+    "c": 3,
+    "display_name": "Player 27 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0571-TE-2_94",
+    "x": 0.285258,
+    "y": -0.024278,
+    "z": -0.291266,
+    "c": 3,
+    "display_name": "Player 94 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0572-TE-4_72",
+    "x": 0.205738,
+    "y": 0.0108,
+    "z": 0.045929,
+    "c": 3,
+    "display_name": "Player 72 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0573-TE-6_24",
+    "x": 0.276301,
+    "y": 0.163081,
+    "z": -0.127649,
+    "c": 3,
+    "display_name": "Player 24 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0574-TE-6_31",
+    "x": 0.395406,
+    "y": 0.231881,
+    "z": -0.038659,
+    "c": 3,
+    "display_name": "Player 31 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0575-TE-8_85",
+    "x": 0.089965,
+    "y": 0.028051,
+    "z": 0.078485,
+    "c": 3,
+    "display_name": "Player 85 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0576-TE-9_10",
+    "x": 0.196755,
+    "y": 0.102494,
+    "z": -0.015117,
+    "c": 3,
+    "display_name": "Player 10 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0577-TE-9_79",
+    "x": -0.001735,
+    "y": -0.220831,
+    "z": -0.168768,
+    "c": 3,
+    "display_name": "Player 79 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0578-TE-9_38",
+    "x": -0.12949,
+    "y": -0.259785,
+    "z": 0.104975,
+    "c": 3,
+    "display_name": "Player 38 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0579-TE-9_87",
+    "x": -0.126383,
+    "y": -0.334139,
+    "z": 0.112783,
+    "c": 3,
+    "display_name": "Player 87 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0580-TE-1_65",
+    "x": -0.208271,
+    "y": 0.050082,
+    "z": -0.19608,
+    "c": 3,
+    "display_name": "Player 65 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0581-TE-2_27",
+    "x": -0.318522,
+    "y": -0.144751,
+    "z": 0.194167,
+    "c": 3,
+    "display_name": "Player 27 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0582-TE-02_4",
+    "x": 0.293312,
+    "y": -0.038415,
+    "z": 0.067627,
+    "c": 3,
+    "display_name": "Player 4 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0583-TE-2_78",
+    "x": -0.063573,
+    "y": -0.126139,
+    "z": 0.021787,
+    "c": 3,
+    "display_name": "Player 78 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0584-TE-4_35",
+    "x": 0.463153,
+    "y": 0.144094,
+    "z": 0.02405,
+    "c": 3,
+    "display_name": "Player 35 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0585-TE-04_8",
+    "x": 0.112738,
+    "y": -0.064465,
+    "z": 0.000392,
+    "c": 3,
+    "display_name": "Player 8 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0586-TE-5_89",
+    "x": -0.412955,
+    "y": -0.078568,
+    "z": -0.043735,
+    "c": 3,
+    "display_name": "Player 89 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0587-TE-6_78",
+    "x": -0.047788,
+    "y": 0.25747,
+    "z": 0.102303,
+    "c": 3,
+    "display_name": "Player 78 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0588-TE-9_41",
+    "x": -0.311464,
+    "y": 0.070483,
+    "z": 0.191359,
+    "c": 3,
+    "display_name": "Player 41 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0589-TE-0_14",
+    "x": 0.148167,
+    "y": 0.04339,
+    "z": 0.053379,
+    "c": 3,
+    "display_name": "Player 14 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0590-TE-5_15",
+    "x": 0.354759,
+    "y": -0.244073,
+    "z": -0.109823,
+    "c": 3,
+    "display_name": "Player 15 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0591-TE-1_30",
+    "x": -0.06184,
+    "y": 0.400955,
+    "z": 0.003825,
+    "c": 3,
+    "display_name": "Player 30 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0592-TE-0_43",
+    "x": -0.259902,
+    "y": 0.06952,
+    "z": 0.066929,
+    "c": 3,
+    "display_name": "Player 43 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0593-TE-21_7",
+    "x": 0.184319,
+    "y": -0.267238,
+    "z": -0.196027,
+    "c": 3,
+    "display_name": "Player 7 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0594-TE-2_70",
+    "x": 0.4305,
+    "y": 0.068167,
+    "z": 0.187701,
+    "c": 3,
+    "display_name": "Player 70 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0595-TE-23_5",
+    "x": 0.382173,
+    "y": 0.013389,
+    "z": -0.104138,
+    "c": 3,
+    "display_name": "Player 5 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0596-TE-3_67",
+    "x": -0.220581,
+    "y": 0.290924,
+    "z": 0.127118,
+    "c": 3,
+    "display_name": "Player 67 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0597-TE-7_36",
+    "x": -0.070167,
+    "y": 0.047317,
+    "z": -0.071546,
+    "c": 3,
+    "display_name": "Player 36 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0598-TE-8_43",
+    "x": 0.099091,
+    "y": -0.031896,
+    "z": 0.070548,
+    "c": 3,
+    "display_name": "Player 43 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0599-TE-1_31",
+    "x": -0.189194,
+    "y": -0.06669,
+    "z": -0.088499,
+    "c": 3,
+    "display_name": "Player 31 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0600-TE-4_34",
+    "x": -0.005993,
+    "y": 0.076939,
+    "z": -0.04237,
+    "c": 3,
+    "display_name": "Player 34 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0601-TE-5_68",
+    "x": -0.120418,
+    "y": -0.196411,
+    "z": 0.008639,
+    "c": 3,
+    "display_name": "Player 68 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0602-TE-3_10",
+    "x": -0.017712,
+    "y": -0.115582,
+    "z": 0.011231,
+    "c": 3,
+    "display_name": "Player 10 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0603-TE-3_48",
+    "x": 0.035871,
+    "y": -0.011672,
+    "z": 0.145623,
+    "c": 3,
+    "display_name": "Player 48 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0604-TE-0_11",
+    "x": 0.136907,
+    "y": -0.072964,
+    "z": 0.001828,
+    "c": 3,
+    "display_name": "Player 11 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0605-TE-0_39",
+    "x": -0.193922,
+    "y": 0.046277,
+    "z": -0.424904,
+    "c": 3,
+    "display_name": "Player 39 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0606-TE-1_61",
+    "x": -0.185557,
+    "y": 0.00791,
+    "z": 0.421148,
+    "c": 3,
+    "display_name": "Player 61 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0607-TE-1_77",
+    "x": -0.244375,
+    "y": -0.181602,
+    "z": 0.104122,
+    "c": 3,
+    "display_name": "Player 77 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0608-TE-42_1",
+    "x": 0.359851,
+    "y": 0.13788,
+    "z": 0.001565,
+    "c": 3,
+    "display_name": "Player 1 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0609-TE-4_47",
+    "x": -0.137874,
+    "y": -0.056114,
+    "z": 0.164584,
+    "c": 3,
+    "display_name": "Player 47 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0610-TE-5_87",
+    "x": -0.12842,
+    "y": 0.127271,
+    "z": 0.042556,
+    "c": 3,
+    "display_name": "Player 87 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0611-TE-0_25",
+    "x": -0.18837,
+    "y": 0.17324,
+    "z": -0.009536,
+    "c": 3,
+    "display_name": "Player 25 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0612-TE-1_75",
+    "x": 0.176108,
+    "y": -0.109646,
+    "z": 0.047544,
+    "c": 3,
+    "display_name": "Player 75 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0613-TE-2_25",
+    "x": 0.430955,
+    "y": -0.190357,
+    "z": -0.066761,
+    "c": 3,
+    "display_name": "Player 25 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0614-TE-3_28",
+    "x": -0.095507,
+    "y": -0.010657,
+    "z": -0.199161,
+    "c": 3,
+    "display_name": "Player 28 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0615-TE-4_79",
+    "x": -0.187618,
+    "y": -0.140235,
+    "z": -0.061602,
+    "c": 3,
+    "display_name": "Player 79 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0616-TE-5_65",
+    "x": -0.274649,
+    "y": 0.179929,
+    "z": -0.061908,
+    "c": 3,
+    "display_name": "Player 65 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0617-TE-7_10",
+    "x": 0.304415,
+    "y": 0.070722,
+    "z": -0.023352,
+    "c": 3,
+    "display_name": "Player 10 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0618-TE-7_13",
+    "x": 0.255025,
+    "y": 0.038493,
+    "z": -0.25149,
+    "c": 3,
+    "display_name": "Player 13 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0619-TE-9_25",
+    "x": 0.154758,
+    "y": -0.107278,
+    "z": -0.220615,
+    "c": 3,
+    "display_name": "Player 25 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0620-TE-0_41",
+    "x": -0.499372,
+    "y": -0.014454,
+    "z": 0.04515,
+    "c": 3,
+    "display_name": "Player 41 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0621-TE-2_86",
+    "x": 0.222764,
+    "y": 0.041706,
+    "z": 0.199529,
+    "c": 3,
+    "display_name": "Player 86 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0622-TE-3_18",
+    "x": -0.232041,
+    "y": -0.095296,
+    "z": 0.117778,
+    "c": 3,
+    "display_name": "Player 18 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0623-TE-4_46",
+    "x": -0.19901,
+    "y": -0.164007,
+    "z": 0.206051,
+    "c": 3,
+    "display_name": "Player 46 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0624-TE-6_58",
+    "x": -0.136928,
+    "y": 0.363153,
+    "z": -0.301214,
+    "c": 3,
+    "display_name": "Player 58 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0625-TE-7_29",
+    "x": -0.587418,
+    "y": 0.213661,
+    "z": 0.171408,
+    "c": 3,
+    "display_name": "Player 29 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0626-TE-8_37",
+    "x": -0.297599,
+    "y": -0.241172,
+    "z": 0.003332,
+    "c": 3,
+    "display_name": "Player 37 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0627-TE-9_12",
+    "x": 0.253076,
+    "y": 0.128319,
+    "z": 0.080193,
+    "c": 3,
+    "display_name": "Player 12 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0628-TE-9_74",
+    "x": -0.14206,
+    "y": -0.242854,
+    "z": -0.165738,
+    "c": 3,
+    "display_name": "Player 74 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0629-TE-26_5",
+    "x": 0.044253,
+    "y": -0.123245,
+    "z": -0.129821,
+    "c": 3,
+    "display_name": "Player 5 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0630-TE-6_98",
+    "x": 0.188785,
+    "y": -0.169721,
+    "z": -0.401399,
+    "c": 3,
+    "display_name": "Player 98 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0631-TE-4_38",
+    "x": 0.385707,
+    "y": -0.005369,
+    "z": 0.039203,
+    "c": 3,
+    "display_name": "Player 38 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0632-TE-5_72",
+    "x": 0.108338,
+    "y": 0.142714,
+    "z": -0.044247,
+    "c": 3,
+    "display_name": "Player 72 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0633-TE-7_53",
+    "x": 0.327701,
+    "y": -0.101744,
+    "z": 0.048893,
+    "c": 3,
+    "display_name": "Player 53 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0634-TE-7_62",
+    "x": -0.125335,
+    "y": 0.04838,
+    "z": -0.281457,
+    "c": 3,
+    "display_name": "Player 62 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0635-TE-0_28",
+    "x": 0.269301,
+    "y": -0.018081,
+    "z": 0.269065,
+    "c": 3,
+    "display_name": "Player 28 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0636-TE-1_46",
+    "x": -0.045637,
+    "y": -0.068482,
+    "z": 0.087644,
+    "c": 3,
+    "display_name": "Player 46 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0637-TE-2_87",
+    "x": -0.119243,
+    "y": -0.106899,
+    "z": 0.002669,
+    "c": 3,
+    "display_name": "Player 87 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0638-TE-83_4",
+    "x": 0.168754,
+    "y": -0.112116,
+    "z": -0.259519,
+    "c": 3,
+    "display_name": "Player 4 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0639-TE-3_50",
+    "x": -0.19612,
+    "y": 0.074566,
+    "z": -0.136511,
+    "c": 3,
+    "display_name": "Player 50 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0640-TE-3_87",
+    "x": 0.348549,
+    "y": -0.280658,
+    "z": 0.044428,
+    "c": 3,
+    "display_name": "Player 87 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0641-TE-4_21",
+    "x": 0.019732,
+    "y": -0.106765,
+    "z": -0.077944,
+    "c": 3,
+    "display_name": "Player 21 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0642-TE-5_67",
+    "x": 0.093316,
+    "y": -0.170544,
+    "z": 0.041235,
+    "c": 3,
+    "display_name": "Player 67 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0643-TE-6_28",
+    "x": -0.124532,
+    "y": 0.374961,
+    "z": 0.415363,
+    "c": 3,
+    "display_name": "Player 28 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0644-TE-7_24",
+    "x": 0.257033,
+    "y": -0.252841,
+    "z": -0.234456,
+    "c": 3,
+    "display_name": "Player 24 TE",
+    "pos": "TE",
+    "season": "2026"
+  },
+  {
+    "pid": "gr-0645-TE-7_54",
+    "x": -0.197632,
+    "y": 0.172028,
+    "z": 0.049332,
+    "c": 3,
+    "display_name": "Player 54 TE",
+    "pos": "TE",
+    "season": "2026"
+  }
+]

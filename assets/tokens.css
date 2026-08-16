@@ -2,7 +2,7 @@
    Shared across vector family: hoops 1764, gridiron 646, pitch 2430, equities 500, unified 20719
    REAL maps assets/data/*.json x/y/z/c ∈ [-1,1] OKABE-8 #080A0F void #0f141e dark
    PWA v67 offline 13.6k CORE20 LOD4000/4000 DPR1 canvas.width=W no devicePixelRatio
-   LCG 20260813→189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,16853,15710] glibc L(s)=(s*1103515245+12345)&0x7fffffff
+   LCG 20260813→189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,11701,18524] glibc L(s)=(s*1103515245+12345)&0x7fffffff
    59 hashes 7/7 PASS TLPG dedup DAU3/WAU3 40px sticky nav height40 top0 z40 thin UI
 */
 :root{

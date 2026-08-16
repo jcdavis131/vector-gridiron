@@ -1,0 +1,32 @@
+{
+  "nflverse": "placeholder stdlib LCG",
+  "cfb": {
+    "status": "503",
+    "message": "CFBData API key not set \u2014 placeholder, 312 teams same as NFL roster structure ready",
+    "teams": 312,
+    "honest": true,
+    "lcg": 189831298
+  },
+  "cfb_optional": "312 teams same as NFL \u2014 ingest nflverse + CFBData real rosters 2025-26 if available else honest 503 placeholder never fake",
+  "honest": true,
+  "honest_lcg": "synthetic_deterministic_stdlib_LCG_189831298_honest",
+  "lcg": {
+    "seed": 20260813,
+    "lcg": 189831298,
+    "idx": 3820,
+    "triple": [
+      11205,
+      19448,
+      14209
+    ],
+    "five": [
+      11205,
+      19448,
+      14209,
+      11701,
+      18524
+    ]
+  },
+  "zero_deps": true,
+  "provenance_note": "CFB roster ingestion optional honest 503 never fake \u2014 NFL 32-team + CFB 312-team share same pipeline 160 feats"
+}

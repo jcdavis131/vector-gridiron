@@ -32,24 +32,28 @@
   --lod-desktop:8000;
   --lod-mobile:4000;
   --dpr:1;
-  /* OKABE-8 — vivid dots on dark map inset, also as book edge dots — visible 8px border 1.4px */
-  --ok-0:#0072B2;
-  --ok-1:#D55E00;
+  /* OKABE-8 canonical spec #E69F00 #56B4E9 #009E73 #F0E442 #0072B2 #D55E00 #CC79A7 #000000 — void #080A0F visible halo for black */
+  --ok-0:#E69F00;
+  --ok-1:#56B4E9;
   --ok-2:#009E73;
   --ok-3:#F0E442;
-  --ok-4:#56B4E9;
-  --ok-5:#CC79A7;
-  --ok-6:#E69F00;
-  --ok-7:#FFFEF7;
+  --ok-4:#0072B2;
+  --ok-5:#D55E00;
+  --ok-6:#CC79A7;
+  --ok-7:#000000;
   --okabe-0:#E69F00;
-  --okabe-0-var:var(--ok-0);
-  --okabe-1:var(--ok-1);
-  --okabe-2:var(--ok-2);
-  --okabe-3:var(--ok-3);
-  --okabe-4:var(--ok-4);
-  --okabe-5:var(--ok-5);
-  --okabe-6:var(--ok-6);
-  --okabe-7:var(--ok-7);
+  --okabe-1:#56B4E9;
+  --okabe-2:#009E73;
+  --okabe-3:#F0E442;
+  --okabe-4:#0072B2;
+  --okabe-5:#D55E00;
+  --okabe-6:#CC79A7;
+  --okabe-7:#000000;
+  /* alias QB blue #0072B2 = ok-4 per req */
+  --qb:#0072B2;
+  --wr:#56B4E9;
+  --rb:#009E73;
+  --te:#F0E442;
   /* accent — confetti kept, but muted */
   --accent:#D8452A;
   --accent-2:#C9A88C;
@@ -98,8 +102,14 @@ body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:var
 }
 .footer-subtle b{color:var(--ink);font-weight:700}
 
-/* okabe dots 8px visible */
-.okabe-dot{display:inline-block;width:8px;height:8px;border-radius:50%;border:1px solid var(--ink);box-shadow:0 0 0 1px #1E1E1E18}
+/* okabe dots 8px visible — black #000000 halo on void #080A0F to keep distinct */
+.okabe-dot{display:inline-block;width:8px;height:8px;border-radius:50%;border:1px solid var(--ink);box-shadow:0 0 0 1px #FFFEF733, 0 0 0 1px #1E1E1E18}
+.okabe-dot[data-c="7"], .okabe-dot.ok-black{background:#000000 !important; box-shadow:0 0 0 1px #FFFEF7, 0 0 0 2px #1E1E1E, 0 0 0 3px #FFFEF766 !important; border-color:#FFFEF7}
+.j-nav{position:sticky;top:0;top:env(safe-area-inset-top,0);z-index:40;height:40px;min-height:40px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 14px;padding-top:env(safe-area-inset-top,0);background:var(--paper);border-bottom:1.5px solid var(--ink);backdrop-filter:saturate(1.02)}
+.j-pill:focus-visible,.pov-pill:focus-visible{outline:2px solid var(--clay);outline-offset:3px}
+
+/* single-select highlight — chip clears prev */
+.pov-pill.on,.j-pill.on{outline:1px solid #00000010}
 
 /* reduce-motion respects */
 @media(prefers-reduced-motion:reduce){

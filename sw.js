@@ -12,7 +12,7 @@
 const CACHE_NAME = 'vector-gridiron-v67-japandi-offline13k';
 const CORE = [
 '/', '/index.html', '/manifest.json', '/offline.html',
-'/assets/tokens.css','/assets/shared-map.js','/assets/inertial-map.js','/assets/site-nav.js','/assets/shell.css','/assets/responsive.css','/assets/icon-192.png','/assets/icon-512.png','/assets/error-boundary.js','/assets/keyboard-a11y.js','/assets/explainer.js'
+'/assets/tokens.css','/assets/shared-map.js','/assets/inertial-map.js','/assets/site-nav.js','/assets/shell.css','/assets/responsive.css','/assets/icon-192.png','/assets/icon-512.png','/assets/error-boundary.js','/assets/keyboard-a11y.js','/assets/explainer.js','/assets/prove.js','/assets/insights.js'
 ];
 const DENY = [
 '/assets/vectors.json',

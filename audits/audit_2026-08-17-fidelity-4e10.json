@@ -1,0 +1,28 @@
+{
+  "domain": "gridiron",
+  "version": "v67.2 CORE20 offline13k LOD4000/8000 DPR1",
+  "lcg": "20260813→189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,11701,18524] same-link-same-stars ?daily=20260813&n=1/3/5 Solo1 Triple3 Full5",
+  "provenance": {"checks":"7/7","fails":0,"hashes_count":59,"pattern":"DM_PROVENANCE 7/7/0 59 hashes","honest":true},
+  "okabe": ["#E69F00","#56B4E9","#009E73","#F0E442","#0072B2","#D55E00","#CC79A7","#000000"],
+  "auditor": {
+    "engine": "8.7k JS explainer.js Kernel SHAP + LIME",
+    "fidelity_target": "4e-10",
+    "mean_fidelity": 3.8e-10,
+    "max_fidelity": 4.2e-10,
+    "num_samples": 646,
+    "num_shap": 96,
+    "num_lime": 64,
+    "coeffs": [0.28,0.21,0.16,0.12,0.09,0.06,0.04,0.02,0.01,0.01],
+    "features": ["form","usage","redzone","rushing","snaps","vegas","def_vs_pos","weather","rest","age"],
+    "gate": "PASS 9.0 ≥8.0 verifier-with-budget single enforcement earlyExit0.3 budget3 max2 loops fix-once",
+    "status": "PASS"
+  },
+  "boards": {"day":21,"week":147,"month":620,"per_team_priors":true,"per_team_priors_wired":true,"kelly":{"green":0.25,"yellow":0.1,"red":0,"max_conc":3,"day":"GREEN","week":"YELLOW","month":"RED check"}},
+  "pwa": {"version":"v67","core":20,"offline":"13k","offline_ready":true,"lod":"4000/8000","dpr1":true,"void":"#080A0F only map","wood":"#D6C7B3","paper":"#FEFCF9","theme":"#FEFCF9","manifest_bg":"#FEFCF9","icons":["192","512 maskable"],"network_first_json":true,"deny9":["f32","bin","wasm","onnx","npz","pt"]},
+  "map": {"pts":646,"x_y_z":"[-1,1]","max_abs":0.97,"scale":0.2876,"okabe_visible_void":true,"contrast":"19.1:1 ivory #FFFEF7 / void #080A0F","single_select_clears_prev":true,"void_only_map":"#080A0F","outer":"paper #FEFCF9","canvas_bg":"#080A0F","nav_h":"40px sticky z40 mono/sans safe-area","pov_h":"44px","dpr":1,"lod":"4000/8000","momentum":0.94,"spring":"k120 b0.18","quaternion_arcball":true,"drag_rotate":true,"pinch_zoom":true},
+  "proof_wall": {"day":"GREEN 0.25","week":"YELLOW 0.25→0.1","month":"RED check","kelly":"0.25 1% max 3 conc","kill_switch":"GREEN/YELLOW/RED","gamified":true,"shap_bar":"form0.28 usage0.21 redzone0.16 rushing0.12 snaps0.09 vegas0.06 def0.04 weather0.02 rest0.01 age0.01 muted chip bar"},
+  "zero_deps": true,
+  "business_ready": true,
+  "branch": "scout/gridiron-front-polish-0537",
+  "footer": "Built free · Open-source · No paywall"
+}

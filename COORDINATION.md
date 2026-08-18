@@ -52,7 +52,3 @@ _Previous: 12:06 CT 2026-08-17 — big-board swarm — 99.8% ship 3 free +8 queu
 
 ## PODCAST AUTO-EXEC LOG 07:29 CT 2026-08-17
 - board sync 07:29 CT 15 rows max — zero-deps true
-
-
-<!-- merged from outside edits 2026-08-18T03:29Z -->
-| analytics-phase0 | dumbmodel.com / analytics store.jsonl + plugin | 23:05 CT 2026-08-17 | Phase0 analytics stub <2h no-torch — store.jsonl append-only DAU/WAU TLPG dedup, plugin 5 cmds ingest/events/stats/detect/hello, PWA v67 offline 13k, daily shard 2026-08-07.jsonl, bridges payments $0 events, no cloud egress, verifier budget 3 thr8.0 — auto-exec 2026-08-17 evening-wrap | scout/analytics-phase0-0830 | todo |

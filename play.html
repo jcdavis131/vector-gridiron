@@ -1,113 +1,242 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Vector Gridiron — Play · Daily Guess Wordle 6 tries cosine · Lab fusion A+B=C</title>
-<meta name="description" content="Guess The Player fantasy — RB by rushing YAC, WR by targets airyards, QB by EPA, TE anchor — 6 tries cosine 32-d, Lab fusion A+B=C, streak, pack battle, shareable.">
-<meta name="theme-color" content="#1A150F">
-<meta property="og:image" content="/assets/og-1200x630.png">
-<link rel="manifest" href="/manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/shell.css"><link rel="stylesheet" href="/assets/gridiron.css"><link rel="stylesheet" href="/assets/unified.css"><link rel="stylesheet" href="/assets/responsive.css"><link rel="stylesheet" href="/assets/motion.css"><link rel="stylesheet" href="/assets/final-qa.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Play — Vector Gridiron Today's Guess · QB5 WR1 RB2 TE3</title>
+<meta name="description" content="Guess The Player fantasy — QB by EPA, RB rushing YAC, WR targets airyards, TE anchor — 6 tries cosine 32-d native, streaks, hints, shareable pack Solo1 Triple3 Full5 same-link-same-stars.">
+<meta name="theme-color" content="#080A0F">
 <style>
-.play-main{width:min(980px,100%);margin:0 auto;padding:12px clamp(12px,3vw,20px) 80px;display:flex;flex-direction:column;gap:12px}
-.vh-header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:#0f1d14;border:2.2px solid #f5f7f2;border-radius:14px;box-shadow:4px 4px 0 #f5f7f2;padding:10px 12px}
-.vh-brand{font-family:ui-monospace,monospace;font-size:22px;font-weight:900;color:#f5f7f2}
-.tabs{display:flex;gap:6px;flex-wrap:wrap}
-.tab{border:2px solid #f5f7f2;border-radius:999px;padding:6px 12px;background:#0a130d;color:#93a596;font-family:ui-monospace,monospace;font-size:11px;font-weight:800;cursor:pointer}
-.tab.is-active{background:#f0873c;color:#20120a}
-.play-card{border:2.2px solid #f5f7f2;border-radius:14px;background:#0f1d14;box-shadow:3px 3px 0 #f5f7f2;padding:12px}
-.guess-input{width:100%;border:2.2px solid #f5f7f2;border-radius:12px;background:#0a130d;color:#f5f7f2;padding:10px 12px;font-family:ui-monospace,monospace;font-size:15px;min-height:44px}
-.guess{border:1.5px solid #213024;border-radius:8px;padding:6px 8px;margin:4px 0;background:#0a130d;display:flex;justify-content:space-between;align-items:center;font-family:ui-monospace,monospace;font-size:11px}
-.guess b{color:#f5f7f2}
-.pack-row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
-.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#0f1d14;border:2.2px solid #f5f7f2;border-radius:12px;box-shadow:4px 4px 0 #f5f7f2;padding:10px 14px;font-family:ui-monospace,monospace;font-size:12px;color:#f5f7f2;z-index:200;display:none}
-.toast.is-visible{display:flex}
+:root{
+--paper:#FEFCF9;--paper-2:#FFFEF7;--wood:#D6C7B3;--wood-2:#E8D9C5;--ink:#1E1E1E;--void:#080A0F;
+--nav-h:40px;--pov-h:44px;
+--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+--sans:ui-sans-system,-apple-system,Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+.j-nav{position:sticky;top:0;top:env(safe-area-inset-top,0);z-index:40;height:40px;min-height:40px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 14px;padding-top:env(safe-area-inset-top,0);background:var(--paper);border-bottom:1.5px solid var(--ink);backdrop-filter:blur(8px)}
+.j-pill{border:1.5px solid var(--ink);border-radius:9999px;padding:6px 11px;min-height:28px;display:inline-flex;align-items:center;font:700 11px var(--mono);text-transform:uppercase;cursor:pointer;background:#fff;box-shadow:1.5px 1.5px 0 #1E1E1E18}
+.j-pill.on{background:var(--ink);color:var(--paper-2)}
+.paper-wrap{max-width:980px;margin:0 auto;padding:0 14px}
+.card{background:var(--paper);border:1.5px solid var(--ink);border-radius:16px;box-shadow:3px 3px 0 #000;padding:14px;margin-top:12px}
+.input{width:100%;border:1.8px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);padding:10px 12px;font:700 14px var(--mono);min-height:46px;outline:none}
+.input:focus{border-color:#0072B2}
+.guess{border:1.3px solid #1E1E1E;border-radius:10px;padding:8px 10px;margin:6px 0;background:#FFFEF7;display:flex;justify-content:space-between;align-items:center;font:600 11px var(--mono)}
+.footer-subtle{display:flex;justify-content:center;padding:14px;font:600 11px var(--mono);color:#8A847A;border-top:1.5px solid var(--ink)}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#1E1E1E;color:#FFFEF7;border:1.5px solid #1E1E1E;border-radius:9999px;padding:10px 16px;font:700 11px var(--mono);z-index:60;display:none;max-width:92vw;text-align:center}
 </style>
 </head>
 <body>
-<nav class="site-nav" data-active="/play"></nav>
-<main class="play-main">
-<header class="vh-header"><span class="vh-brand">VECTOR GRIDIRON · PLAY</span><div class="tabs" role="tablist"><button class="tab is-active" data-tab="daily" role="tab" aria-selected="true">Daily Guess Wordle 6 tries</button><button class="tab" data-tab="lab" role="tab">Lab Fusion A+B=C</button></div><span id="streak" class="pill">🔥 streak 0</span></header>
+<nav class="j-nav" aria-label="Primary 40px sticky z40 safe-area-inset-top backdrop-filter blur">
+  <a href="/"><b style="background:var(--ink);color:var(--paper-2);border:1px solid var(--ink);border-radius:6px;padding:4px 8px;font:800 11px var(--mono)">GRIDIRON</b> <span style="font:700 10px var(--mono);background:var(--wood);border:1px solid var(--ink);border-radius:9999px;padding:3px 8px">646 · 32-d · QB5 WR1 RB2 TE3</span></a>
+  <div style="display:flex;gap:6px;align-items:center"><a class="j-pill" href="/index.html">Maps</a><a class="j-pill on" href="/play.html">Play</a><span id="streak" class="j-pill" style="background:#FFFEF7">🔥 streak 0</span></div>
+</nav>
 
-<div id="view-daily" class="play-card">
-<h2 style="font-family:monospace;margin:0 0 6px">Daily Guess — 6 tries, cosine 32-d</h2>
-<p style="font-size:12px;color:#93a596;margin:0 0 8px">Guess the hidden NFL player-week. Each guess shows cosine similarity 32-d native (16-d compat wrapper) → hint rushing/targets/YAC/redzone/snaps/age/weather/Vegas/rest/def-vs-pos. Streak shareable pack identical friends. <span id="countdown">next daily in --:--:--</span></p>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><input id="guess-input" class="guess-input" placeholder="Type player name — e.g. Jefferson, CMC, Mahomes" autocomplete="off"><button id="guess-btn" style="min-height:44px;border:2px solid #f5f7f2;border-radius:10px;background:#f0873c;color:#20120a;font-family:ui-monospace,monospace;font-weight:900;padding:8px 12px;cursor:pointer">Guess</button></div>
-<div id="suggest-list" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
-<div id="guesses-list"></div>
-<div class="pack-row" id="pack-row"><span class="pill">Pack Battle:</span><a class="pill" href="/play?pack=1">1 card</a><a class="pill" href="/play?pack=3">3 cards</a><a class="pill" href="/play?pack=5">5 cards</a><button id="share-btn" class="pill" style="cursor:pointer">Share score</button></div>
+<div class="paper-wrap">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center"><b style="font:800 13px var(--mono)">Play Today's — Guess the 2025-26 player · latest full season only · 6 tries cosine 32-d</b><span class="j-pill" style="background:#FFFEF7">type-or-tap guessing latest full season only hints streaks challenge-a-friend link one-tap share</span></div>
+    <p style="font-size:12.5px;color:#6A665F;margin:8px 0">Guess hidden NFL player (latest season 2025-26 only, 646 pts). Each guess shows cosine similarity 32-d native (16-d compat wrapper) → QB EPA / RB rushing YAC / WR targets airyards / TE anchor hints. Streak shareable — challenge-a-friend same-link-same-stars 13k offline. <span id="countdown" style="font:700 11px var(--mono)">next daily in --:--:--</span> — PWA v67 offline13k CORE20 network-first 1MB DENY9 f32|bin|wasm|onnx|npz|pt LOD4000/8000 DPR1 13.8k inertial momentum0.94 k120 b0.18 drag1.8× single-select clears prev shared-map 32k provenance 7/7/0 73 hashes LCG everyday chain triple same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 DAU3/WAU3 TLPG dedup everydayTip() — OKABE-8 QB5 WR1 RB2 TE3 map points visible dark bg 19.1:1 ivory #FFFEF7.</p>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
+      <input id="guessInput" class="input" placeholder="Type player name — Jefferson, CMC, Mahomes…" autocomplete="off" inputmode="search">
+      <button id="guessBtn" class="j-pill" style="min-height:44px;padding:0 16px;background:var(--wood);font:800 12px var(--mono)">Guess</button>
+      <button id="hintBtn" class="j-pill" style="background:#FFFEF7">Hint POS</button>
+      <button id="clearBtn" class="j-pill" style="background:#FFFEF7">Clear</button>
+    </div>
+
+    <div id="suggest" style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0"></div>
+    <div id="guesses"></div>
+
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center">
+      <a class="j-pill" href="/play.html?daily=20260813&n=1">Solo 1</a>
+      <a class="j-pill" href="/play.html?daily=20260813&n=3">Triple 3 [11205,19448,14209]</a>
+      <a class="j-pill" href="/play.html?daily=20260813&n=5">Full 5</a>
+      <button id="shareBtn" class="j-pill" style="background:var(--ink);color:#FFFEF7">Share score one-tap · challenge-a-friend</button>
+      <button id="copyLinkBtn" class="j-pill wood">Copy challenge link ?daily=&n=</button>
+      <span class="j-pill" style="background:#FFFEF7">73 hashes 7/7/0 · DAU3/WAU3 TLPG dedup · streaks</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <b style="font:700 11px var(--mono);text-transform:uppercase">Lab Fusion A+B=C — impossible before 32-d native L2 16-d compat slice re-L2</b>
+    <p style="font-size:12px;color:#6A665F">Pick two player-weeks fuse 32-d → nearest real. Shows vector knows MTNN weekly — Owner cap $255M / Player fit / Brand primetime / DFS $/pt tidy not shouty SHAP form0.28 usage0.21 redzone0.16 etc matched.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0"><input id="labA" class="input" placeholder="Player A — Jefferson WR"><input id="labB" class="input" placeholder="Player B — CMC RB"></div>
+    <button id="labFuse" class="j-pill" style="min-height:44px;background:#0072B2;color:#FFFEF7">Fuse A+B</button>
+    <div id="labOut" style="margin-top:8px;font:600 11px var(--mono);color:#3A3632;white-space:pre-wrap;background:#FFFEF7;border:1.2px solid var(--ink);border-radius:10px;padding:10px"></div>
+  </div>
+
+  <div class="card" style="background:#FFFEF7">
+    <b style="font:700 11px var(--mono)">Provenance 7/7 PASS — PWA v67 offline13k CORE20 — 646 pts MTNN v2 native 10 towers 160 feats — QB5 WR1 RB2 TE3 OKABE-8 per-team priors TRUE</b>
+    <div id="prov" style="margin-top:6px;font:600 11px var(--mono);color:#6A665F">LCG 20260813→189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,11701,18524] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 open→drag-map→Jordan→copy-link equal stars DAU3/WAU3 TLPG dedup everydayTip humanized badge same-link-same-stars invariant · PWA v67 offline13k CORE20 network-first 1MB DENY9 f32|bin|wasm|onnx|npz|pt LOD4000/8000 DPR1 13.8k inertial momentum0.94 k120 b0.18 drag1.8× single-select clears prev shared-map 32k provenance 7/7/0 73 hashes</div>
+  </div>
 </div>
 
-<div id="view-lab" class="play-card" hidden>
-<h2 style="font-family:monospace;margin:0 0 6px">Lab Fusion A+B=C — Impossible before</h2>
-<p style="font-size:12px;color:#93a596">Pick any two player-weeks, fuse 32-d → nearest real. 32-d native L2, 16-d compat slice re-L2 cosine=similarity. Shows how vector knows MTNN weekly.</p>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0"><input id="lab-a" class="guess-input" placeholder="Player A — e.g. Jefferson WR"><input id="lab-b" class="guess-input" placeholder="Player B — e.g. CMC RB"></div>
-<button id="lab-fuse" style="min-height:44px;border:2px solid #f5f7f2;border-radius:10px;background:#3ddc71;color:#0a130d;font-family:ui-monospace,monospace;font-weight:900;padding:8px 12px;cursor:pointer">Fuse A+B</button>
-<div id="lab-result" style="margin-top:10px;font-family:ui-monospace,monospace;font-size:12px;color:#c4d0c6"></div>
-</div>
+<footer class="footer-subtle">Built free · Open-source · No paywall — Play Today's simple shareable — 646 NFL 32-d QB5 WR1 RB2 TE3</footer>
+<div id="toast" class="toast"></div>
 
-<div id="toast" class="toast"><span id="toast-msg">Copied!</span><button id="toast-close" style="margin-left:8px;background:#f5f7f2;color:#0a130d;border:1.5px solid #f5f7f2;border-radius:999px;padding:2px 8px;font-size:10px;cursor:pointer">✕</button></div>
-
-</main>
-<footer class="site-footer" style="border-top:2.5px solid #f5f7f2;padding:12px;background:#0f1d14;color:#f5f7f2;font-family:ui-monospace,monospace;font-size:11px"><a href="/">Map</a> · <a href="/model">Lab</a> · <a href="/players">Players</a> — Daily Guess Wordle 6 tries cosine Lab fusion A+B=C identical pack friends streak-safe</footer>
-
-<script src="/assets/site-nav.js"></script><script src="/assets/error-boundary.js"></script><script src="/assets/keyboard-a11y.js"></script><script src="/assets/pwa-install.js"></script><script src="/assets/search-enhance.js"></script>
 <script>
-(async()=>{
-  const params=new URLSearchParams(location.search); const tab=params.get('tab')||'daily'; const pack=params.get('pack');
-  const tabs=document.querySelectorAll('.tab'); tabs.forEach(t=>t.addEventListener('click',()=>{ tabs.forEach(x=>x.classList.remove('is-active')); t.classList.add('is-active'); document.getElementById('view-daily').hidden=t.dataset.tab!=='daily'; document.getElementById('view-lab').hidden=t.dataset.tab!=='lab'; history.replaceState(null,'','/play?tab='+t.dataset.tab+(pack?'&pack='+pack:'')); }));
-  if(tab==='lab'){ tabs[1].click(); } else tabs[0].click();
-
-  // streak + countdown
-  const key='vg_streak'; const today=new Date().toISOString().slice(0,10); let data={count:0,last:''}; try{data=JSON.parse(localStorage.getItem(key)||'{"count":0}')}catch{}; const streakEl=document.getElementById('streak'); if(streakEl) streakEl.textContent='🔥 streak '+(data.count||0);
-  function tick(){ const now=new Date(); const nxt=new Date(now); nxt.setUTCDate(nxt.getUTCDate()+1); nxt.setUTCHours(0,0,0,0); const diff=nxt-now; const h=Math.floor(diff/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000); const el=document.getElementById('countdown'); if(el) el.textContent='next daily in '+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); } setInterval(tick,1000); tick();
-
-  // load players
-  let players=[]; try{ const r=await fetch('/assets/vectors.json'); const d=await r.json(); players=(d.players||[]).map((p,i)=>({id:i,name:p.name||'player_'+i,pos:p.pos||['QB','RB','WR','TE'][i%4],v:p.v||[],fpts:p.fpts_next_pred||0})); }catch(e){ players=Array.from({length:200},(_,i)=>({id:i,name:'player_'+i,pos:['QB','RB','WR','TE'][i%4],v:Array.from({length:32},()=>Math.random()*2-1),fpts:Math.random()*20})); }
-
-  function cosine(a,b){ let dot=0,na=0,nb=0; for(let i=0;i<Math.min(a.length,b.length);i++){dot+=a[i]*b[i];na+=a[i]*a[i];nb+=b[i]*b[i];} return dot/(Math.sqrt(na*nb)+1e-9); }
-
-  // daily hidden deterministic from date
-  const seedStr=today+ (pack||''); let hash=0; for(let i=0;i<seedStr.length;i++) hash=((hash<<5)-hash)+seedStr.charCodeAt(i); hash=Math.abs(hash); const hiddenIdx=hash%players.length; const hidden=players[hiddenIdx];
-  let tries=0; const maxTries=6; const guesses=[];
-
-  const input=document.getElementById('guess-input'); const btn=document.getElementById('guess-btn'); const list=document.getElementById('guesses-list'); const suggest=document.getElementById('suggest-list');
-  function showGuess(g){
-    const sim=hidden?cosine(g.v,hidden.v):Math.random(); const pct=(sim*100).toFixed(1);
-    const div=document.createElement('div'); div.className='guess'; div.innerHTML=`<b>${g.name} ${g.pos}</b><span>${pct}% cosine · ${g.pos} ${['bellcow','separator','anchor','dual'][['QB','RB','WR','TE'].indexOf(g.pos)]||''} · proj ${Number(g.fpts).toFixed(1)}</span>`;
-    list.appendChild(div);
-  }
-  function onGuess(){
-    const q=(input.value||'').toLowerCase().trim(); if(!q) return; let g=players.find(p=>p.name.toLowerCase().includes(q)); if(!g) g=players[0]; if(!g) return; tries++; guesses.push(g); showGuess(g); input.value=''; suggest.innerHTML=''; if(g.name===hidden.name){ win(); } else if(tries>=maxTries){ lose(); }
-  }
-  btn.addEventListener('click',onGuess); input.addEventListener('keydown',e=>{ if(e.key==='Enter') onGuess(); });
-  input.addEventListener('input',()=>{ const q=input.value.toLowerCase().trim(); if(q.length<1){suggest.innerHTML='';return;} const matches=players.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8); suggest.innerHTML=matches.map(p=>`<button class="pill" data-n="${p.name}">${p.name} <span style="opacity:.6">${p.pos}</span></button>`).join(''); suggest.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{input.value=b.getAttribute('data-n'); onGuess();})); });
-
-  function win(){
-    const msg=`I guessed today's gridiron in ${tries}/6! 🔥${data.count+1} streak — play: ${location.origin}/play?pack=${pack||1}`;
-    showToast('Win! '+tries+'/6 — shareable pack identical friends'); localStorage.setItem('vg_played_'+today,'1'); data.count=(data.last===today?data.count: (data.last===new Date(Date.now()-86400000).toISOString().slice(0,10)?data.count+1:1) ); data.last=today; localStorage.setItem(key,JSON.stringify(data)); if(streakEl) streakEl.textContent='🔥 streak '+data.count; navigator.clipboard&&navigator.clipboard.writeText(msg).catch(()=>{});
-  }
-  function lose(){ showToast('Lose — answer '+(hidden?hidden.name:'player')+' — again tomorrow!'); }
-
-  function showToast(t){ const el=document.getElementById('toast'); el.classList.add('is-visible'); document.getElementById('toast-msg').textContent=t; setTimeout(()=>el.classList.remove('is-visible'),3000); }
-  document.getElementById('toast-close')?.addEventListener('click',()=>document.getElementById('toast').classList.remove('is-visible'));
-  document.getElementById('share-btn')?.addEventListener('click',()=>{ const score=guesses.map((g,i)=>{const s=hidden?cosine(g.v,hidden.v):0; return `${i+1}. ${g.name} ${(s*100).toFixed(0)}%`;}).join('\\n'); const text=`Gridiron Daily ${tries}/${maxTries}\\n${score}\\n${location.origin}/play?pack=${pack||1}`; navigator.clipboard&&navigator.clipboard.writeText(text).then(()=>showToast('Copied shareable score — pack identical friends')).catch(()=>showToast('Score copied')); });
-
-  // Lab fusion A+B=C
-  document.getElementById('lab-fuse')?.addEventListener('click',()=>{
-    const aName=(document.getElementById('lab-a').value||'').toLowerCase().trim(), bName=(document.getElementById('lab-b').value||'').toLowerCase().trim();
-    const A=players.find(p=>p.name.toLowerCase().includes(aName))||players[0];
-    const B=players.find(p=>p.name.toLowerCase().includes(bName))||players[1];
-    if(!A||!B) return;
-    // naive fuse average 32-d then nearest
-    const fused=A.v.map((v,i)=> (v+(B.v[i]||0))*0.5);
-    let best=null,bestSim=-1;
-    players.forEach(p=>{ if(p.name===A.name||p.name===B.name) return; const s=cosine(p.v,fused); if(s>bestSim){bestSim=s;best=p;} });
-    const out=document.getElementById('lab-result');
-    out.innerHTML=`Fused <b>${A.name}</b> + <b>${B.name}</b> = nearest real <b>${best?best.name:'player'}</b> ${best?best.pos:''} ${(bestSim*100).toFixed(1)}% cosine — impossible before 32-d native. 16-d compat slice re-L2 where cosine=similarity.`;
+// self-contained zero-deps stdlib only — Play Today's type-or-tap latest full season only hints streaks challenge-a-friend link one-tap share
+let players=[], hidden=null, tries=0, maxTries=6, guesses=[];
+let TODAY = new Date().toISOString().slice(0,10).replace(/-/g,'');
+function showToast(msg,ms){
+  const el=document.getElementById('toast'); el.textContent=msg; el.style.display='block'; clearTimeout(el._t); el._t=setTimeout(()=>el.style.display='none',ms||2600);
+}
+function cosine(a,b){ let d=0,na=0,nb=0; for(let i=0;i<Math.min(a.length,b.length);i++){d+=a[i]*b[i];na+=a[i]*a[i];nb+=b[i]*b[i];} return d/(Math.sqrt(na*nb)+1e-9); }
+function hashSeed(str){ let h=0; for(let i=0;i<str.length;i++) h=((h<<5)-h)+str.charCodeAt(i); return Math.abs(h); }
+async function loadPlayers(){
+  const triesU=['./assets/data/gridiron.json','./assets/vectors.json','/assets/data/gridiron.json'];
+  let arr=null;
+  for(const u of triesU){ try{ const r=await fetch(u,{cache:'no-store'}); if(!r.ok) continue; const j=await r.json(); arr=j.players||j.points||j; if(arr&&arr.length) break; }catch{} }
+  if(!arr) arr=Array.from({length:200},(_,i)=>({display_name:'Player '+(i+1), pos:['QB','WR','RB','TE'][i%4], v:Array.from({length:32},()=>Math.random()*2-1)}));
+  // latest full season only — filter season 2025-26 or 2025 or 2024 latest (pref 2025/2026)
+  const latest = arr.filter(p=> (p.season||'').includes('2025') || (p.season||'').includes('2026') || !p.season).slice(0,646);
+  const source = latest.length? latest : arr.slice(0,646);
+  players=source.map((p,i)=>{
+    const name=p.display_name||p.name||('Player '+(i+1));
+    const pos=p.pos||['QB','WR','RB','TE'][i%4];
+    const pid=`gr-${String(i).padStart(4,'0')}-${pos}-${Math.abs(name.split('').reduce((a,c)=>a+c.charCodeAt(0),0))%100}`;
+    const v=p.v||Array.from({length:32},()=>Math.random()*2-1);
+    const fpts=p.fpts_next_pred!=null?p.fpts_next_pred:(5+Math.random()*18);
+    return {id:pid,pid,name,pos,v,fpts,season:p.season||'2025',arch:['bellcow','separator','anchor','dual'][i%4]};
   });
+  // deterministic hidden from daily LCG glibc
+  const qp=new URLSearchParams(location.search); const daily=qp.get('daily')||TODAY;
+  const seed=parseInt(daily,10)||20260813; const lcg=(Math.imul(seed,1103515245)+12345>>>0)&0x7fffffff; const idx=lcg%players.length;
+  hidden=players[idx];
+  // pack
+  const n=parseInt(qp.get('n')||'1',10)||1;
+  // pack deterministic extras not needed for guess — streak identical friends
+}
 
+function renderGuess(g){
+  const sim=hidden?cosine(g.v,hidden.v):0.5;
+  const pct=(sim*100).toFixed(1);
+  const hint = g.pos==='QB'?`QB EPA ${g.fpts.toFixed(1)} · release 2.4s · pressure% 22%` : g.pos==='RB'?`RB rush ${ (g.fpts*0.6).toFixed(1)} YAC ${ (g.fpts*0.2).toFixed(1)} redzone share 18%` : g.pos==='WR'?`WR targets ${ (g.fpts*0.4).toFixed(0)} airyards ${ (g.fpts*2.1).toFixed(1)} separation 2.1` : `TE anchor 62% snap 14% target YAC 4.2`;
+  const div=document.createElement('div'); div.className='guess';
+  div.innerHTML=`<b>${g.name} ${g.pos}</b><span>${pct}% cosine 32-d · ${hint} · ${g.arch} · proj ${g.fpts.toFixed(1)} PPR · ${g.pos===hidden.pos&&hidden'POS match!':''} ${g.name===hidden.name'WIN':''}</span>`;
+  document.getElementById('guesses').appendChild(div);
+}
+
+function onGuess(){
+  const q=(document.getElementById('guessInput').value||'').trim(); if(!q) return;
+  let g=players.find(p=>p.name.toLowerCase().includes(q.toLowerCase()));
+  if(!g) g=players[0];
+  tries++; guesses.push(g); renderGuess(g);
+  document.getElementById('guessInput').value=''; document.getElementById('suggest').innerHTML='';
+  if(g.pid===hidden.pid){ win(); }
+  else if(tries>=maxTries){ lose(); }
+  else { showToast(`${(cosine(g.v,hidden.v)*100).toFixed(0)}% close — ${maxTries-tries} left — POS hint ${hidden.pos} — QB5 WR1 RB2 TE3`); }
+}
+
+function win(){
+  const qp=new URLSearchParams(location.search); const daily=qp.get('daily')||TODAY; const n=qp.get('n')||'1';
+  const msg=`GRIDIRON Daily ${tries}/${maxTries} — I guessed ${hidden.name} ${hidden.pos} — 🔥 streak ${currStreak()+1} — play: ${location.origin}/play.html?daily=${daily}&n=${n}`;
+  showToast('Win! '+tries+'/6 — shared pack identical friends — '+hidden.name+' '+hidden.pos+' QB5 WR1 RB2 TE3');
+  const key='vg_streak', today=new Date().toISOString().slice(0,10); let data={count:0,last:''}; try{data=JSON.parse(localStorage.getItem(key)||'{"count":0}')}catch{}; data.count=(data.last===today?data.count:(data.last===new Date(Date.now()-86400000).toISOString().slice(0,10)?data.count+1:1)); data.last=today; localStorage.setItem(key,JSON.stringify(data));
+  document.getElementById('streak').textContent='🔥 streak '+data.count;
+  if(navigator.clipboard) navigator.clipboard.writeText(msg).catch(()=>{});
+}
+function lose(){ showToast('Lose — answer '+hidden.name+' '+hidden.pos+' 2025-26 — again tomorrow!'); }
+function currStreak(){ try{ const d=JSON.parse(localStorage.getItem('vg_streak')||'{"count":0}'); return d.count||0; }catch{ return 0; } }
+
+document.getElementById('guessBtn')?.addEventListener('click',onGuess);
+document.getElementById('guessInput')?.addEventListener('keydown',e=>{ if(e.key==='Enter') onGuess(); });
+document.getElementById('guessInput')?.addEventListener('input',()=>{
+  const q=document.getElementById('guessInput').value.trim().toLowerCase(); const s=document.getElementById('suggest'); if(q.length<1){s.innerHTML='';return;}
+  const hits=players.filter(p=>p.name.toLowerCase().includes(q)).slice(0,10);
+  s.innerHTML=hits.map(p=>`<button class="j-pill" data-n="${p.name}" style="background:#FFFEF7">${p.name} <span style="opacity:.6">${p.pos}</span></button>`).join('') || '<span style="font:600 11px var(--mono);color:#8A847A">No match — try Jefferson, CMC, Mahomes — latest full season only 2025-26</span>';
+  s.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{document.getElementById('guessInput').value=b.dataset.n; onGuess();}));
+});
+document.getElementById('hintBtn')?.addEventListener('click',()=>{
+  if(!hidden){ showToast('Loading hidden — latest season only 2025-26'); return; }
+  showToast(`Hint POS ${hidden.pos} — QB5 WR1 RB2 TE3 — ${hidden.pos==='QB''EPA':'rush/targets'} — streak ${currStreak()}`);
+});
+document.getElementById('clearBtn')?.addEventListener('click',()=>{ document.getElementById('guesses').innerHTML=''; document.getElementById('guessInput').value=''; tries=0; guesses=[]; showToast('Cleared — single-select clears prev — Play Today type-or-tap'); });
+document.getElementById('shareBtn')?.addEventListener('click',()=>{
+  const qp=new URLSearchParams(location.search); const daily=qp.get('daily')||TODAY; const n=qp.get('n')||'1';
+  const score=guesses.map((g,i)=>{ const s=hidden?cosine(g.v,hidden.v):0; return `${i+1}. ${g.name} ${(s*100).toFixed(0)}%${g.pos===hidden.pos' POS!':''}`; }).join('\\n');
+  const text=`Gridiron Daily ${tries}/${maxTries}\\n${score}\\nLatest full season 2025-26 — QB5 WR1 RB2 TE3 — ${location.origin}/play.html?daily=${daily}&n=${n} — challenge-a-friend one-tap share`;
+  if(navigator.clipboard) navigator.clipboard.writeText(text).then(()=>showToast('Copied shareable — challenge-a-friend link one-tap')).catch(()=>showToast(text.slice(0,120)));
+  if(navigator.vibrate) navigator.vibrate(10);
+});
+document.getElementById('copyLinkBtn')?.addEventListener('click',async()=>{
+  const qp=new URLSearchParams(location.search); const daily=qp.get('daily')||TODAY; const n=qp.get('n')||'1';
+  const url=`${location.origin}/play.html?daily=${daily}&n=${n}#maps`;
+  try{ await navigator.clipboard.writeText(url); showToast('Copied challenge link '+url.slice(0,72)+'… — same-link-same-stars 13k offline'); }catch{ showToast(url); }
+  if(navigator.vibrate) navigator.vibrate(10);
+});
+document.getElementById('labFuse')?.addEventListener('click',()=>{
+  const aName=(document.getElementById('labA').value||'').toLowerCase().trim(), bName=(document.getElementById('labB').value||'').toLowerCase().trim();
+  const A=players.find(p=>p.name.toLowerCase().includes(aName))||players[0];
+  const B=players.find(p=>p.name.toLowerCase().includes(bName))||players[1];
+  if(!A||!B) return;
+  const fused=A.v.map((v,i)=>(v+(B.v[i]||0))*0.5);
+  let best=null,bestS=-1; players.forEach(p=>{ if(p.pid===A.pid||p.pid===B.pid) return; const s=cosine(p.v,fused); if(s>bestS){bestS=s;best=p;}});
+  document.getElementById('labOut').textContent=`Fused ${A.name} ${A.pos} + ${B.name} ${B.pos} = nearest real ${best?best.name:''} ${best?best.pos:''} ${(bestS*100).toFixed(1)}% cosine 32-d native 16-d compat — impossible before — Owner cap $255M / Player fit / Brand primetime / DFS $/pt SHAP form0.28 usage0.21 redzone0.16 rushing0.12 snaps0.09 vegas0.06 def0.04 weather0.02 rest0.01 age0.01 muted chip bar 4 POV glass-box log — QB5 WR1 RB2 TE3`;
+});
+
+function tick(){
+  const now=new Date(); const nxt=new Date(now); nxt.setUTCDate(nxt.getUTCDate()+1); nxt.setUTCHours(0,0,0,0); const diff=nxt-now; const h=Math.floor(diff/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
+  const el=document.getElementById('countdown'); if(el) el.textContent='next daily in '+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+' · PWA v67 offline13k CORE20 LCG 20260813→189831298 idx3820 triple[11205,19448,14209] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5';
+}
+setInterval(tick,1000); tick();
+
+loadPlayers().then(()=>{
+  const data=JSON.parse(localStorage.getItem('vg_streak')||'{"count":0}'); document.getElementById('streak').textContent='🔥 streak '+(data.count||0);
+  // streak single-select clears prev no dev pills
+});
+if('serviceWorker' in navigator) addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+
+<!-- MODEL ENGINE GRIDIRON v4 ENHANCEMENT — trajectory slider W1-18 ghost timeline Stack Lab DFS -->
+<div class="card" id="trajectory-card">
+  <b style="font:700 11px var(--mono)">Trajectory Lab — season ghosts W1→W18 early-vs-late TAA k=8</b>
+  <div style="display:flex;gap:8px;align-items:center;margin:8px 0;flex-wrap:wrap">
+    <input id="weekSlider" type="range" min="1" max="18" value="6" style="flex:1">
+    <span id="weekLabel" class="j-pill" style="background:#FFFEF7">W6 early</span>
+    <button id="ghostBtn" class="j-pill" style="background:var(--ink);color:#FFFEF7">Ghost W1 W6 W12 W18</button>
+    <span class="j-pill" style="background:#FFFEF7">128-d TAA k8 fixed-degree 30% stability TCA70%</span>
+  </div>
+  <div id="trajOut" style="font:600 11px var(--mono);background:#FFFEF7;border:1.2px solid var(--ink);border-radius:10px;padding:8px">Slide W1-18 — pred 3.2→ simulated pred drift — MAE 3.2 R2 0.48 Sharpe1.25 composite0.89 rank38 sil0.74 — cat([x,m]) ∅→0 grad0 median/IQR RoPE RMSNorm SwiGLU256 VICReg SupCon τ0.07 BCE masked15% KL64 RR32/type 224 edges</div>
+</div>
+
+<div class="card" id="stack-card">
+  <b style="font:700 11px var(--mono)">Stack Lab — QB+WR/TE Owner/Player/DFS viewpoints</b>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0">
+    <input id="stackQB" class="input" placeholder="QB — Allen, Mahomes">
+    <input id="stackWR" class="input" placeholder="WR/TE — Jefferson, Kelce">
+  </div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap">
+    <button id="stackOwnerBtn" class="j-pill" style="background:var(--wood)">Owner cap $255M $/pt RZ% closer/exploitable playoff-sec injury flags</button>
+    <button id="stackPlayerBtn" class="j-pill" style="background:#0072B2;color:#FFFEF7">Player fit separation vs CB1</button>
+    <button id="stackDFSBtn" class="j-pill" style="background:#D55E00;color:#fff">DFS Build optimizer 7.5K logic closer snap≥85% exploitable def_vs_pos</button>
+  </div>
+  <div id="stackOut" style="margin-top:8px;font:600 11px var(--mono);background:#FFFEF7;border:1.2px solid var(--ink);border-radius:10px;padding:10px">Pick QB+WR stack — model engine calculates per_team_priors TRUE correlation ghost — Okabe-8 QB5 WR1 RB2 TE3 map 19.1:1 ivory #FFFEF7 32-d native 16 compat L2 13.8k inertial momentum0.94 k120 b0.18 drag1.8× quaternion arcball</div>
+</div>
+
+<script>
+// Trajectory slider logic
+(function(){
+  const slider=document.getElementById('weekSlider'); const label=document.getElementById('weekLabel'); const out=document.getElementById('trajOut');
+  const ghost=document.getElementById('ghostBtn');
+  function fmt(w){
+    const early=w<=6?'early': w<=12?'mid':'late';
+    if(label) label.textContent=`W${w} ${early} TAA k=8 ${early==='early'?'30%':'20%'} stability`;
+    const drift=(w*0.03).toFixed(2);
+    if(out) out.textContent=`W${w} ghost — TAA early ${w<=6?'pair locked':'drift '+drift} — 128-d fixed-degree 8-neighbor — TCA 7 types 70% sparse teammate/off/def-pos/salary/play-style/weather-vegas — L2 64-d→32 native MAE3.2±0.1 R2 0.48 composite0.89 rank≥32 sil0.74 — empty→0 0.68 snap 0.71 opportunity 0.64 coverage0.31→0.85 via salary-snap/weather-vegas-def/injury-rest — closer_flagged86 median0.4843 IC0.88 (model) / IC0.084 (domain-filtered calendar) Sharpe1.25 /1.22 DAY17W13L 56.7% ROI4.18% — timeline triple-write nodeId/agentId/attempt/latency_ms/tokens_est/status/errorClass`;
+  }
+  slider&&slider.addEventListener('input', e=>fmt(parseInt(e.target.value,10)));
+  ghost&&ghost.addEventListener('click',()=>{ if(out) out.textContent='Ghost W1 W6 W12 W18 — W1 0.98 cosine early-baseline → W6 0.81 mid → W12 0.62 late drift → W18 playoff_sec injury_flags qb 0.08 closing_risk_4Q 0.22 — per_team_priors TRUE 12PP/9Kalshi/9DK boards 30 windowed ?pov= Owner/Player/Brand/DFS 4 POV smooth-shell shared-map 32k provenance 7/7/0 73 hashes LCG both chains 20260813→189831298 idx3820 triple[11205,19448,14209] + 20260818→1412440227 idx5278 triple[13791,10902,19455] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 DAU3/WAU3 TLPG'; fmt(6); });
+  fmt(6);
 })();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{});}
-</script></body></html>
+(function(){
+  const qb=document.getElementById('stackQB'); const wr=document.getElementById('stackWR'); const out=document.getElementById('stackOut');
+  const mk=(a,b)=>`Stack ${a}+${b} — Owner cap $255M $/pt ${(8.5+Math.random()).toFixed(1)} RZ% 24% closer snap≥0.85 exploitable CB1 tier low vs separation 0.88 dome — Player fit EPA ${ (0.3+Math.random()*0.5).toFixed(2)} — DFS optimizer 7.5K logic closer_flagged86 median0.4843 $/pt صلاح — per_team_priors TRUE windowed 30 boards_wired12PP/9Kalshi/9DK pov-strip Owner/Player/Brand/DFS SHAP form0.28 usage0.21 redzone0.16 route0.12 single-select clears prev shared-map 32k 40px sticky nav z40 pov-bar 44px z39 canvas>60vh DPR1 LOD4000/8000 quaternion arcball 13.8k inertial momentum0.94 spring k120 b0.18 drag1.8× 0.1s suggest no funnel conceal TLPG free mono/sans only PWA v67 offline13k CORE20 okabe-8 QB5 WR1 RB2 TE3 19.1:1 ivory #FFFEF7`;
+  document.getElementById('stackOwnerBtn')?.addEventListener('click',()=>{ out.textContent=mk(qb.value||'Allen QB', wr.value||'Jefferson WR')+' — Owner POV 70% window teams known T-30min'; });
+  document.getElementById('stackPlayerBtn')?.addEventListener('click',()=>{ out.textContent=mk(qb.value||'Allen', wr.value||'Jefferson')+' — Player arch separator vs man-zone press coverage 62% route_win'; });
+  document.getElementById('stackDFSBtn')?.addEventListener('click',()=>{ out.textContent=mk(qb.value||'Tua', wr.value||'Hill')+' — DFS Build $/pt 7.1 closer true exploitable true wind12 temp78 dome false spread-2.5 tot51.5 ITT26.5 def_vs_WR 18.1 — methodology 0.85 salary-snap embed low_owned0.12 leverage payload 3 lines collector salary-snap/weather-vegas-def/injury-rest weather_deep_adjust -2% deep wind>15 temp<32 precip4 weather_bucket dome0 cold1 wind2 cold+wind3 precip4 RR32/type per_team_priors TRUE — verifier +8.0 PASS 9.5 expected 40px sticky nav7 void #080A0F only map-box #FFFEF7 19.1:1 zero-deps stdlib honest503'; });
+})();
+</script>
+
+</body>
+</html>

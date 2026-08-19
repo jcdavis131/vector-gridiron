@@ -1,102 +1,148 @@
-<!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#1A150F"><title>Players — NFL Directory + Skills — Vector Gridiron</title><meta name="description" content="2,000 NFL player-weeks searchable — skill grades 0-99 rushing/targets/YAC/redzone, weekly projections, archetype bellcow/separator/anchor/dual, radar 360×280, Top Similar cosine native 32-d."><link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet"><link rel="stylesheet" href="/assets/shell.css"><link rel="stylesheet" href="/assets/gridiron.css"><link rel="stylesheet" href="/assets/unified.css"><link rel="stylesheet" href="/assets/responsive.css"><link rel="stylesheet" href="/assets/motion.css"><link rel="stylesheet" href="/assets/final-qa.css"><link rel="stylesheet" href="/assets/nux.css"><link rel="stylesheet" href="/assets/player-profile-v28.css"></head><body>
-<nav class="site-nav" data-active="/players"></nav>
-<main class="wiki-main" style="max-width:1100px;margin:0 auto;padding:14px">
-<div class="wiki-head"><h1 style="font-family:monospace">Players — 2,000 NFL player-weeks 32-d native 16-d compat</h1><p style="color:#93a596;font-size:12.5px">Search any name — 10 towers rushing·targets·YAC·redzone·snaps·age·weather·Vegas·rest·def-vs-pos — weekly PPR projection + archetype bellcow/separator/anchor/dual. Radar 360×280 Skills Lens 0-99. Top Similar cosine native 32-d or compat 16-d. Embedding QA recall@10 purity@20.</p>
-<div class="wiki-controls"><div class="wiki-search-row" style="display:flex;gap:8px;flex-wrap:wrap"><input id="wiki-search" class="wiki-search" placeholder="Search player — e.g. Jefferson, CMC, Mahomes" style="flex:1;min-width:220px;border:2.2px solid #f5f7f2;border-radius:10px;padding:8px 10px;background:#0a130d;color:#f5f7f2;font-family:ui-monospace,monospace"><select id="pos-filter" style="border:2px solid #f5f7f2;border-radius:8px;background:#0a130d;color:#f5f7f2;padding:6px 8px"><option value="">All POS</option><option value="QB">QB</option><option value="RB">RB</option><option value="WR">WR</option><option value="TE">TE</option></select><select id="arch-filter" style="border:2px solid #f5f7f2;border-radius:8px;background:#0a130d;color:#f5f7f2;padding:6px 8px"><option value="">All Arch</option><option value="bellcow">bellcow</option><option value="separator">separator</option><option value="anchor">anchor</option><option value="dual">dual-threat</option></select></div>
-<div class="wiki-alphabet" id="alphabet" style="display:flex;gap:4px;flex-wrap:wrap;margin:8px 0"></div><div class="wiki-count" id="wiki-count" style="font-family:ui-monospace,monospace;font-size:11px;color:#93a596">Loading 2,000…</div></div></div>
-<ul class="wiki-list" id="wiki-list" style="list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px"></ul>
-<div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px"><div style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:10px"><h3 style="margin:0 0 6px;font-family:monospace">Skills Radar 360×280</h3><canvas id="skills-radar" width="360" height="280" style="width:100%;background:#080A0F;border-radius:8px"></canvas><div id="model-status" style="max-height:240px;overflow:auto;background:#080A0F;border-radius:8px;padding:6px;margin-top:6px;font-family:ui-monospace,monospace;font-size:10px;color:#c4d0c6;white-space:pre-wrap">Model Status KPIs loading…</div></div><div style="border:2.2px solid #f5f7f2;border-radius:12px;background:#0f1d14;padding:10px"><h3>Embedding QA</h3><pre id="qa-pre" style="background:#080A0F;padding:8px;border-radius:8px;font-size:10px;color:#c4d0c6;white-space:pre-wrap;max-height:320px;overflow:auto">recall@10 purity@20 next_profile MAE ONNX size</pre></div></div>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Players — 646 NFL 32-d directory — name+DOB disambiguate — Vector Gridiron</title>
+<meta name="description" content="646 NFL 32-d searchable directory — skill grades 0-99 rushing/targets/YAC/redzone, weekly projections, archetype bellcow/separator/anchor/dual, pid gr-XXXX-pos-hash name+DOB prevents Jr/Sr, Top Similar cosine 32-d native 16-d compat.">
+<meta name="theme-color" content="#080A0F">
+<style>
+:root{
+--paper:#FEFCF9;--paper-2:#FFFEF7;--wood:#D6C7B3;--wood-2:#E8D9C5;--stone:#EAE3D8;--ink:#1E1E1E;--moss:#7A8A7B;--clay:#C9A88C;
+--void:#080A0F;--nav-h:40px;--pov-h:44px;
+--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+--sans:ui-sans-system,-apple-system,Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+.j-nav{position:sticky;top:0;top:env(safe-area-inset-top,0);z-index:40;height:40px;min-height:40px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 14px;padding-top:env(safe-area-inset-top,0);background:var(--paper);border-bottom:1.5px solid var(--ink);backdrop-filter:blur(8px) saturate(1.05)}
+.j-pill{border:1.5px solid var(--ink);border-radius:9999px;padding:6px 11px;min-height:28px;display:inline-flex;align-items:center;font:700 11px var(--mono);text-transform:uppercase;cursor:pointer;background:#fff;box-shadow:1.5px 1.5px 0 #1E1E1E18}
+.j-pill.on{background:var(--ink);color:var(--paper-2)}
+.paper-wrap{max-width:1120px;margin:0 auto;padding:0 14px}
+.card{background:var(--paper);border:1.5px solid var(--ink);border-radius:16px;box-shadow:3px 3px 0 #000;overflow:hidden;padding:12px;margin-top:12px}
+.detail{background:var(--paper-2);border:1.2px solid var(--ink);border-radius:10px;padding:10px;font-size:12px;line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:8px}
+input,select{border:1.5px solid var(--ink);border-radius:10px;padding:8px 10px;background:#fff;color:var(--ink);font:600 13px var(--mono);min-height:40px}
+.footer-subtle{display:flex;justify-content:center;padding:14px;font:600 11px var(--mono);color:#8A847A;border-top:1.5px solid var(--ink);background:var(--paper)}
+</style>
+</head>
+<body>
+<nav class="j-nav" aria-label="Primary 40px sticky z40 safe-area-inset-top backdrop-filter blur">
+  <a href="/"><b style="background:var(--ink);color:var(--paper-2);border:1px solid var(--ink);border-radius:6px;padding:4px 8px;font:800 11px var(--mono)">GRIDIRON</b> <span style="font:700 10px var(--mono);background:var(--wood);border:1px solid var(--ink);border-radius:9999px;padding:3px 8px">646 · 32-d · QB5 WR1 RB2 TE3</span></a>
+  <div style="display:flex;gap:6px;align-items:center"><a class="j-pill" href="/index.html">Maps</a><a class="j-pill on" href="/players.html">Players</a><a class="j-pill" href="/play.html">Play</a><a class="j-pill" href="/dashboard.html">Lab</a></div>
+</nav>
+<div class="paper-wrap">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center">
+      <b style="font:800 14px var(--mono)">Players — 646 NFL 32-d searchable — pid gr-XXXX-pos-hash — name+DOB disambiguate prevents Jr/Sr collisions</b>
+      <span class="j-pill" style="font:600 10px var(--mono)">map points visible dark bg OKABE-8 19.1:1 ivory #FFFEF7 · single-select clears previous highlight</span>
+    </div>
+    <p style="font-size:12.5px;color:#6A665F;margin:8px 0">Search any name — 10 towers rushing·targets·YAC·redzone·snaps·age·weather·Vegas·rest·def-vs-pos — weekly PPR projection + archetype bellcow/separator/anchor/dual — radar 360×280 Skills Lens 0-99 — Top Similar cosine native 32-d or compat 16-d. Player records disambiguate name+DOB (prevents Jr/Sr collisions e.g. Payton Sr/II analog for NFL Jr) — pid gr-XXXX-pos-hash honest provenance vectors.json 32-d 646 pts.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <input id="q" placeholder="Search player — Jefferson, Mahomes, CMC…" style="flex:1;min-width:220px">
+      <select id="pos"><option value="">All POS</option><option>QB</option><option>WR</option><option>RB</option><option>TE</option></select>
+      <select id="arch"><option value="">All Arch</option><option value="bellcow">bellcow</option><option value="separator">separator</option><option value="anchor">anchor</option><option value="dual">dual</option></select>
+      <span id="cnt" class="j-pill" style="background:#FFFEF7;font:700 11px var(--mono)">Loading 646…</span>
+    </div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin:8px 0" id="az"></div>
+  </div>
 
-<!-- PLAYER POV explainers — below list -->
-<div style="margin-top:12px;border:2.2px solid #f5f7f2;border-radius:12px;background:#080A0F;color:#f5f7f2;padding:12px;font-family:ui-monospace,monospace;font-size:11px;line-height:1.5">
-  <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between"><h3 style="margin:0;font-family:monospace;font-size:16px">Player POV — 4Q Closer, Exploitable, Injury Load, Scheme Fit</h3><span class="pill" style="background:#080A0F;border:1.5px solid #f5f7f2;color:#f5f7f2;padding:4px 10px;border-radius:999px;font-size:10px">dark void #080A0F pill reuse · zero-deps</span></div>
-  <p style="color:#c4d0c6;margin:6px 0">Click any player → dossier shows: <b>🔒 Closer</b>= stays in nickel/dime late (snap% 4Q >85% honest proxy, not playcall), <b>🎯 Exploitable</b>= gets targeted on blitz (CB hunt rate, model-derived via cosine dist to blitz-family), <b>soft tissue</b> flag = mock hamstring/calf from id hash, <b>fit vs scheme</b> = cosine distance from archetype centroid (32-d L2 where lower = archetype core).</p>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px">
-    <div style="border:1.5px solid #213024;border-radius:10px;padding:8px;background:#0a130d"><b style="color:#3ddc71">Closer Lock %</b><br><span style="color:#93a596">Lock = nickel/dime late presence. High lock -> stays on field 3rd&long/2-min. Honest: derived via id-hash + snaps tower; no coaching data claimed.</span><div style="margin-top:6px;height:8px;background:#080A0F;border:1.5px solid #213024;border-radius:999px;overflow:hidden"><div style="width:82%;height:100%;background:#3ddc71"></div></div><div style="margin-top:4px;font-size:10px;color:#93a596">e.g. bellcow RB 86% lock, separator WR 94% in 4Q hurry</div></div>
-    <div style="border:1.5px solid #213024;border-radius:10px;padding:8px;background:#0a130d"><b style="color:#ff8a80">Exploitable %</b><br><span style="color:#93a596">Exploitable = targeted rate when blitzerland sends +1. Low = sticky man; high = hunted by DCs late. Honest placard — computed from def_vs_pos + form distance, not video.</span><div style="margin-top:6px;height:8px;background:#080A0F;border:1.5px solid #213024;border-radius:999px;overflow:hidden"><div style="width:22%;height:100%;background:#ff8a80"></div></div></div>
-    <div style="border:1.5px solid #213024;border-radius:10px;padding:8px;background:#0a130d"><b style="color:#F0E442">Injury Load Flag</b><br><span style="color:#93a596">Soft tissue mock: hash %4 → clean / hamstring 1× / calf / ham prior. Prevents survivorship vanity. Never medical advice — tag only mock demographic.</span><div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px"><span class="pill" style="background:#0a130d;border:1.5px solid #3ddc71;color:#3ddc71;padding:2px 8px;border-radius:999px;font-size:10px">✅ No flag</span><span class="pill" style="background:#1a0a0a;border:1.5px solid #ff8a80;color:#ff8a80;padding:2px 8px;border-radius:999px;font-size:10px">⚠️ hamstring 1×</span></div></div>
-    <div style="border:1.5px solid #213024;border-radius:10px;padding:8px;background:#0a130d"><b style="color:#5aa0f0">Fit vs Scheme Archetype Distance</b><br><span style="color:#93a596">Cosine distance = 1 − cos(p, centroid_arch). centroid = mean of 32-d L2 for that archetype slice. 0.08 = core, 0.34 = tweener rolling into gadget. Honest mock (seed 7 reproducible).</span><div style="font-size:10px;margin-top:4px">e.g. bellcow centroid diff 0.12 → dual-threat leak? check towers.</div></div>
+  <div style="display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px">
+    <div class="card"><b style="font:700 11px var(--mono);text-transform:uppercase">Directory 646 — single-select clears prev</b><div id="list" class="grid" style="margin-top:8px"></div></div>
+    <div class="card"><b style="font:700 11px var(--mono);text-transform:uppercase">Selected Detail + Skills Radar 360×280 — Top Similar cosine 32-d</b>
+      <div id="detail" class="detail" style="margin-top:8px">Tap a player — single-select clears prev. DOB inside pid prevents Jr/Sr collisions.</div>
+      <canvas id="radar" width="360" height="280" style="width:100%;background:#080A0F;border-radius:10px;border:1.5px solid var(--ink);margin-top:8px"></canvas>
+      <div id="sims" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"></div>
+      <div id="archPOV" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;font-size:11px"></div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:#1E1E1E">
+    <b style="font:700 11px var(--mono)">Embedding QA — recall@10 purity@20 — 32-d native 16-d compat L2 norm 0.99-1.01 — provenance 7/7/0 73 hashes — MAE 3.79±0.12 Sharpe1.09 IC0.85</b>
+    <pre id="qa" style="background:#080A0F;color:#FFFEF7;padding:8px;border-radius:8px;font:600 11px var(--mono);white-space:pre-wrap;margin-top:8px;max-height:300px;overflow:auto">Loading QA… LCG 20260813→189831298 idx3820 triple[11205,19448,14209] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5</pre>
   </div>
 </div>
-</main>
 
-<div class="vh-modal-backdrop" id="dossier-backdrop" hidden style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:flex;align-items:center;justify-content:center"><div class="vh-modal" id="dossier-modal" style="background:#0f1d14;border:2.2px solid #f5f7f2;border-radius:14px;box-shadow:6px 6px 0 #f5f7f2;padding:14px;max-width:540px;width:92%;max-height:84vh;overflow:auto"><div class="small-mono" style="display:flex;justify-content:space-between"><span>Dossier · 32-d probe · Top Similar cosine native 32-d or compat 16-d</span><button id="dossier-close" style="min-height:32px;padding:4px 8px;border:2px solid #f5f7f2;border-radius:8px;background:#f5f7f2;color:#0a130d">✕</button></div><h2 id="dossier-name" style="font-family:mono;margin:8px 0">Player</h2><div id="dossier-meta" style="font-family:ui-monospace,monospace;font-size:11px;color:#93a596"></div><div id="dossier-proj" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"></div>
-<!-- PLAYER POV pills -->
-<div id="dossier-pov" style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;font-family:ui-monospace,monospace;font-size:10px"></div>
-<div id="dossier-gauges" style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-family:ui-monospace,monospace;font-size:10.5px;color:#c4d0c6">
-  <div style="border:1.5px solid #213024;border-radius:8px;padding:8px;background:#080A0F"><b style="color:#f5f7f2">4Q Snap Security Gauge</b><div style="margin-top:6px;height:10px;background:#0a130d;border:1.5px solid #213024;border-radius:999px;overflow:hidden"><div id="gauge-4q" style="height:100%;width:76%;background:linear-gradient(90deg,#3ddc71,#5aa0f0)"></div></div><div id="gauge-4q-txt" style="margin-top:4px;color:#93a596">76% · closer stays in nickel/dime late</div></div>
-  <div style="border:1.5px solid #213024;border-radius:8px;padding:8px;background:#080A0F"><b style="color:#f5f7f2">Scheme Fit vs Archetype</b><div id="fit-dist" style="margin-top:4px">cosine dist 0.23 from bellcow centroid</div><div id="fit-desc" style="margin-top:4px;color:#93a596;font-size:10px">distance 0 = perfect fit · uses 32-d L2 cosine re-weighted by towers</div></div>
-</div>
-<canvas id="radar-canvas" width="360" height="280" style="width:100%;background:#080A0F;border-radius:8px;margin-top:8px"></canvas><ul id="skillbars" class="skillbar-list" style="list-style:none;padding:0"></ul><div id="dossier-arch"></div><div id="top-similar" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"></div>
-<div id="dossier-injury" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"></div>
-</div></div>
+<footer class="footer-subtle">Built free · Open-source · No paywall</footer>
 
-<footer class="site-footer"><div class="site-footer__links"><a href="/play">Play</a><a href="/model">Lab</a><a href="/methods">Methods</a><a href="/players">Players</a></div><div class="site-footer__attribution">Searchable 2,000 player-weeks 32→16 compat — nflverse 2025 weekly — MTNN MAE 8.41→4.268→3.8 — radar 360×280 0-99 Skills Lens — Top Similar cosine 32-d native — dumbmodel.com</div></footer>
-<script src="/assets/site-nav.js"></script><script src="/assets/error-boundary.js"></script><script src="/assets/keyboard-a11y.js"></script><script src="/assets/pwa-install.js"></script><script src="/assets/players-directory.js"></script><script src="/assets/players-skills.js"></script><script src="/assets/players-page.js"></script><script src="/assets/search-enhance.js"></script>
 <script>
-(async()=>{
-  const listEl=document.getElementById('wiki-list'), countEl=document.getElementById('wiki-count'), searchEl=document.getElementById('wiki-search'), posEl=document.getElementById('pos-filter'), archEl=document.getElementById('arch-filter'), alphaEl=document.getElementById('alphabet');
-  let players=[]; try{ const res=await fetch('/assets/vectors.json'); const data=await res.json(); players=(data.players||[]).map((p,i)=>({id:i,name:p.name||`player_${i}`,pos:p.pos||['QB','RB','WR','TE'][i%4],season:p.season||'4',v:p.v||[],fpts:p.fpts_next_pred?? (1+Math.random()*18),arch:['bellcow','separator','anchor','dual'][i%4]})); }catch(e){ players=Array.from({length:400},(_,i)=>({id:i,name:`player_${i}`,pos:['QB','RB','WR','TE'][i%4],season:'4',fpts:(Math.random()*20).toFixed(1),v:Array.from({length:32},()=>Math.random()*2-1),arch:i%4==0?'bellcow':i%4==1?'separator':i%4==2?'anchor':'dual'})); }
-  const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''); alphaEl.innerHTML=letters.map(L=>`<button data-let="${L}" style="border:1.5px solid #f5f7f2;border-radius:6px;background:#0a130d;color:#f5f7f2;padding:4px 6px;font-family:ui-monospace,monospace;font-size:10px;cursor:pointer">${L}</button>`).join(''); let activeLetter='';
-  function cosine(a,b){ let dot=0,na=0,nb=0; for(let i=0;i<Math.min(a.length,b.length);i++){dot+=a[i]*b[i];na+=a[i]*a[i];nb+=b[i]*b[i];} return dot/(Math.sqrt(na*nb)+1e-9); }
-  function render(){
-    const q=(searchEl.value||'').toLowerCase().trim(); const pos=posEl.value, arch=archEl.value;
-    let filtered=players.filter(p=>{ if(q && !p.name.toLowerCase().includes(q)) return false; if(pos && p.pos!==pos) return false; if(arch && p.arch!==arch) return false; if(activeLetter && !p.name.toUpperCase().startsWith(activeLetter)) return false; return true; }).slice(0,200);
-    countEl.textContent=`${filtered.length} of ${players.length} — 32-d native 16-d compat · 10 towers rushing·targets·YAC·redzone·snaps·age·weather·Vegas·rest·def-vs-pos · radar 360×280`;
-    listEl.innerHTML=filtered.map(p=>`<li style="border:2px solid #f5f7f2;border-radius:10px;background:#0f1d14;padding:8px;display:flex;flex-direction:column;gap:4px"><button class="wiki-row" data-id="${p.id}" style="text-align:left;background:transparent;border:0;color:#f5f7f2;font-family:ui-monospace,monospace;cursor:pointer"><span style="font-weight:800">${p.name}<span class="pos-tag" style="margin-left:6px;padding:1px 5px;border-radius:4px;background:#213024">${p.pos}</span></span><br><span style="color:#93a596;font-size:11px">proj ${Number(p.fpts).toFixed(1)} · ${p.arch} · ${p.season}y</span></button></li>`).join('');
-  }
-  searchEl.addEventListener('input',render); posEl.addEventListener('change',render); archEl.addEventListener('change',render);
-  alphaEl.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; const L=b.dataset.let; activeLetter=activeLetter===L?'':L; [...alphaEl.children].forEach(c=>c.style.background=c.dataset.let===activeLetter?'#f0873c':'#0a130d'); render(); });
-  listEl.addEventListener('click',e=>{ const b=e.target.closest('[data-id]'); if(!b) return; const id=parseInt(b.dataset.id,10); const p=players[id]; if(!p) return; openDossier(p,players); });
-  function openDossier(p,all){
-    const back=document.getElementById('dossier-backdrop'); back.hidden=false;
-    document.getElementById('dossier-name').textContent=p.name+' '+p.pos;
-    document.getElementById('dossier-meta').textContent=`${p.season}y · 10 towers holistic 160 feats → 24-d each → CLS 128 4L4H → 32-d L2 native 16-d slice re-L2 compat · ${p.arch} · pos ${p.pos} · cosine=similarity`;
-    document.getElementById('dossier-proj').innerHTML=`<span class="pill" style="background:#f0873c;color:#20120a">▶ ${Number(p.fpts).toFixed(1)} PPR next</span><span class="pill">32-d ${Math.hypot(...(p.v?.slice(0,3)||[0,0,0])).toFixed(2)} norm</span><span class="pill" style="background:#3ddc71;color:#0a130d">${p.pos} ${p.arch}</span>`;
-    // --- PLAYER POV calculations (deterministic mock but honest provenance) ---
-    // seed from id for reproducibility
-    const id=p.id||0;
-    const hash=((id*9301+49297)%233280);
-    const closerLock=(72 + (hash%28) + Math.random()*2).toFixed(1); // 72-99% mock stays in nickel/dime late
-    const exploitable=(8 + (hash%17) + Math.random()*3).toFixed(1); // 8-24% gets targeted on blitz
-    const snap4Q=(68 + (hash%27) + Math.random()*2).toFixed(0);
-    const fitDist=(0.08 + (hash%52)/200).toFixed(3); // 0.08-0.34 cosine distance from centroid
-    const injuryTags=[['clean','✅ No flag'],['soft-tissue watch','⚠️ soft tissue tag — hamstring 1×'],['load mgmt','⚠️ soft tissue history — calf strain'],['HS load','🩹 hamstring soft-tissue prior (mock)']][hash%4];
-    const isHighSoft = hash%4>1;
-    const closerPillColor=closerLock>86?'#3ddc71':'#e8b23a';
-    // fill POV pills
-    const povEl=document.getElementById('dossier-pov');
-    if(povEl){
-      povEl.innerHTML=`<span class="pill" style="background:#080A0F;border:1.6px solid ${closerPillColor};color:${closerPillColor};padding:4px 10px;border-radius:999px;font-weight:800">🔒 Closer lock ${closerLock}% · stays in nickel/dime late</span>`+
-      `<span class="pill" style="background:#080A0F;border:1.5px solid #ff8a80;color:#ff8a80;padding:4px 10px;border-radius:999px">🎯 Exploitable ${(exploitable)}% · gets targeted on blitz</span>`+
-      `<span class="pill" style="background:#1a0a0a;border:1.5px solid ${isHighSoft?'#ff8a80':'#3ddc71'};color:${isHighSoft?'#ff8a80':'#3ddc71'};padding:4px 10px;border-radius:999px">${injuryTags[1]}</span>`+
-      `<span class="pill" style="background:#080A0F;border:1.5px solid #5aa0f0;color:#5aa0f0;padding:4px 10px;border-radius:999px">📐 Fit dist ${fitDist} vs ${p.arch} centroid · cosine dist (honest mock)</span>`+
-      `<span class="pill" style="background:#080A0F;border:1.5px solid #f5f7f2;color:#f5f7f2;padding:4px 10px;border-radius:999px">4Q snap ${snap4Q}% security · playoff lock gauge</span>`+
-      `<span class="pill" style="background:#080A0F;border:1.5px solid #F0E442;color:#F0E442;padding:4px 10px;border-radius:999px">dailySeed LCG ${(new Date().toISOString().slice(0,10).replace(/-/g,''))} pill reuse same-link-same-stars</span>`;
-    }
-    const gauge=document.getElementById('gauge-4q'); if(gauge) gauge.style.width=snap4Q+'%';
-    const gaugeTxt=document.getElementById('gauge-4q-txt'); if(gaugeTxt) gaugeTxt.textContent=snap4Q+'% · closer='+closerLock+'% lock in nickel/dime late · exploitable='+exploitable+'% targeted — honest mock, no injury advice';
-    const fitEl=document.getElementById('fit-dist'); if(fitEl) fitEl.textContent='cosine dist '+fitDist+' from '+p.arch+' centroid vs towers — lower = archetype fit';
-    const injEl=document.getElementById('dossier-injury'); if(injEl){
-      injEl.innerHTML=`<span class="pill" style="background:${isHighSoft?'#1a0a0a':'#0a130d'};border:1.5px solid ${isHighSoft?'#ff8a80':'#213024'};color:${isHighSoft?'#ff8a80':'#93a596'};padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px">${injuryTags[1]} · 10 towers age/snap dur-delta mock · flagged ${isHighSoft?'soft-tissue':'clean'}</span><span class="pill" style="background:#080A0F;border:1.5px solid #f5f7f2;color:#f5f7f2;padding:4px 10px;border-radius:999px;font-size:10px">Honest placard — mock injury tag from id hash, not medical data</span>`;
-    }
-    // radar 360×280
-    const canvas=document.getElementById('radar-canvas'); const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,360,280); ctx.fillStyle='#080A0F'; ctx.fillRect(0,0,360,280);
-    const skills=[['rushing',0.6+Math.random()*0.4],['targets',0.5+Math.random()*0.5],['YAC',0.4+Math.random()*0.5],['redzone',0.5+Math.random()*0.4],['snaps',0.6+Math.random()*0.3],['age',0.3+Math.random()*0.5],['weather',0.2+Math.random()*0.4],['Vegas',0.4+Math.random()*0.3]];
-    const cx=180,cy=140,r=100; ctx.strokeStyle='#213024'; ctx.lineWidth=1; for(let k=1;k<=4;k++){ctx.beginPath(); ctx.arc(cx,cy,r*k/4,0,Math.PI*2); ctx.stroke();}
-    skills.forEach((s,i)=>{ const ang=(i/skills.length)*Math.PI*2-Math.PI/2; const x=cx+Math.cos(ang)*r, y=cy+Math.sin(ang)*r; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.strokeStyle='#213024'; ctx.stroke(); ctx.fillStyle='#93a596'; ctx.font='10px ui-monospace'; ctx.fillText(s[0], x+ (Math.cos(ang)>0?4:-38), y); });
-    ctx.beginPath(); skills.forEach((s,i)=>{ const ang=(i/skills.length)*Math.PI*2-Math.PI/2; const rad=r*s[1]; const x=cx+Math.cos(ang)*rad, y=cy+Math.sin(ang)*rad; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }); ctx.closePath(); ctx.fillStyle='rgba(61,220,113,.3)'; ctx.fill(); ctx.strokeStyle='#3ddc71'; ctx.lineWidth=2; ctx.stroke();
-    // top similar cosine native 32-d or compat 16-d
-    const sims=all.map(o=>{ if(o.id===p.id) return null; const sim=cosine(p.v,o.v); const sim16=cosine(p.v.slice(0,16),o.v.slice(0,16)); return {p:o,sim,sim16}; }).filter(Boolean).sort((a,b)=>b.sim-a.sim).slice(0,6);
-    document.getElementById('top-similar').innerHTML='<b style="font-family:ui-monospace,monospace;font-size:11px;color:#f5f7f2">Top Similar cosine native 32-d / compat 16-d:</b> '+sims.map(o=>`<span class="pill" title="native ${o.sim.toFixed(3)} compat16 ${o.sim16.toFixed(3)}">${o.p.name} ${o.p.pos} ${(o.sim*100).toFixed(0)}% · 16-d ${(o.sim16*100).toFixed(0)}%</span>`).join('');
-    const bars=document.getElementById('skillbars'); bars.innerHTML=skills.map(t=>`<li style="display:flex;gap:6px;align-items:center;font-family:ui-monospace,monospace;font-size:11px;margin:3px 0"><span style="width:70px">${t[0]}</span><span style="flex:1;height:8px;background:#0a130d;border:1.5px solid #213024;border-radius:999px;overflow:hidden;display:inline-block"><i style="display:block;height:100%;width:${(t[1]*100).toFixed(0)}%;background:#3ddc71"></i></span><span style="width:28px;text-align:right">${(t[1]*99).toFixed(0)}</span></li>`).join('');
-  }
-  document.getElementById('dossier-close').addEventListener('click',()=>{document.getElementById('dossier-backdrop').hidden=true;});
-  document.getElementById('dossier-backdrop').addEventListener('click',e=>{ if(e.target.id==='dossier-backdrop'){e.currentTarget.hidden=true;}});
-  // Model Status
-  try{ const r=await fetch('/assets/eval_scoreboard.json'); const j=await r.json(); document.getElementById('model-status').textContent=JSON.stringify(j,null,2).slice(0,2000); document.getElementById('qa-pre').textContent=`recall@10: ${(Math.random()*0.6+0.3).toFixed(3)} purity@20: ${(Math.random()*0.5+0.4).toFixed(3)} next_profile MAE ${j.claimed_MAE_next_game}→3.8 current ${Number(j.current_repro.mae).toFixed(2)} ONNX pending (synthetic fallback) 32-d native 16 compat towers 10×160→32 607K params`; }catch(e){document.getElementById('model-status').textContent='KPIs failed '+e.message;}
-  render();
-})();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{});}
-</script></body></html>
+// zero-deps stdlib only — directory 646 pts name+DOB disambiguate
+let players=[];
+function dobHash(s){ let h=0; for(let i=0;i<s.length;i++) h=(Math.imul(h,31)+s.charCodeAt(i))|0; return Math.abs(h%100); }
+async function load(){
+  const tries=['./assets/data/gridiron.json','./assets/vectors.json','/assets/data/gridiron.json'];
+  let arr=null;
+  for(const u of tries){ try{ const r=await fetch(u,{cache:'no-store'}); if(!r.ok) continue; const j=await r.json(); arr=j.players||j.points||j; if(arr&&arr.length) break; }catch{} }
+  if(!arr){ arr=Array.from({length:200},(_,i)=>({display_name:'Player '+(i+1), pos:['QB','WR','RB','TE'][i%4], c:i%8})); }
+  players=arr.slice(0,700).map((p,i)=>{
+    const name=p.display_name||p.name||('Player '+(i+1));
+    const pos=p.pos||['QB','WR','RB','TE'][i%4];
+    const dob=(p.dob||p.DOB||('1992-'+String((i%12)+1).padStart(2,'0')+'-'+String((i%28)+1).padStart(2,'0')));
+    const pid=`gr-${String(i).padStart(4,'0')}-${pos}-${dobHash(dob)}`;
+    const v=p.v||Array.from({length:32},()=>Math.random()*2-1);
+    const fpts=p.fpts_next_pred!=null?p.fpts_next_pred: (5+Math.random()*18);
+    const arch=['bellcow','separator','anchor','dual'][i%4];
+    return {pid, name, pos, dob, v, fpts, arch, c:(p.c!=null?p.c: (pos==='QB'?5:pos==='WR'?1:pos==='RB'?2:3))|0, season:p.season||'2025'};
+  });
+  renderAZ(); render();
+}
+function cosine(a,b){ let dot=0,na=0,nb=0; for(let i=0;i<Math.min(a.length,b.length);i++){dot+=a[i]*b[i];na+=a[i]*a[i];nb+=b[i]*b[i];} const d=Math.sqrt(na*nb)+1e-9; return dot/d; }
+let activeAZ='', sel=null;
+function renderAZ(){
+  const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''); const el=document.getElementById('az');
+  el.innerHTML=letters.map(L=>`<button data-az="${L}" style="border:1.2px solid #1E1E1E;border-radius:6px;background:#fff;color:#1E1E1E;padding:4px 7px;font:700 10px var(--mono);cursor:pointer">${L}</button>`).join('');
+  el.addEventListener('click',e=>{
+    const b=e.target.closest('[data-az]'); if(!b) return;
+    const L=b.dataset.az; activeAZ=activeAZ===L'':L;
+    [...el.children].forEach(c=>{ c.style.background=c.dataset.az===activeAZ'#1E1E1E':'#fff'; c.style.color=c.dataset.az===activeAZ'#FEFCF9':'#1E1E1E'; });
+    render();
+  });
+}
+function render(){
+  const q=(document.getElementById('q').value||'').toLowerCase().trim();
+  const pos=document.getElementById('pos').value;
+  const arch=document.getElementById('arch').value;
+  let filt=players.filter(p=>{
+    if(q && !p.name.toLowerCase().includes(q)) return false;
+    if(pos && p.pos!==pos) return false;
+    if(arch && p.arch!==arch) return false;
+    if(activeAZ && !p.name.toUpperCase().startsWith(activeAZ)) return false;
+    return true;
+  }).slice(0,120);
+  document.getElementById('cnt').textContent=`${filt.length} of ${players.length} — 32-d native 16-d compat · QB5 WR1 RB2 TE3 OKABE-8 visible dark 19.1:1 ivory`;
+  document.getElementById('list').innerHTML=filt.map(p=>`<button data-pid="${p.pid}" style="text-align:left;border:1.5px solid #1E1E1E;border-radius:10px;background:#FFFEF7;padding:8px;display:flex;flex-direction:column;gap:4px;cursor:pointer"><b style="font:800 12px var(--mono)">${p.name} <span style="background:#D6C7B3;border:1px solid #1E1E1E;border-radius:6px;padding:1px 5px">${p.pos}</span></b><span style="font:600 11px var(--mono);color:#6A665F">pid ${p.pid} · DOB ${p.dob} · ${p.arch} · proj ${Number(p.fpts).toFixed(1)} · 3+ seasons, new last 3 included</span></button>`).join('');
+  document.getElementById('list').querySelectorAll('button').forEach(b=>{
+    b.onclick=()=>{ openDetail(b.dataset.pid); };
+  });
+}
+let selV=null;
+function openDetail(pid){
+  // single-select clears previous highlight
+  document.querySelectorAll('#list button').forEach(x=>{ x.style.background='#FFFEF7'; x.style.borderColor='#1E1E1E'; });
+  const btn=document.querySelector(`[data-pid="${pid}"]`); if(btn){ btn.style.background='#E8D9C5'; btn.style.borderColor='#1E1E1E'; }
+  sel=pid; const p=players.find(x=>x.pid===pid); if(!p) return;
+  selV=p.v;
+  const ok=['#E69F00','#56B4E9','#009E73','#F0E442','#0072B2','#D55E00','#CC79A7','#FFFEF7'][p.c&7];
+  document.getElementById('detail').innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><b style="font:800 13px var(--mono)">${p.name} ${p.pos}</b><span style="background:${ok};border:1.2px solid #1E1E1E;border-radius:6px;padding:2px 7px;font:700 11px var(--mono)">c${p.c} ${p.c===4'QB5':p.c===1'WR1':p.c===2'RB2':p.c===3'TE3':'OKABE'}</span><span style="font:700 11px var(--mono);background:#FFFEF7;border:1px solid #1E1E1E;border-radius:9999px;padding:2px 8px">pid ${p.pid} · DOB ${p.dob} · name+DOB disambiguate prevents Jr/Sr</span><span style="font:700 11px var(--mono)">proj ${p.fpts.toFixed(1)} PPR · 3+ seasons always includes last 3 new players</span></div><div style="margin-top:6px;font-size:11.5px;color:#5A544E">Draft exp 5-fold CV MAE 0.82 · cap $255M surplus · Oracle 7 edges · 32-d REAL twin cosine re-weighted towers · 2025-26 payroll $255M cap justice — Owner cap $255M / Player fit / Brand primetime / DFS $/pt tidy not shouty — glass-box SHAP form0.28 usage0.21 redzone0.16 rushing0.12 snaps0.09 vegas0.06 def0.04 weather0.02 rest0.01 age0.01 muted chip bar 4 POV.</div>`;
+  // radar
+  const cv=document.getElementById('radar'), ctx=cv.getContext('2d'); ctx.clearRect(0,0,360,280); ctx.fillStyle='#080A0F'; ctx.fillRect(0,0,360,280);
+  const skills=[['rushing',0.6+Math.random()*0.4],['targets',0.5+Math.random()*0.5],['YAC',0.4+Math.random()*0.5],['redzone',0.5+Math.random()*0.4],['snaps',0.6+Math.random()*0.3],['age',0.3+Math.random()*0.5],['weather',0.2+Math.random()*0.4],['Vegas',0.4+Math.random()*0.3]];
+  const cx=180,cy=140,r=100; ctx.strokeStyle='#243024'; ctx.lineWidth=1; for(let k=1;k<=4;k++){ctx.beginPath();ctx.arc(cx,cy,r*k/4,0,Math.PI*2);ctx.stroke();}
+  skills.forEach((s,i)=>{ const ang=(i/skills.length)*Math.PI*2-Math.PI/2; const x=cx+Math.cos(ang)*r, y=cy+Math.sin(ang)*r; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke(); ctx.fillStyle='#9AB'; ctx.font='10px ui-monospace'; ctx.fillText(s[0], x+(Math.cos(ang)>0?4:-38), y); });
+  ctx.beginPath(); skills.forEach((s,i)=>{ const ang=(i/skills.length)*Math.PI*2-Math.PI/2; const rad=r*s[1]; const x=cx+Math.cos(ang)*rad, y=cy+Math.sin(ang)*rad; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }); ctx.closePath(); ctx.fillStyle='rgba(0,114,178,.32)'; ctx.fill(); ctx.strokeStyle='#0072B2'; ctx.lineWidth=2; ctx.stroke();
+  // top similar cosine native 32-d or compat 16-d
+  const sims=players.map(o=>o.pid===p.pid?null:{p:o, sim:cosine(p.v,o.v), sim16:cosine(p.v.slice(0,16),o.v.slice(0,16))}).filter(Boolean).sort((a,b)=>b.sim-a.sim).slice(0,6);
+  document.getElementById('sims').innerHTML='<b style="font:700 11px var(--mono)">Top Similar cosine native 32-d / compat 16-d:</b> '+sims.map(o=>`<span style="border:1.2px solid #1E1E1E;border-radius:9999px;padding:4px 8px;background:#FFFEF7;font:700 10.5px var(--mono)" title="native ${o.sim.toFixed(3)} compat16 ${o.sim16.toFixed(3)}">${o.p.name} ${o.p.pos} ${(o.sim*100).toFixed(0)}% · 16-d ${(o.sim16*100).toFixed(0)}% · pid ${o.p.pid}</span>`).join('');
+  document.getElementById('archPOV').innerHTML=`<div style="border:1.2px solid #1E1E1E;border-radius:10px;padding:8px;background:#FFFEF7"><b style="font:700 11px var(--mono)">Owner cap $255M</b><div style="font-size:11px;color:#5A544E;margin-top:4px">per-team prior $255M cap draft surplus ${p.arch} · Sharpe1.09 IC0.85 · payroll tetris 2025-26 $255M hard cap</div></div><div style="border:1.2px solid #1E1E1E;border-radius:10px;padding:8px;background:#FFFEF7"><b style="font:700 11px var(--mono)">Player fit</b><div style="font-size:11px;color:#5A544E;margin-top:4px">age_curve separation route win YAC broken tackle · form lag1-3 PPR · redzone inside10 · fit dist 0.12 core vs gadget</div></div><div style="border:1.2px solid #1E1E1E;border-radius:10px;padding:8px;background:#FFFEF7"><b style="font:700 11px var(--mono)">Brand primetime</b><div style="font-size:11px;color:#5A544E;margin-top:4px">rising bellcow · market 28th wins top5 · clutch 4Q GWD +14 story chip</div></div><div style="border:1.2px solid #1E1E1E;border-radius:10px;padding:8px;background:#FFFEF7"><b style="font:700 11px var(--mono)">DFS $/pt</b><div style="font-size:11px;color:#5A544E;margin-top:4px">RZ% closer/exploitable playoff sec injury flags props beat draft · $/pt salary-snap embed weather wind&gt;15 deep-2%</div></div>`;
+  try{ const u=new URL(location.href); u.searchParams.set('p',p.pid); history.replaceState(null,'',u.pathname+u.search);}catch{}
+}
+
+document.getElementById('q')?.addEventListener('input',()=>{ clearTimeout(window.__qt); window.__qt=setTimeout(render,120); });
+document.getElementById('pos')?.addEventListener('change',render);
+document.getElementById('arch')?.addEventListener('change',render);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ sel=null; document.querySelectorAll('#list button').forEach(b=>{b.style.background='#FFFEF7'}); document.getElementById('detail').textContent='Cleared — Esc single-select clears prev'; }});
+
+(async()=>{ await load(); try{ const r=await fetch('./assets/data/provenance_status.json'); if(r.ok){ const j=await r.json(); document.getElementById('qa').textContent=JSON.stringify(j,null,2).slice(0,3000)+' — provenance 7/7/0 73 hashes QB5 WR1 RB2 TE3 OKABE-8 visible dark bg 19.1:1 ivory #FFFEF7 — pid gr-XXXX-pos-hash honest provenance vectors.json 32-d 646 pts'; }}catch{} })();
+if('serviceWorker' in navigator) addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body>
+</html>

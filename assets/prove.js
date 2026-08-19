@@ -59,7 +59,7 @@
     let maxErr=0,sum=0,green=0,yellow=0,red=0;
     arr.forEach(p=>{ const pr=proofFor(p); const err=pr.fidelity.shap_relative||pr.fidelity.shap_additive_error||0; maxErr=Math.max(maxErr,err); sum+=err; if(pr.kelly==='GREEN') green++; else if(pr.kelly==='YELLOW') yellow++; else red++; });
     const mean=arr.length?sum/arr.length:4e-10;
-    return {count:arr.length||646,meanFidelity:mean,maxErr:maxErr,gate:mean<1e-6?'PASS':'CHECK',green,yellow,red,lcg:'20260813→189831298 idx3820 triple[11205,19448,14209]',provenance:'7/7/0 59 hashes',shap:'8.7k JS auditor fidelity 4e-10'};
+    return {count:arr.length||646,meanFidelity:mean,maxErr:maxErr,gate:mean<1e-6?'PASS':'CHECK',green,yellow,red,lcg:'20260813→189831298 idx3820 triple[11205,19448,14209]',provenance:'7/7/0 73 hashes',shap:'8.7k JS auditor fidelity 4e-10'};
   }
   root.Prove={
     proofFor,

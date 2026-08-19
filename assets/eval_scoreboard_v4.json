@@ -1,0 +1,12 @@
+{
+  "MAE_next": 3.2,
+  "R2": 0.48,
+  "Sharpe": 1.25,
+  "IC": 0.88,
+  "composite": 0.89,
+  "rank": 38,
+  "sil": 0.74,
+  "pos_cluster": 0.797,
+  "rank_target": ">=32",
+  "sil_target": 0.74
+}

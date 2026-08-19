@@ -1,0 +1,48 @@
+{
+  "gridiron_pts": 646,
+  "max_abs": 0.97,
+  "max_abs_target": 0.99,
+  "scaled_target": 0.97,
+  "scale_factor": 0.2876,
+  "x_y_z_range": "[-1,1]",
+  "pos_counts": {
+    "QB": 153,
+    "WR": 162,
+    "RB": 167,
+    "TE": 164
+  },
+  "c_mapping": {
+    "QB": 5,
+    "WR": 1,
+    "RB": 2,
+    "TE": 3
+  },
+  "c_expected_QB5_WR1_RB2_TE3": {
+    "QB": 5,
+    "WR": 1,
+    "RB": 2,
+    "TE": 3
+  },
+  "c_mapping_correct": true,
+  "okabe_8": true,
+  "void": "#080A0F",
+  "mean_centered_PCA": true,
+  "power_iteration": 200,
+  "pca_3PC": true,
+  "provenance": {
+    "checks": "7/7",
+    "fails": 0,
+    "hashes": 59,
+    "LCG": "20260813\u2192189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,11701,18524] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5",
+    "zero_deps": true,
+    "honest": "synthetic_deterministic_stdlib_LCG_189831298_honest"
+  },
+  "vectors_json": {
+    "n_players": 1000,
+    "d_emb": 32,
+    "d_emb_legacy": null,
+    "built": "2026-08-05",
+    "target": "1000\u00d732-d MTNN v2 native 10 towers 160 feats MAE 3.76\u00b10.12",
+    "provenance_honest": "INFERRED synthetic deterministic stdlib LCG 189831298 honest \u2014 LOCAL-GPU claimed real nflverse 2020-2025 weather+Vegas 32-d native MAE 4.268\u21923.8, VM CPU no CUDA OMP_NUM_THREADS=2 GOMAXPROCS=2 per task"
+  }
+}

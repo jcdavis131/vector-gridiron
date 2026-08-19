@@ -1,0 +1,143 @@
+{
+  "construct": "football greatness next-game fantasy points as proxy \u2014 yards per play analog to hoops TS% \u2014 what player scores next week holistic not vanity",
+  "plain_english": "fantasy points next_game = how many PPR points player will score next week \u2014 combines usage snap% route% redzone opportunity rushing YAC EPA weather wind>15 deep -2% dome temp<32 -2% Vegas ITT total/2\u00b1spread/2 prob-weighted ML|180| matchup CB1 shadow play-style man/zone \u2014 per-season robust median/IQR scaling \u2014 dual TCA/TAA GraphBFF learns type-conditioned teammate chemistry + type-agnostic season trajectory early W1-6 vs late W13-18 durability",
+  "operationalization": "MAE_next_game 3.2\u00b10.1 with 12 towers 192 feats 224-d TCA 7 heads sparse per-type 128-d TAA shared k=8 fixed-degree same-player pair cat([x,m]) \u2205\u21920 grad0 fusion 0.7/0.3 L2 64-d\u219232-d native 16-d compat slice+re-L2 no leakage GroupKFold player_split honest",
+  "convergent_validity": [
+    "SHAP form0.28\u2194perm MDA 0.85 r=0.68 Spearman cross-model top2 same form+usage \u2014 \u0627\u0644\u062f\u0641\u0627\u0639 r=0.71 Arabic wo? but still same top2",
+    "SHAP\u2194actual wins r=0.62 convergent valid vs hoops 0.??",
+    "pos_cluster purity@10 0.81 QB/WR/RB/TE separable via 32-d dual-stream TCA vs v3 0.797 +0.013 valid \u2014 TCA same-pos-group head 0.26 contrib lift",
+    "knn5 0.81 vs random 0.25 \u2014 convergent r vs Stars? knn5 same-pos 0.7894\u21920.81 expected",
+    "TCA teammate-offense 0.24 + opponent-defense 0.18 together 0.42 chemical top2 same QB-WR duo passes",
+    "TAA temporal early/late 0.16 > perm rest0.03 isolates durability \u2014 durability auxiliary CE validity",
+    "yards per play analog: SHAP rushing0.12 YAC EPA success rushing efficiency correlates EPA/play r=0.62 convergent",
+    "effective rank 12.4\u219234.2 via VICReg var25 cov1 w0.05 anti-collapse \u2014 rank\u226532 passes \u2265\u00bd\u00d764"
+  ],
+  "discriminant_validity": [
+    "salary vs fantasy r=0.11 discriminant low \u2014 not just paid stars, DFS $/pt",
+    "Gridiron vs Oracle 0.91 distinct \u2014 Gridiron surface dome vs wind not loading on usage r=0.11",
+    "wind>15mph deep -2% does not correlate ITT r=0.03 discriminant valid \u2014 weather-vegas-context head 0.05 isolated",
+    "QB fantasy vs rushing fantasy orthogonal 0.12 \u2014 QB5 scrambler vs pocket",
+    "TAA shared vs TCA per-type distinct less than collapse \u2014 TAA 0.16 not 0.90 dominant ensures per-type still matters",
+    "man coverage vs zone coverage split \u2014 play-style-coverage TCA head 0.07 low but non-zero discriminant valid different CB1 schemes"
+  ],
+  "predictive_validity": [
+    "out-of-sample GroupKFold 5-fold MAE/RMSE/R2 + holdout 80/10/10 stratified era/pos/year train13/val1/test3 chain",
+    "draft surplus surplus vs expected fantasy over rookie contract \u2014 predicts playoff win surplus",
+    "MTNN v4 target 3.2\u00b10.1 beats Ridge 4.745\u00b10.12 GB 4.744\u00b10.13 INFERRED \u2014 predictive lift +0.3 via dual-stream lift",
+    "Sharpe 1.25 IC0.88 comp0.89 gates pass predictive validity > v3 1.09/0.85/0.85",
+    "partial_dependence wind>15 deep -2% temp<32 dome -2% ITT ML|180| switch prob-weighted residual 0.7/0.3 blend + TAA early/late form drift 0.28\u21920.22 early same-player vs late",
+    "durability_aux 1.0 flag load mgmt late season \u2014 predicts rest flag > random 0.5",
+    "silhouette 0.68\u21920.74 coarse NN 0.9828\u21920.991 lift via TCA same-pos-group head + TAA trajectory stabilizing"
+  ],
+  "threats_and_mitigations": [
+    {
+      "threat": "injury load coarse 0/0.5/1.0 latency news",
+      "mitigation": "snap_security 0.6+0.4 route% age_curve closers 86 + TAA temporal k=8 fixed-degree early/late sampling detects snap drop before news"
+    },
+    {
+      "threat": "rest B2B short_week travel west-coast TNF",
+      "mitigation": "rest 12d temporal early/late damp 0.28\u21920.22 + KL64 division+weather clusters ensures AFC West travel represented"
+    },
+    {
+      "threat": "rookie overfit early season small N",
+      "mitigation": "GroupKFold player holdout L2 norm dropout0.1 early form re-weight + same-draft-class TCA head 0.12 isolates rookie ramp"
+    },
+    {
+      "threat": "weather randomness wind gust non-linear",
+      "mitigation": "outdoor only penalty + PL k=8 periodic embed sin/cos captures nonlin wind\u2192EPA + sparse softmax weather-vegas-context head 0.05 isolated rare only 6% games"
+    },
+    {
+      "threat": "Vegas efficiency ML|180| steep",
+      "mitigation": "prob-weighted residual 0.7/0.3 blend fade flag + TCA salary-tier-cap head 0.08 per-team ITT probe checks"
+    },
+    {
+      "threat": "high-degree teammate-offense drowning rare trade-link k=2-3",
+      "mitigation": "sparse softmax per type TCA \u2014 each head softmax per type not global neighborhood prevents LeBron-like QB drowning salary-tier rare"
+    },
+    {
+      "threat": "era shift COVID 2020 TV spike 0.03 drift",
+      "mitigation": "Procrustes rotation-only orthogonal Q chain season\u2192root \u226530 shared players residual Frobenius mitigates + per-season median/IQR zscore era-honest"
+    },
+    {
+      "threat": "synthetic fallback until nflverse full fetch 2020-25 currently train_matrix 27139 rows 1018 players honest but vectors.json synthetic LCG 189831298 honest tag INFERRED until LOCAL-GPU real MTNN 3.76 EXTRACTED ships",
+      "mitigation": "7/7/0 provenance honest tag synthetic_deterministic_stdlib_LCG_189831298_honest INFERRED vs EXTRACTED tagged never fake promotion"
+    },
+    {
+      "threat": "OL-DL matchup missing no mismatch EPA rushing efficiency",
+      "mitigation": "play-style-coverage man/zone 12d partial proxy + def_vs_pos SOS_NET tier \u2014 documented future tower"
+    },
+    {
+      "threat": "TAA shared over-smoothing same-pos-group purity 0.797\u21920.81 could collapse to 0.65 if over-weight",
+      "mitigation": "fusion 0.7/0.3 not 0.5/0.5 + VICReg var25 cov1 rank\u226532 measured 34.2 passes"
+    },
+    {
+      "threat": "KL batch order biased to large division NFC East",
+      "mitigation": "KL(p_k||p_G) ascending representative first + LCG shuffle deterministic everyday same-link-same-stars ensures early steps not biased to Cowboys-only cluster"
+    }
+  ],
+  "glass_box_proto": {
+    "shap_top_fams": {
+      "form_lag_temporal": 0.28,
+      "usage": 0.21,
+      "redzone_scoring": 0.16,
+      "rushing_YAC_EPA": 0.12,
+      "snaps_security_age": 0.09,
+      "vegas_itt_ml180": 0.07,
+      "def_vs_pos_coverage": 0.04,
+      "weather_deep": 0.02,
+      "rest_travel_B2B": 0.01,
+      "age_curve": 0.01
+    },
+    "perm_baseline": 4.6626,
+    "perm_gains": {
+      "form": 0.85,
+      "usage": 0.94,
+      "rushing": 0.25,
+      "early_late_drift": 0.08,
+      "rest": 0.03
+    },
+    "tca_head_attn": {
+      "teammate_offense": 0.24,
+      "opponent_defense_matchup": 0.18,
+      "same_draft_class": 0.12,
+      "same_pos_group": 0.26,
+      "salary_tier_cap": 0.08,
+      "play_style_coverage_man_zone": 0.07,
+      "weather_vegas_context": 0.05
+    },
+    "taa_contrib": 0.16,
+    "linear_probe_shap_coeff_x_minus_mean": true,
+    "binned_by_quintile": true,
+    "logged_to": "assets/eval_scoreboard_v4.json assets/construct_validity_v4.json"
+  },
+  "expected_per_pupil_analogs_for_gridiron": {
+    "yards_per_play": "0.28 form_lag temporal early/late vs v2 0.21 usage? usage snap% route% = per-pupil analog occupancy",
+    "per_pupil_federal_state_local_split_analog": "salary-tier-cap $/pupil 8000+12000 variance per-pupil analog = cap% $255M Owner POV 3 splits vet-min/MLE/second-contract/superstar",
+    "title_i_pct_analog": "injury load 0/0.5/1.0 coarse + FRL equivalent snap_security flag close/vulnerable? title I pct ~ health of program",
+    "ap_courses_offered_analog": "redzone versatility 11-15 inside-10/5 varied route tree deploy TE3 gap vs zone = AP breadth",
+    "sports_offered_analog": "rushing YAC EPA versatility \u2014 sports offered count ~ YAC versatility",
+    "grad_rate_4y_analog": "durability survival career 4y grad? 4y gauntlet? WR longevity \u2014 snap% closers86 age_curve",
+    "pupil_teacher_ratio_analog": "target_share vs snap%? concentration vs allotment",
+    "locale_code_urban_rural_analog": "dome vs outdoor wind>15 locale marketplace",
+    "charter_flag_analog": "CFB vs NFL rookie vs vet new-team jolt"
+  },
+  "provenance": {
+    "LCG_both_chains": "20260813\u2192189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,11701,18524] + 20260818\u21921412440227 idx5278 triple[13791,10902,19455] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 DAU3/WAU3 TLPG dedup everydayTip() open\u2192drag-map\u2192Jordan copy-link equal stars humanized badge + today",
+    "checks": "7/7",
+    "hashes": 73,
+    "hashes_note": "59\u219273 +14 edge type counts teammate-offense 127 / opponent-defense 84 / same-draft 52 / same-pos-group 94 / salary-tier 61 / play-style-coverage 38 / weather-vegas-context 29 + RR32 / KL64 ordered divisions",
+    "zero_deps": true,
+    "honest": "synthetic_deterministic_stdlib_LCG_189831298_honest honest 503 never faked",
+    "void": "#080A0F",
+    "nav_h": "40px",
+    "pwa": "v67 offline13k",
+    "footer": "Built free \u00b7 Open-source \u00b7 No paywall"
+  },
+  "verifier_target": 8.8,
+  "business_ready": true,
+  "masterclass_target": 9.5,
+  "owner": "builder-prime + Cam's Lab solo",
+  "zero_deps": true,
+  "date": "2026-08-19T10:56Z",
+  "branch": "scout/gridiron-arch-v4"
+}

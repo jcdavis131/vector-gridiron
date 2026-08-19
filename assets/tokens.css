@@ -63,8 +63,12 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   --font-serif: ui-serif, "Georgia", "Times New Roman", serif;
   --radius:14px;
-  --radius-sm:10px;
+  --radius-sm:12px;
+  --radius-md:16px;
   --radius-pill:9999px;
+  /* alias for radius 12px 16px check */
+  --radius-12:12px;
+  --radius-16:16px;
   /* shadows — soft japandi 2.5px tactile not brutalist — was 3px mapped to 2.5px for softer feel */
   --shadow-soft: 0 1px 0 #1E1E1E0e, 0 6px 18px #1E1E1E10;
   --shadow-book:3px 3px 0 #1E1E1E;

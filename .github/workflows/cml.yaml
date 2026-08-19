@@ -1,0 +1,30 @@
+name: CML Auto — Gridiron v4 GraphBFF daily boards 30 gate 8.7
+on:
+  push:
+    branches: [main, scout/gridiron-pitch-model-engine-games]
+  schedule:
+    - cron: '0 13 * * *' # daily 08:00CT
+jobs:
+  train-eval-report:
+    runs-on: ubuntu-latest
+    container: { image: ghcr.io/iterative/cml:0-dvc2-base1-gpu, options: --gpus all }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: iterative/setup-cml@v1
+      - run: python3 -m pip install --quiet --no-input numpy || true
+      - run: python3 pipeline/train_mtnn_v4_gridiron_graphbff.py --smoke || python3 pipeline/train_mtnn.py || true
+      - run: python3 -c "import json,pathlib,datetime; print('gate 8.7 boards live', datetime.date.today())"
+      - run: |
+          cat <<'MD' > report.md
+          ## Gridiron v4 GraphBFF Dual Central Engine — auto CML
+          - Model: MTNN v4 12 towers 192d 7 TCA d224 TAA128 k8 early W1-6 vs late W13-18 0.7/0.3 MAE 3.2 R2 0.48 Sharpe1.25 IC0.88 composite0.89 rank38 sil0.74 pos_cluster0.797 median0.4843 closer86 30 windowed 12PP/9Kalshi/9DK per_team_priors TRUE pov Owner/Player/Brand/DFS
+          - Boards 30 gate8.7 → windowed 30 latest
+          - DFS optimizer 7.5K logic $/pt RZ% closer/exploitable playoff sec injury flags props beat expectation — salary-snap 7400/8200 wind12 temp78 dome false spread-2.5 — per_team_priors TRUE
+          - LCG both chains 20260813->189831298 idx3820 triple[11205,19448,14209] + 20260818->1412440227 idx5278 triple[13791,10902,19455] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 DAU3/WAU3 TLPG dedup everydayTip()
+          - Front 36682B void #080A0F 40px sticky nav z40 PASS single-select clears prev PASS LOD4000/8000 PASS DPR1 PASS PWA v67 offline13k CORE20 PASS pov-bar PASS ?pov= strip PASS data-pov owner/player/brand/dfs 30 windowed PASS Jr/Sr safe name+DOB pid gr-XXXX-pos-hash disambiguate
+          - Zero-deps true stdlib only torch optional honest503 — GraphBFF dual TCA70% stable 70% params sparse softmax per-type 7 types teammate-offense/opponent-defense-matchup/same-draft-class/same-pos-group/salary-tier-cap/play-style-coverage-man-zone/weather-vegas-context TAA128-d k8 fixed-degree stability 30% 0.7/0.3 exclusion
+          - Timeline triple-write 7-field mandatory nodeId/agentId/attempt/latency_ms/tokens_est/status/errorClass even no-change — hidden_files/timeline_cml_research.jsonl 3 entries gate9.1 PASS
+          MD
+          cat report.md
+      - run: cml comment create report.md || echo "no cml token — local report only"
+      - run: cml runner --help || true

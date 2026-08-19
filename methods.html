@@ -124,7 +124,7 @@ if fetch_nflverse.py succeeds:
       const exploit=(9+(b*7)%17).toFixed(0);
       const edge=( (b%5)+6 + Math.random()).toFixed(1);
       const isLock=parseInt(closer)>84 && parseInt(exploit)<16;
-      return '<div style="display:flex;justify-content:space-between;align-items:center;border:1px solid '+(isLock?'#3ddc71':'#213024')+';border-radius:8px;padding:6px;background:#0a130d"><span>'+(isLock?'🔒 LOCK':'🚫 FADE')+' '+name+' — closer '+closer+'% exploitable '+exploit+'% — edge +'+edge+' vs Vegas</span><span class="pill" style="background:'+(isLock?'#0a130d':'#1a0a0a')+';border:1.5px solid '+(isLock?'#3ddc71':'#ff8a80')+';color:'+(isLock?'#3ddc71':'#ff8a80')+';padding:2px 8px;border-radius:999px;font-size:10px">'+(isLock?'snap secure':'CB hunt')+'</span></div>';
+      return '<div style="display:flex;justify-content:space-between;align-items:center;border:1px solid '+(isLock'#3ddc71':'#213024')+';border-radius:8px;padding:6px;background:#0a130d"><span>'+(isLock'🔒 LOCK':'🚫 FADE')+' '+name+' — closer '+closer+'% exploitable '+exploit+'% — edge +'+edge+' vs Vegas</span><span class="pill" style="background:'+(isLock'#0a130d':'#1a0a0a')+';border:1.5px solid '+(isLock'#3ddc71':'#ff8a80')+';color:'+(isLock'#3ddc71':'#ff8a80')+';padding:2px 8px;border-radius:999px;font-size:10px">'+(isLock'snap secure':'CB hunt')+'</span></div>';
     }).join('')+'<div style="font-size:10px;color:#93a596;margin-top:4px">5,323 historic weekly rows + 646 proj 2026 + 2000 player-weeks display — DFS uses model yards/TD edge vs Vegas O/U, not outcome claim — honest expectation gap only.</div>';
   }
   document.getElementById('dfs-copy')?.addEventListener('click',()=>{

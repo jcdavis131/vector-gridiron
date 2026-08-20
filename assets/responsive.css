@@ -1,106 +1,284 @@
-/* Vector Gridiron — responsive.css v2 — hoops-level parity, mobile-first */
-:root{
-  --page-gutter: clamp(12px, 4vw, 20px);
-  --layout-max: 820px;
-  --layout-wide: 1180px;
-  --touch-min:44px;
-  --header-h:56px;
-}
-html,body{overflow-x:hidden;max-width:100%}
-*,*::before,*::after{box-sizing:border-box}
-html{ -webkit-text-size-adjust:100% }
-img{max-width:100%;height:auto}
-svg,canvas{max-width:100%}
+/* Vector Hoops — assets/responsive.css
+ * Mobile-first fluid layout. Loads after hoops.css + shell.css.
+ * Uses --page-gutter / --layout-max / --layout-wide from hoops.css :root. */
 
-/* shells */
-.site-nav,.site-footer,.vg-hero-band,.landing-main,.play-main{width:100%;box-sizing:border-box;min-width:0}
-.landing-main,.play-main{overflow-x:clip}
+/* ---------- global ---------- */
 
-/* touch anti-zoom */
-button,.vg-input,input,select,textarea{font-size:16px}
-.vg-input,.vg-btn,.site-nav__link{ min-height:44px }
-
-.site-nav{ padding-inline: var(--page-gutter) }
-.site-footer{ padding-inline: var(--page-gutter) }
-
-@media(max-width:639px){
-  .site-nav{ flex-wrap:nowrap; gap:8px; overflow-x:hidden }
-  .site-nav__brand{ flex:0 0 auto; max-width:38%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
-  .site-nav__links{ flex:1 1 auto; flex-wrap:nowrap; justify-content:flex-start; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; min-width:0; -webkit-mask-image:linear-gradient(to right, transparent, black 8px, black calc(100% - 8px), transparent); mask-image:linear-gradient(to right, transparent, black 8px, black calc(100% - 8px), transparent) }
-  .site-nav__links::-webkit-scrollbar{display:none}
-  .site-nav__link{ flex:0 0 auto; white-space:nowrap }
+img{
+  max-width: 100%;
+  height: auto;
 }
 
-/* page shells */
-.research-main,.wiki-main,.methods-main,.leaderboard-main,.drift-main,.landing-main,.play-main{
-  width:min(100%, var(--layout-wide));
-  max-width:var(--layout-wide);
-  min-width:0;
-  box-sizing:border-box;
-  margin-inline:auto;
-}
-.research-main,.wiki-main,.methods-main,.drift-main{
-  padding: clamp(16px,3vw,24px) var(--page-gutter) clamp(40px,6vw,56px);
+/* Do NOT blanket-style svg/canvas — game charts, courts, and the 3D map
+   set their own width/height/aspect-ratio in hoops.css + game.js. */
+
+.site-nav,
+.site-footer,
+.vh-challenge-banner{
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* vg tabs cockpit — keep horizontal scroll */
-.vg-tabs{ -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; }
-.vg-tab{ min-height:48px }
+/* ---------- site nav ---------- */
 
-.vg-mapwrap{
-  position:relative;
-  width:100%;
-  overflow:hidden;
-  border-radius:10px;
-  background:rgba(0,0,0,.2);
-}
-.vg-mapwrap canvas, #dr-map, #map, #gridiron-map{
-  display:block;
-  width:100%;
-  height:auto;
-  aspect-ratio:1;
-  max-width:100%;
-  max-height:min(70vh, 600px);
-  touch-action:none;
-}
-.vg-posfilter{ display:flex; flex-wrap:nowrap; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:4px }
-.vg-posfilter::-webkit-scrollbar{display:none}
-.vg-posfilter button{ flex:0 0 auto; min-height:36px; padding:0 12px; white-space:nowrap }
-
-.vg-tablewrap, .vg-tblwrap{ width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; border-radius:6px }
-.vg-tbl, .vg-table{ width:max(680px,100%); min-width:100% }
-@media(min-width:720px){ .vg-tbl, .vg-table{ width:100% } }
-.vg-tbl th, .vg-table th, .vg-tbl td, .vg-table td{ padding:8px 8px; font-size:12.5px; white-space:nowrap }
-
-/* cards tri */
-.vg-hero-tri .vg-tri-card{ min-width:0; width:100%; box-sizing:border-box }
-
-/* roster void cards */
-.roster-void canvas{ display:block; width:100%; height:100% }
-
-@media(max-width:479px){
-  .vg-hero-inner{ padding:14px 12px 12px }
-  .vg-hero-h1{ font-size:26px }
-  .vg-hero-map{ min-height:68vh }
-  .vg-hero-tri{ padding:0 10px 10px }
-  .vh-header{ row-gap:8px }
-  .vh-header__brand{ flex:1 1 100%; min-width:0; overflow:hidden }
-  .stats-strip,.cqs-strip{ margin:0 calc(var(--page-gutter) * -1); padding-inline:var(--page-gutter) }
+.site-nav{
+  padding-inline: var(--page-gutter);
 }
 
-.vg-footer, footer{ padding:12px var(--page-gutter); padding-bottom:max(12px, env(safe-area-inset-bottom)); font-size:12px; line-height:1.4; text-align:center }
-
-@media(max-width:360px){
-  :root{ --page-gutter:10px }
-  .vg-card{ padding:10px }
-  .vg-tbl th,.vg-tbl td{ padding:6px 6px; font-size:11.5px }
+.site-footer{
+  padding-inline: var(--page-gutter);
 }
-html,body{ overflow-x:clip }
 
-/* network flow hoops-level */
-.network-flow-host{min-height:260px}
-.network-flow-host svg{width:100%;height:auto;display:block}
-.network-controls{display:flex;flex-direction:column;gap:10px}
-.search-row{display:flex;gap:8px;flex-wrap:wrap}
-.wiki-search.network-search{flex:1 1 220px;min-width:0;border:2.2px solid var(--ink);border-radius:12px;padding:12px 14px;font-size:16px;min-height:48px;background:var(--surface);color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
-.network-player-tag{font-family:var(--mono);font-size:11px;background:var(--surface);border:1.5px solid var(--ink);border-radius:999px;padding:5px 10px;box-shadow:1px 1px 0 var(--ink)}
+@media (max-width: 639px){
+  .site-nav{
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .site-nav__brand{
+    flex: 0 0 auto;
+    max-width: 38%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .site-nav__links{
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    min-width: 0;
+    -webkit-mask-image: linear-gradient(to right, transparent, black 8px, black calc(100% - 8px), transparent);
+    mask-image: linear-gradient(to right, transparent, black 8px, black calc(100% - 8px), transparent);
+  }
+  .site-nav__links::-webkit-scrollbar{ display: none; }
+  .site-nav__link{
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
+
+/* ---------- page shells ---------- */
+
+.wiki-main,
+.skills-main,
+.methods-main,
+.leaderboard-main,
+.drift-main,
+.landing-main{
+  width: min(100%, var(--layout-wide));
+  max-width: var(--layout-wide);
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.wiki-main,
+.skills-main,
+.methods-main,
+.leaderboard-main,
+.drift-main{
+  padding: clamp(16px, 3vw, 24px) var(--page-gutter) clamp(40px, 6vw, 56px);
+  margin-inline: auto;
+}
+
+.wiki-head h1,
+.methods-main h1,
+.lb-head h1,
+.drift-head h1,
+.skills-head h1{
+  font-size: var(--heading-page);
+}
+
+.landing-section,
+.landing-hero{
+  padding-inline: var(--page-gutter);
+  width: min(100%, var(--layout-wide));
+  max-width: var(--layout-wide);
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
+/* ---------- landing ---------- */
+
+@media (max-width: 479px){
+  .landing-equation{
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 6px;
+  }
+  .credibility-strip{
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 16px;
+  }
+  .landing-favorite__select{
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+.landing-cta,
+.landing-cta-secondary{
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+@media (min-width: 480px){
+  .landing-cta,
+  .landing-cta-secondary{
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* ---------- play header ---------- */
+
+@media (max-width: 719px){
+  .vh-header{
+    row-gap: 8px;
+  }
+  .vh-header__brand{
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .vh-pool-toggle{
+    flex: 1 1 100%;
+    width: 100%;
+  }
+  .vh-pool-toggle .vh-subtab{
+    flex: 1 1 50%;
+    text-align: center;
+  }
+  .vh-stats{
+    margin-left: auto;
+    flex: 0 1 auto;
+  }
+  .vh-identity-chip,
+  .vh-favorite-chip{
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 720px){
+  .vh-tagline{
+    max-width: clamp(200px, 28vw, 320px);
+  }
+}
+
+/* ---------- clue charts (scoped — not global svg) ---------- */
+
+.vh-clue-zone__bars svg,
+.vh-breakdown svg,
+.vh-court,
+.vh-map,
+.vh-arc-linechart svg,
+.vh-arc-card__minibars svg{
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  display: block;
+}
+
+.vh-clue-zone__bars svg{
+  max-height: clamp(140px, 38vw, 220px);
+}
+
+/* ---------- result card (narrow phones) ---------- */
+
+@media (max-width: 479px){
+  .vh-result__top{
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .vh-map-thumb-btn{
+    width: min(100%, 160px);
+    height: auto;
+    aspect-ratio: 1;
+    align-self: center;
+  }
+  .vh-warmth{
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .vh-warmth__closest{
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+/* ---------- modals ---------- */
+
+.vh-modal--dossier,
+.vh-modal--stats{
+  max-width: min(560px, calc(100vw - 2 * var(--page-gutter)));
+}
+
+/* ---------- skills lens ---------- */
+
+@media (max-width: 360px){
+  .skillbar{
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+  }
+  .skillbar__label{
+    grid-column: 1 / -1;
+    white-space: normal;
+  }
+  .skillbar__track{ grid-column: 1; }
+  .skillbar__grade{ grid-column: 2; grid-row: 2; }
+}
+
+.skills-panel,
+.wiki-controls,
+.lb-controls,
+.drift-card{
+  padding: clamp(12px, 2.5vw, 16px);
+}
+
+/* ---------- wiki / leaderboard ---------- */
+
+@media (max-width: 479px){
+  .wiki-row{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .wiki-row__meta{ white-space: normal; }
+  .lb-date-row{
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .lb-date-row .vh-link-btn{ align-self: flex-start; }
+}
+
+.lb-table-wrap,
+.drift-table-wrap,
+.methods-section{
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ---------- wide desktop ---------- */
+
+@media (min-width: 1280px){
+  :root{ --layout-max: 800px; }
+}
+
+@media (min-width: 1000px){
+  #panel-chimera{
+    grid-template-columns: minmax(0, 1fr) minmax(280px, min(380px, 34vw));
+    gap: clamp(14px, 2vw, 22px);
+  }
+}
+
+@media (min-width: 1440px){
+  :root{ --layout-wide: 1200px; }
+}

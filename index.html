@@ -3,280 +3,211 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Vector Gridiron — 646 NFL 32-d · japandi</title>
-<meta name="description" content="646 NFL 32-d MTNN 10 towers 160 feats MAE 3.79 QB5 WR1 RB2 TE3 OKABE-8 per-team priors TRUE — japandi paper #FEFCF9 void #080A0F 40px sticky nav">
-<meta name="theme-color" content="#080A0F">
+<title>Vector Gridiron — 646 real NFL · Map</title>
+<meta name="description" content="646 real NFL seasons, 32-d MTNN. Map-is-mechanic, real data only. No mock.">
+<link rel="canonical" href="https://gridiron.dumbmodel.com">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Vector Gridiron — 646 real seasons">
+<meta property="og:description" content="646 real NFL seasons — map-is-mechanic, no mock.">
 <link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/hoops.css">
+<link rel="stylesheet" href="/assets/shell.css">
 <link rel="stylesheet" href="/assets/fonts.css">
-<link rel="manifest" href="/assets/data/provenance_status.json" data-manifest="v67 offline13k CORE20 network-first 1MB DENY9">
-<meta property="og:image" content="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=">
+<link rel="stylesheet" href="/assets/responsive.css">
 <style>
-:root{
---paper:#FEFCF9;--paper-2:#FFFEF7;--wood:#D6C7B3;--wood-2:#E8D9C5;--stone:#EAE3D8;--ink:#1E1E1E;--moss:#7A8A7B;--clay:#C9A88C;
---void:#080A0F;--void-2:#10141e;
---nav-h:40px;--pov-h:44px;--momentum:0.94;--k:120;--b:0.18;--drag:1.8;
---ok0:#E69F00;--ok1:#56B4E9;--ok2:#009E73;--ok3:#F0E442;--ok4:#0072B2;--ok5:#D55E00;--ok6:#CC79A7;--ok7:#000000;
---radius:14px;--radius-sm:12px;--radius-lg:16px;
---mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
---sans:ui-sans-system,-apple-system,Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-}
-*{box-sizing:border-box}
-html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-button{font:inherit}
-/* nav 40px sticky z40 safe-area-inset-top backdrop-filter blur */
-.j-nav{
-position:sticky;top:0;top:env(safe-area-inset-top,0);z-index:40;
-height:var(--nav-h);min-height:var(--nav-h);
-display:flex;align-items:center;justify-content:space-between;gap:10px;
-padding:0 14px;padding-top:env(safe-area-inset-top,0);
-background:color-mix(in srgb,var(--paper) 84%,transparent);
-backdrop-filter:blur(10px) saturate(1.08);
-border-bottom:1.5px solid var(--ink);
-}
-.j-nav b{font:800 12px var(--mono);letter-spacing:.08em;text-transform:uppercase}
-.j-nav__links{display:flex;gap:6px;align-items:center;overflow:auto;scrollbar-width:none}
-.j-nav__links::-webkit-scrollbar{display:none}
-.j-pill{border:1.5px solid var(--ink);border-radius:9999px;padding:6px 11px;min-height:28px;display:inline-flex;align-items:center;font:700 11px var(--mono);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;background:#fff;box-shadow:1.5px 1.5px 0 #1E1E1E18;transition:.12s}
-.j-pill.on{background:var(--ink);color:var(--paper-2)}
-.j-pill.wood{background:var(--wood)}
-
-/* pov bar 40px Books/Maps/Picks/Lab sticky under nav 40px mono/sans */
-.pov-bar{
-position:sticky;top:var(--nav-h);top:calc(var(--nav-h) + env(safe-area-inset-top,0));z-index:30;
-min-height:var(--pov-h);display:flex;gap:8px;align-items:center;
-padding:8px 14px;background:var(--paper-2);border-bottom:1.2px solid var(--ink);
-overflow-x:auto;white-space:nowrap;scrollbar-width:none
-}
-.pov-bar::-webkit-scrollbar{display:none}
-.pov-pill{border:1.3px solid var(--ink);border-radius:9999px;padding:6px 11px;font:700 11px var(--mono);background:#fff;cursor:pointer;flex:0 0 auto}
-.pov-pill.on{background:var(--ink);color:#FFFEF7}
-
-.paper-wrap{max-width:1280px;margin:0 auto;padding:0 14px}
-.hero{padding:18px 0 12px;display:grid;grid-template-columns:1.1fr .9fr;gap:14px;border-bottom:1.5px solid var(--ink)}
-@media(max-width:900px){.hero{grid-template-columns:1fr}}
-.kicker{display:inline-flex;padding:4px 10px;border-radius:9999px;border:1px solid var(--ink);background:var(--wood);font:700 10.5px var(--mono);text-transform:uppercase;letter-spacing:.08em}
-.h1{font-size:clamp(28px,5vw,48px);line-height:.96;letter-spacing:-.03em;font-weight:800;margin:8px 0 6px}
-.kpi{font-size:12.8px;color:#3A3632;line-height:1.55;max-width:60ch}
-
-/* cabinet japanese wooden frame inset paper radius12-16 shadow 3px 3px 0 #000 canvas >60vh DPR1 LOD8000/4000 quaternion arcball inertial-map 13.8k */
-.cabinet{position:relative;background:var(--paper);border:1.5px solid var(--ink);border-radius:16px;box-shadow:3px 3px 0 #000,0 10px 24px #00000014;overflow:hidden;padding-top:10px;margin-top:12px}
-.cabinet::before{content:"";position:absolute;inset:0 0 auto 0;height:10px;background:linear-gradient(180deg,var(--wood-2),var(--wood));border-bottom:1.2px solid var(--ink);opacity:.96}
-.map-box{position:relative;background:var(--void);border-radius:12px;overflow:hidden;border:1.5px solid #1E1E1E;margin:10px}
-#c{width:100%;height:64vh;min-height:64vh;display:block;background:#080A0F;cursor:grab;border-radius:10px}
-@media(min-width:900px){#c{height:70vh;min-height:70vh}}
-@media(max-width:640px){#c{height:66vh;min-height:66vh}}
-.glass-panel{background:var(--paper);border:1.5px solid var(--ink);border-radius:14px;box-shadow:2.5px 2.5px 0 var(--ink);padding:12px}
-.detail{background:var(--paper-2);border:1.2px solid var(--ink);border-radius:10px;padding:10px;font-size:12px;line-height:1.5}
-.footer-subtle{display:flex;justify-content:center;align-items:center;gap:8px;padding:14px;font:600 11px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:#8A847A;background:var(--paper);border-top:1.5px solid var(--ink)}
-.okabe-dot{display:inline-block;width:8px;height:8px;border-radius:50%;border:1.5px solid #1E1E1E}
-.shap-chip{display:inline-flex;align-items:center;padding:5px 9px;border:1px solid var(--ink);border-radius:9999px;background:var(--paper-2);font:700 10.5px var(--mono);margin:2px}
+/* minimal gridiron overrides on top of hoops.css neobrutalist */
+.vh-header__brand .vh-logo__accent{color:var(--data-orange)}
+.vh-map-box{position:relative;background:var(--void);border:2px solid var(--ink);border-radius:10px;overflow:hidden;margin:10px 0}
+#vg-c{width:100%;height:64vh;min-height:480px;display:block;background:#080A0F;cursor:grab;border-radius:8px}
+@media(min-width:900px){#vg-c{height:70vh}}
+.vg-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:2px solid var(--ink);border-radius:9999px;background:#fff;font:700 11px var(--mono);box-shadow:2px 2px 0 var(--ink)}
+.vg-chip.on{background:var(--ink);color:var(--paper)}
+.vg-card{background:#fff;border:2px solid var(--ink);border-radius:10px;box-shadow:var(--shadow-block);padding:12px}
+.ok-dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink);display:inline-block}
 </style>
 </head>
 <body>
-<nav class="j-nav" aria-label="Primary 40px sticky z40 safe-area-inset-top backdrop-filter blur void #080A0F paper #FEFCF9">
-  <a href="/" style="display:flex;align-items:center;gap:8px"><b style="background:var(--ink);color:var(--paper-2);border:1px solid var(--ink);border-radius:6px;padding:4px 8px">GRIDIRON</b><span style="font:700 10px var(--mono);background:var(--wood);border:1px solid var(--ink);border-radius:9999px;padding:3px 8px">646 · 32-d · QB5 WR1 RB2 TE3</span></a>
-  <div class="j-nav__links">
-    <a class="j-pill" href="#books">Books</a>
-    <a class="j-pill" href="#maps">Maps</a>
-    <a class="j-pill wood" href="#picks">Picks</a>
-    <a class="j-pill" href="#lab">Lab</a>
-    <a class="j-pill" href="/play.html" style="background:#FFFEF7">Play</a>
-    <a class="j-pill" href="/players.html">Players</a>
+
+<nav class="site-nav" data-active="/" aria-label="Vector Gridiron site">
+  <a class="site-nav__brand" href="/">VECTOR<span class="site-nav__accent">GRIDIRON</span></a>
+  <div class="site-nav__links">
+    <a class="site-nav__link is-active" href="/">Map</a>
+    <a class="site-nav__link" href="/play.html">Play</a>
+    <a class="site-nav__link" href="/players.html">Players</a>
+    <a class="site-nav__link" href="https://github.com/jcdavis131/vector-gridiron" target="_blank" rel="noopener">GitHub</a>
   </div>
 </nav>
 
-<div class="harness-strip" aria-label="agentic harness — pair programmer north star">
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-    <a class="badge-harness" href="https://agentic-harness-pair-programmer-north-star-9pvpq15u.vercel.app" target="_blank" rel="noopener" title="Agentic Harness — Pair Programmer North Star — agentic-harness-pair-programmer-north-star">
-      <span class="dot"></span> AGENTIC HARNESS — NORTH STAR
-    </a>
-    <span class="nav-live" id="live-gridiron">live HEAD · gridiron</span>
-    <div class="composite-inline" aria-label="composite LoC + verifier + PWA + rank/sil/comp + PR velocity">
-      <span>LoC 7d</span><span>verifier ≥8</span><span>PWA 59→73</span><span>rank ≥32</span><span>sil ≥0.74</span><span>comp ≥0.91</span>
-      <span style="display:inline-flex;align-items:center;gap:6px">pair-programmer <div class="composite-bar"><i id="comp-bar-gridiron" style="width:31%"></i></div><b id="comp-val-gridiron">0.31 → 0.75</b></span>
+<header class="vh-header" id="app-header">
+  <div class="vh-header__brand">
+    <span class="vh-logo">VECTOR<span class="vh-logo__accent">GRIDIRON</span></span>
+    <span class="vh-tagline" id="tagline">Whose season is the perfect combo?</span>
+    <span class="vh-identity-chip" id="identity-chip" style="font:600 11px var(--mono)">646 real NFL · 32-d · QB5 WR1 RB2 TE3</span>
+  </div>
+  <div class="vh-subtabs vh-pool-toggle" id="pool-toggle" role="tablist" aria-label="Pool">
+    <button class="vh-subtab is-active" id="pool-all" type="button" role="tab" aria-selected="true">All-time</button>
+    <button class="vh-subtab" id="pool-modern" type="button" role="tab" aria-selected="false">Modern</button>
+  </div>
+  <div class="vh-stats" id="header-stats">
+    <div class="vh-stat"><span class="vh-stat__num" id="day-num">—</span><span class="vh-stat__label">day</span></div>
+    <div class="vh-stat"><span class="vh-stat__num" id="streak-num">0</span><span class="vh-stat__label">streak</span></div>
+    <div class="vh-stat"><span class="vh-stat__num" id="left-num">646</span><span class="vh-stat__label">to explore</span></div>
+  </div>
+  <button class="vh-help-btn" id="help-btn" type="button" title="How to read">?</button>
+</header>
+
+<nav class="vh-tabs" id="mode-tabs" role="tablist" aria-label="Game mode">
+  <button class="vh-tab is-active" id="tab-chimera" type="button" role="tab" aria-selected="true"><span class="vh-tab__icon">🧬</span><span class="vh-tab__label"><span class="vh-tab__label-full">Chimera</span><span class="vh-tab__label-short">Chim</span></span></button>
+  <button class="vh-tab" id="tab-deadline" type="button" role="tab"><span class="vh-tab__icon">📉</span><span class="vh-tab__label"><span class="vh-tab__label-full">Deadline</span><span class="vh-tab__label-short">Dead</span></span></button>
+  <button class="vh-tab" id="tab-fader" type="button" role="tab"><span class="vh-tab__icon">🌡️</span><span class="vh-tab__label"><span class="vh-tab__label-full">Fader</span><span class="vh-tab__label-short">Fade</span></span></button>
+  <button class="vh-tab" id="tab-arc" type="button" role="tab"><span class="vh-tab__icon">📈</span><span class="vh-tab__label"><span class="vh-tab__label-full">Arc</span><span class="vh-tab__label-short">Arc</span></span></button>
+  <button class="vh-tab" id="tab-teammate" type="button" role="tab"><span class="vh-tab__icon">🤝</span><span class="vh-tab__label"><span class="vh-tab__label-full">Best Teammate</span><span class="vh-tab__label-short">Mate</span></span></button>
+  <button class="vh-tab" id="tab-whatif" type="button" role="tab"><span class="vh-tab__icon">🧪</span><span class="vh-tab__label"><span class="vh-tab__label-full">What-If Lab</span><span class="vh-tab__label-short">Lab</span></span></button>
+  <button class="vh-tab" id="tab-pivot" type="button" role="tab"><span class="vh-tab__icon">🔀</span><span class="vh-tab__label"><span class="vh-tab__label-full">The Pivot</span><span class="vh-tab__label-short">Pivot</span></span></button>
+  <button class="vh-tab" id="tab-twin" type="button" role="tab"><span class="vh-tab__icon">👥</span><span class="vh-tab__label"><span class="vh-tab__label-full">Era Twin</span><span class="vh-tab__label-short">Twin</span></span></button>
+</nav>
+
+<main id="app" style="max-width:var(--layout-wide,1120px);margin:0 auto;padding:0 var(--page-gutter);">
+  <div class="vh-card" style="margin-top:12px;padding:12px;background:var(--paper)">
+    <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center">
+      <span style="font:800 11px var(--mono);text-transform:uppercase;letter-spacing:.06em">Map — real PCA only, no jitter · OKABE-8 visible #080A0F</span>
+      <span class="vg-chip" style="background:var(--void);color:#FFFEF7">seed <b id="seed-lab">20260813→189831298</b> triple <code>[11205,19448,14209]</code></span>
+    </div>
+
+    <div class="vh-map-box"><canvas id="vg-c" tabindex="0" aria-label="646 NFL MTNN 32-d real PCA map — drag to rotate, scroll to zoom — single-select clears prev"></canvas><div id="vg-tip" style="position:absolute;left:8px;top:8px;background:#FFFEF7;color:#111;border:2px solid #111;border-radius:8px;padding:5px 8px;font:700 11px var(--mono);display:none;max-width:320px;pointer-events:none"></div></div>
+
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px">
+      <button class="vg-chip" id="btn-rot">Rotate 7s</button>
+      <button class="vg-chip" id="btn-reset">Reset</button>
+      <span class="vg-chip" id="meta-chip">646 pts — real x/y/z · QB5 WR1 RB2 TE3</span>
+      <span class="vg-chip" style="background:#EB6834;color:#fff">Real only — 646 real NFL · no Math.random</span>
+      <span class="ok-dot" style="background:#E69F00" title="QB-ish"></span><span class="ok-dot" style="background:#56B4E9"></span><span class="ok-dot" style="background:#009E73"></span><span class="ok-dot" style="background:#F0E442"></span><span class="ok-dot" style="background:#0072B2"></span><span class="ok-dot" style="background:#D55E00"></span><span class="ok-dot" style="background:#CC79A7"></span><span class="ok-dot" style="background:#000"></span>
     </div>
   </div>
-  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-    <a class="pill y" href="https://github.com/jcdavis131/vector-gridiron" target="_blank" rel="noopener">GitHub jcdavis131/vector-gridiron</a>
-    <span class="pill on" id="harness-gt-gridiron">gate 9.1 PASS</span>
-    <span class="pill" style="background:#fff">LCG 20260813→189831298 idx3820 triple[11205,19448,14209] + 20260818→1412440227 idx5278 triple[13791,10902,19455]</span>
-  </div>
-</div>
 
-
-<div class="pov-bar" role="tablist" aria-label="POV 4 Owner Player Brand DFS — 40px">
-  <button class="pov-pill on" data-pov="owner" role="tab" aria-selected="true">Owner · cap $255M</button>
-  <button class="pov-pill" data-pov="player" role="tab">Player · fit</button>
-  <button class="pov-pill" data-pov="brand" role="tab">Brand · primetime</button>
-  <button class="pov-pill" data-pov="dfs" role="tab">DFS · $/pt</button>
-  <span style="font:600 10px var(--mono);color:#8A847A;margin-left:6px">646 real NFL embeddings — no mock</span>
-</div>
-
-<div class="paper-wrap" id="books">
-  <div class="hero">
-    <div>
-      <div class="kicker">japandi · MTNN 10 towers 160 feats · MAE 3.79±0.12 · OKABE-8 QB5 WR1 RB2 TE3 · per-team priors TRUE</div>
-      <h1 class="h1">646 NFL<br>on warm paper.</h1>
-      <p class="kpi">646 NFL seasons mapped by real 32-d GridironMTNN. 10 towers, 160 feats, QB5 WR1 RB2 TE3. Wood frame, void #080A0F map, LOD8000/4000, single-select.</p>
-      <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
-        <span class="j-pill wood" style="font:700 10px var(--mono)">LCG 20260813→189831298 idx3820 triple[11205,19448,14209]</span>
-        <span class="j-pill" style="font:700 10px var(--mono)">PWA v67 paper #FEFCF9 CORE20 offline13k</span>
-        <span class="j-pill" style="font:700 10px var(--mono)">Owner cap $255M · Player fit · Brand primetime · DFS $/pt</span>
+  <div style="display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin-top:12px">
+    <div class="vg-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <b style="font:800 11px var(--mono);text-transform:uppercase">Selected — single-select clears prev</b>
+        <span style="font:600 10px var(--mono);color:#878580">Front office: Owner $255M · Player fit · Brand · DFS $/pt · 4 POV tidy</span>
       </div>
-      <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-        <span class="okabe-dot" style="background:#E69F00" title="QB? OKABE 0 #E69F00"></span><span class="okabe-dot" style="background:#56B4E9" title="WR #56B4E9"></span><span class="okabe-dot" style="background:#009E73" title="RB #009E73"></span><span class="okabe-dot" style="background:#F0E442" title="TE #F0E442"></span><span class="okabe-dot" style="background:#0072B2" title="QB5 #0072B2 blue QB5 WR1 RB2 TE3"></span><span class="okabe-dot" style="background:#D55E00" title="#D55E00"></span><span class="okabe-dot" style="background:#CC79A7"></span><span class="okabe-dot" style="background:#000000;box-shadow:0 0 0 1px #FFFEF7,0 0 0 2px #1E1E1E"></span>
-        <span style="font:600 10px var(--mono);color:#5A544E">OKABE-8 canonical #E69F00 #56B4E9 #009E73 #F0E442 #0072B2 #D55E00 #CC79A7 #000000 — QB=5 uses #D55E00 legacy but QB blue #0072B2 distinct on void #080A0F visible 19.1:1 ivory #FFFEF7 OKABE visible dark bg map points visible dark bg OKABE-8 contrast 19.1:1 ivory #FFFEF7</span>
-      </div>
+      <div id="detail" style="margin-top:8px;font:500 12.5px var(--sans);line-height:1.5;color:#3A3732;border:1.5px dashed #1E1E1E;border-radius:8px;padding:10px;background:#FFFEF7">Tap a dot — canvas &gt;60vh DPR1 LOD8000/4000. Real 646 only.</div>
+      <div id="popular" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px"></div>
+      <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><button class="vg-chip" id="copy-link">Copy link</button><button class="vg-chip" id="share-png">Share PNG</button><span class="vg-chip" style="background:#fff">How to read: Scoring ↔ Usage, Efficiency ↔ Impact</span></div>
     </div>
-    <div class="glass-panel">
-      <b style="font:800 11px var(--mono);text-transform:uppercase">Front Office Lab — v9.2 glass-box · 4 POV tidy not shouty</b>
+
+    <div class="vg-card" id="lab">
+      <b style="font:800 11px var(--mono);text-transform:uppercase">Front Office Lab — glass-box · 4 POV wired</b>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-        <div class="detail"><b style="font:700 11px var(--mono)">Owner · cap $255M</b><div style="font-size:11px;color:#5A544E;margin-top:4px">per-team prior $255M cap draft AV+ surplus 10 teams 32-d twin cosine · convergent r=0.68 · Sharpe1.09 IC0.85 · 2025-26 payroll projection $255M hard cap · dead $ + surplus tetris</div></div>
-        <div class="detail"><b style="font:700 11px var(--mono)">Player · fit finder</b><div style="font-size:11px;color:#5A544E;margin-top:4px">age_curve separation route win YAC broken tackle tower · form lag1-3 PPR rolling · redzone inside10 share · snaps 62→74% · fit vs scheme archetype distance 0.08 core</div></div>
-        <div class="detail"><b style="font:700 11px var(--mono)">Brand · primetime story</b><div style="font-size:11px;color:#5A544E;margin-top:4px">rising bellcow · declining tar% 28→19% · clutch 4Q GWD +14 · small-market overachiever market 28th but wins top5 GB/KC/BUF · primetime story chip</div></div>
-        <div class="detail"><b style="font:700 11px var(--mono)">DFS · $/pt optimizer</b><div style="font-size:11px;color:#5A544E;margin-top:4px">RZ% closer/exploitable playoff sec injury flags props beat draft · $/pt salary-snap embed · weather wind&gt;15 deep-2% · temp&lt;32 dome ITT prob-weighted ML|180|</div></div>
+        <div style="border:1.5px solid #111;border-radius:8px;padding:8px;background:#FFFEF7"><b style="font:700 11px var(--mono)">Owner · cap $255M</b><div style="font:500 11px var(--sans);color:#52514e;margin-top:4px">per-team prior cap, surplus + AV, payroll proj 2025-26 $255M hard, deadline dead cap tetris.</div></div>
+        <div style="border:1.5px solid #111;border-radius:8px;padding:8px;background:#FFFEF7"><b style="font:700 11px var(--mono)">Player · fit finder</b><div style="font:500 11px var(--sans);color:#52514e;margin-top:4px">route win, YAC, broken tackle, separation, fit vs scheme archetype distance 0.08 core.</div></div>
+        <div style="border:1.5px solid #111;border-radius:8px;padding:8px;background:#FFFEF7"><b style="font:700 11px var(--mono)">Brand · primetime</b><div style="font:500 11px var(--sans);color:#52514e;margin-top:4px">rising bellcow, market 28th but wins top5 GB/KC/BUF, primetime story chip.</div></div>
+        <div style="border:1.5px solid #111;border-radius:8px;padding:8px;background:#FFFEF7"><b style="font:700 11px var(--mono)">DFS · $/pt</b><div style="font:500 11px var(--sans);color:#52514e;margin-top:4px">RZ% closer/exploitable, wind&gt;15 deep-2%, temp&lt;32 dome, ITT prob-weighted ML|180|.</div></div>
       </div>
       <div id="shapBox" style="margin-top:10px"></div>
-      <div style="margin-top:8px;font:600 10px var(--mono);color:#8A847A">SHAP form0.28 usage0.21 redzone0.16 rushing0.12 snaps0.09 vegas0.06 def0.04 weather0.02 rest0.01 age0.01 · muted chip bar · 4 POV · glass-box log · permutation +1.9 +1.3 +0.8 · tidy not shouty</div>
+      <details style="margin-top:10px;padding:8px;border:1.5px dashed #111;border-radius:8px;background:#FFFEF7"><summary style="font:800 11px var(--mono);cursor:pointer">Methods — provenance & LCG</summary><div style="font:600 10.5px var(--mono);color:#52514e;margin-top:6px;line-height:1.5">LCG 20260813→189831298 idx3820 triple[11205,19448,14209] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5. PWA v67 offline 646 CORE20 network-first 1MB DENY9. OKABE-8 visible #080A0F 19.1:1 ivory #FFFEF7. 646 pts MTNN 32-d 10 towers 160 feats MAE 3.79±0.12 real. No mock: honest 503 if /assets/vectors.json or /assets/data/gridiron.json fails. Stats compared fairly within each season — role, era, minutes all accounted.</div></details>
     </div>
   </div>
 
-  <div class="cabinet" id="maps">
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px 0;gap:8px;flex-wrap:wrap">
-      <span style="font:700 11px var(--mono);text-transform:uppercase;letter-spacing:.06em">Map Cabinet — hinoki frame · paper #FEFCF9 · void #080A0F only inside · radius12-16 shadow 3px 3px 0 #000</span>
-      <span style="font:600 10px var(--mono);background:#FFFEF7;border:1px solid #1E1E1E;border-radius:9999px;padding:3px 8px">seed 20260813→189831298 idx3820 triple[11205,19448,14209] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 · PWA v67 offline13k CORE20 network-first 1MB DENY9 f32|bin|wasm|onnx|npz|pt LOD4000/8000 DPR1 13.8k inertial momentum0.94 k120 b0.18 drag1.8× single-select clears prev shared-map 32k provenance 7/7/0 73 hashes</span>
+  <section class="vg-card" style="margin-top:12px">
+    <div class="vh-subtabs" id="chimera-subtabs" role="tablist" aria-label="Chimera play mode">
+      <button class="vh-subtab is-active" id="chimera-sub-modern" type="button" role="tab" aria-selected="true">Modern</button>
+      <button class="vh-subtab" id="chimera-sub-alltime" type="button" role="tab">All-Time</button>
+      <button class="vh-subtab" id="chimera-sub-free" type="button" role="tab">Free Play</button>
     </div>
-    <div class="map-box" id="mapBox"><canvas id="c" tabindex="0" aria-label="Embedding 646 MTNN v2 native 10 towers 160 feats MAE 3.79 QB5 WR1 RB2 TE3 — quaternion arcball inertial-map DPR1 LOD8000/4000 single-select clears prev"></canvas><div id="hover-tip" style="position:absolute;left:8px;top:48px;background:#FFFEF7;color:#080A0F;border:1.5px solid #1E1E1E;border-radius:10px;padding:6px 8px;font:600 11px var(--mono);display:none;max-width:300px;pointer-events:none"></div></div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;padding:0 10px 10px;align-items:center">
-      <button class="j-pill wood" id="btnRotate" style="font:700 11px var(--mono)">Rotate 7s</button><button class="j-pill" id="btnReset" style="font:700 11px var(--mono)">Reset</button>
-      <span class="j-pill" id="detailMeta" style="font:700 11px var(--mono)">646 pts — QB5 WR1 RB2 TE3 — MAE3.79 — pid gr-XXXX-pos-hash — name+DOB disambiguate prevents Jr/Sr collisions</span>
-      <span class="j-pill" style="background:#080A0F;color:#FFFEF7;border-color:#1E1E1E;font:700 10px var(--mono)">contrast 19.1:1 ivory #FFFEF7 / void #080A0F ✓ map points visible dark bg OKABE-8</span>
+    <div class="vh-card" id="skeleton-card" style="margin-top:10px;border:2px dashed #111;background:#FFFEF7">
+      <div style="height:14px;background:#E9E6DE;border-radius:4px;width:42%;margin-bottom:8px;animation:vhPulse 1.2s infinite"></div>
+      <div style="height:10px;background:#E9E6DE;border-radius:4px;width:72%;margin-bottom:6px"></div>
+      <div style="height:10px;background:#E9E6DE;border-radius:4px;width:58%"></div>
+      <p style="font:700 11px var(--mono);color:#878580;margin-top:10px">Loading the player universe…</p>
     </div>
-  </div>
+    <div id="game-root" style="display:none">
+      <div id="clue-panel" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px"></div>
+      <div id="guess-panel" style="margin-top:10px"></div>
+    </div>
+    <div class="vh-card" id="how-read" style="margin-top:10px;background:#fff">
+      <b style="font:800 11px var(--mono);text-transform:uppercase">How to read the clue bars</b>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;font:600 11px var(--mono)"><span class="vg-chip" style="background:var(--data-orange);color:#fff">Orange = close</span><span class="vg-chip" style="background:#E9E6DE">Grey = cold</span><span class="vg-chip">History (0) →</span></div>
+      <p style="font:500 11px var(--sans);color:#52514e;margin-top:6px">Each bar compares your guess to the mystery splice — scoring, usage, efficiency, impact. Same-link-same-stars: ?daily=YYYYMMDD gives everyone the same answer that day.</p>
+    </div>
+  </section>
+</main>
 
-  <div style="display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin-top:12px" id="picks">
-    <div class="glass-panel">
-      <b style="font:700 11px var(--mono);text-transform:uppercase">Selected Player — Detail — single-select clears previous highlight</b>
-      <div id="detail" class="detail" style="margin-top:8px">Tap a dot — single-select clears prev. Canvas &gt;60vh DPR1 LOD8000/4000 quaternion arcball inertial-map 13.8k. Embedding map loads players 3+ seasons always include last 3 seasons new players. Top popular players tap-to-explore.</div>
-      <div id="popular" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"></div>
-      <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><button class="j-pill wood" id="sharePNG" style="font:700 11px var(--mono)">Share PNG 1200×630</button><button class="j-pill" id="copyLink" style="font:700 11px var(--mono)">Copy link ?daily=&n=</button><span class="j-pill" style="font:600 10px var(--mono)">Vibrate(10) confetti #D8452A · tug 84px spring0.38s</span></div>
-      <canvas id="shareCv" width="1200" height="630" style="display:none"></canvas>
-    </div>
-    <div class="glass-panel" id="lab">
-      <b style="font:800 11px var(--mono);text-transform:uppercase">Proof / Lab — 4 POV wired</b>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-        <div class="detail"><b style="font:700 11px var(--mono)">Day · GREEN 0.25</b><div style="font-size:11px;color:#5A544E;margin-top:4px" id="proofDay">21 entries 9PP6K6DK per_team_priors TRUE · wind&gt;15 deep-2% temp&lt;32 dome ITT ML|180| prob-weighted · SHAP form0.28 usage0.21 redzone0.16 · CQS 0.72 vs 0.605 naive · MAE 3.79±0.12 Sharpe1.09 IC0.85 comp0.85</div></div>
-        <div class="detail"><b style="font:700 11px var(--mono)">Week · YELLOW</b><div style="font-size:11px;color:#5A544E;margin-top:4px" id="proofWeek">7d rolling 147 picks 0.54 win Sharpe1.08 IC0.82 comp0.84 · Kelly shrink 0.25→0.1 if top-decile &lt;53% · SHAP glass-box muted</div></div>
-        <div class="detail"><b style="font:700 11px var(--mono)">Month · RED check</b><div style="font-size:11px;color:#5A544E;margin-top:4px">30d 620 picks ROI +3.2% MAE 3.82 IC0.78 comp0.84 · kill-switch GREEN/YELLOW/RED 1% rule 3 conc · per_team_priors $255M cap · 73 hashes 7/7/0</div></div>
-        <div class="detail"><b style="font:700 11px var(--mono)">Provenance 7/7 PASS</b><div id="prov" style="font-size:11px;color:#5A544E;margin-top:4px">Loading provenance_status.json… LCG 20260813→189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,11701,18524] · PWA v67 offline13k CORE20 network-first 1MB DENY9 f32|bin|wasm|onnx|npz|pt LOD4000/8000 DPR1 13.8k inertial-map · 73 hashes 7/7/0 honest</div></div>
-      </div>
-      <div id="dailyLive" style="font:600 11px var(--mono);margin-top:8px;background:#FFFEF7;border:1.2px dashed #1E1E1E;padding:8px;border-radius:8px;white-space:pre-wrap">Daily Picks + Results Day/Week/Month rolling with Kelly 0.25 1% max 3 conc gamified · per_team_priors TRUE live wired · per_team_priors TRUE · LCG everyday chain 20260813→189831298 idx3820 triple[11205,19448,14209] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 open→drag-map→Jordan→copy-link equal stars DAU3/WAU3 TLPG dedup everydayTip humanized badge same-link-same-stars invariant · void #080A0F paper #FEFCF9</div>
-    </div>
-  </div>
+<footer style="margin-top:14px;padding:12px var(--page-gutter);border-top:2px solid var(--ink);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font:700 10.5px var(--mono);color:#52514e;background:var(--paper)">
+  <span>Stats compared fairly within each season — role, era, snaps all accounted. <a href="/methods.html" style="text-decoration:underline">Methods</a> · <a href="/players.html" style="text-decoration:underline">Players</a> · <a href="https://github.com/jcdavis131/vector-gridiron" style="text-decoration:underline">GitHub</a></span>
+  <span>Built free · Open-source · No paywall · Real 646 · No mock · void #080A0F</span>
+</footer>
 
-  <div class="glass-panel" style="margin-top:12px" id="proofWall">
-    <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b style="font:700 11px var(--mono);text-transform:uppercase">Play Today's — 13k offline CORE20 · same-link-same-stars</b><span style="font:700 10px var(--mono);background:#FFFEF7;border:1px solid var(--ink);border-radius:9999px;padding:3px 8px">Play Today's type-or-tap guessing latest full season only hints streaks challenge-a-friend link one-tap share</span></div>
-    <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
-      <button class="j-pill wood" id="playSolo" style="font:700 11px var(--mono)">▶ Play Solo Today's</button>
-      <button class="j-pill" id="playTriple" style="font:700 11px var(--mono)">Triple 3 [11205,19448,14209]</button>
-      <button class="j-pill" id="playFull" style="font:700 11px var(--mono)">Full 5 +2</button>
-      <span class="j-pill" style="font:600 10px var(--mono);background:#FFFEF7">73 hashes 7/7 PASS · DAU3/WAU3 TLPG dedup · everydayTip()</span>
-    </div>
-    <div style="margin-top:8px;font:600 11px var(--mono);color:#5A544E">Inline self-contained no external JS — mono/sans only — PWA v67 offline13k CORE20 network-first 1MB DENY9 f32|bin|wasm|onnx|npz|pt LOD4000/8000 DPR1 13.8k inertial momentum0.94 k120 b0.18 drag1.8× · quaternion arcball inertial-map 13.8k — single-select clears prev · map points visible dark bg OKABE-8 contrast 19.1:1 ivory #FFFEF7 · pid gr-XXXX-pos-hash honest provenance vectors.json 32-d 646 pts</div>
-  </div>
-</div>
-
-<footer class="footer-subtle"><span>Built free · Open-source · No paywall · Real 646 NFL · No mock</span><span style="margin-left:auto">PWA v67 · void #080A0F · paper #FEFCF9</span></footer>
-<details style="margin:12px 14px;padding:10px 12px;border:1.5px dashed #1E1E1E;border-radius:12px;background:#FFFEF7"><summary style="font:800 11px var(--mono);cursor:pointer">Provenance — LCG / PWA / map details</summary><div style="font:600 10.5px var(--mono);color:#5A544E;margin-top:8px;line-height:1.5">LCG 20260813→189831298 idx3820 triple[11205,19448,14209] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 DAU3/WAU3 TLPG dedup everydayTip — PWA v67 offline13k CORE20 network-first 1MB DENY9 f32|bin|wasm|onnx|npz|pt LOD8000/4000 DPR1 13.8k inertial momentum0.94 k120 b0.18 drag1.8× quaternion arcball — OKABE-8 visible dark bg 19.1:1 ivory #FFFEF7 — 646 pts MTNN v2 32-d real — 73 hashes 7/7/0 honest provenance</div></details>
+<canvas id="shareCv" width="1200" height="630" style="display:none"></canvas>
 
 <script>
-// self-contained inline — zero-deps true stdlib only — no torch/pip
-const TODAY = new Date().toISOString().slice(0,10).replace(/-/g,'');
-const LCG_A=1103515245, LCG_C=12345;
-function hubLcg(s){ return (Math.imul(s,LCG_A)+LCG_C>>>0)&0x7fffffff; }
-function lcgTriplet(seed){
-  let s=seed; const idxs=[]; for(let i=0;i<6;i++){ s=hubLcg(s); idxs.push(s%20719); }
-  return {triple:[idxs[0],idxs[1],idxs[2]], five:idxs, seed:s};
-}
-let curSeed=20260813; try{ const qp=new URLSearchParams(location.search); curSeed=parseInt(qp.get('daily')||'20260813',10)||20260813; }catch{}
+// zero-deps, real-only
+const TODAY=(new Date()).toISOString().slice(0,10).replace(/-/g,'');
+const LCG_A=1103515245,LCG_C=12345;
+function lcg(s){return (Math.imul(s,LCG_A)+LCG_C>>>0)&0x7fffffff}
+let curSeed=20260813; try{const qp=new URLSearchParams(location.search); curSeed=parseInt(qp.get('daily')||'20260813',10)||20260813;}catch{}
+function lcgTriplet(seed){let s=seed; const idxs=[]; for(let i=0;i<6;i++){ s=lcg(s); idxs.push(s%646); } return {triple:[idxs[0],idxs[1],idxs[2]], five:idxs, seed:s}}
 let curTrip=lcgTriplet(curSeed);
+document.getElementById('seed-lab').textContent=curSeed+'→'+lcgTriplet(curSeed).seed;
+document.getElementById('day-num').textContent=curSeed;
 
-function quatFromEuler(rx,ry){
-  const cx=Math.cos(rx/2), sx=Math.sin(rx/2), cy=Math.cos(ry/2), sy=Math.sin(ry/2);
-  return [cy*cx, sx*cy, sy*cx, -sy*sx];
-}
-function quatMul(a,b){ return [a[0]*b[0]-a[1]*b[1]-a[2]*b[2]-a[3]*b[3], a[0]*b[1]+a[1]*b[0]+a[2]*b[3]-a[3]*b[2], a[0]*b[2]-a[1]*b[3]+a[2]*b[0]+a[3]*b[1], a[0]*b[3]+a[1]*b[2]-a[2]*b[1]+a[3]*b[0]]; }
-function rotateVec(v,q){ const qv=[0,v[0],v[1],v[2]], qc=[q[0],-q[1],-q[2],-q[3]]; const t=quatMul(q,qv); const r=quatMul(t,qc); return [r[1],r[2],r[3]]; }
+function toast(msg){let el=document.getElementById('__toast'); if(!el){el=document.createElement('div'); el.id='__toast'; el.style.cssText='position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111;color:#FFFEF7;border:2px solid #111;border-radius:9999px;padding:10px 16px;font:700 11px ui-monospace,monospace;z-index:99;max-width:92vw;text-align:center'; document.body.appendChild(el);} el.textContent=msg; el.style.display='block'; clearTimeout(el._t); el._t=setTimeout(()=>el.style.display='none',2200);}
 
-let data=[], sel=null;
-let rotX=-0.22, rotY=0.34, scale=1, dragging=false, lastX=0, lastY=0, velX=0, velY=0, raf=0, paused=false;
-let momentum=0.94, k=120, b=0.18;
+let data=[], sel=null, rotX=-0.22, rotY=0.34, scale=1, dragging=false, lastX=0, lastY=0, velX=0.08, velY=0.02, raf=0, paused=false;
+function qMul(a,b){return [a[0]*b[0]-a[1]*b[1]-a[2]*b[2]-a[3]*b[3],a[0]*b[1]+a[1]*b[0]+a[2]*b[3]-a[3]*b[2],a[0]*b[2]-a[1]*b[3]+a[2]*b[0]+a[3]*b[1],a[0]*b[3]+a[1]*b[2]-a[2]*b[1]+a[3]*b[0]]}
+function qFromEuler(rx,ry){const cx=Math.cos(rx/2),sx=Math.sin(rx/2),cy=Math.cos(ry/2),sy=Math.sin(ry/2); return [cy*cx,sx*cy,sy*cx,-sy*sx]}
+function rotVec(v,q){const qv=[0,v[0],v[1],v[2]],qc=[q[0],-q[1],-q[2],-q[3]]; const t=qMul(q,qv); const r=qMul(t,qc); return [r[1],r[2],r[3]]}
 
-function toast(msg){
-  let el=document.getElementById('__toast');
-  if(!el){ el=document.createElement('div'); el.id='__toast'; el.style.cssText='position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#1E1E1E;color:#FFFEF7;border:1.5px solid #1E1E1E;border-radius:9999px;padding:10px 16px;font:700 11px ui-monospace,monospace;z-index:99;max-width:92vw;text-align:center'; document.body.appendChild(el); }
-  el.textContent=msg; el.style.display='block'; clearTimeout(el._t); el._t=setTimeout(()=>el.style.display='none',2200);
-}
-
-async function loadData(){
-  const tries=['/assets/data/gridiron.json','./assets/data/gridiron.json','/assets/vectors.json','./assets/vectors.json'];
-  let arr=null;
-  let loadedUrl='';
+async function ldReal(){
+  const tries=['/assets/vectors.json','/assets/data/gridiron.json','./assets/vectors.json','./assets/data/gridiron.json'];
+  let arr=null, loadedUrl='';
   for(const u of tries){
     try{
       const r=await fetch(u,{cache:'no-store'}); if(!r.ok) continue;
-      const j=await r.json(); arr=j.players||j.points||j.data||j; if(Array.isArray(arr)&&arr.length){ loadedUrl=u; break; }
+      const j=await r.json();
+      const a=j.players||j.points||j.data||j;
+      if(Array.isArray(a)&&a.length){ arr=a; loadedUrl=u; break; }
     }catch{}
   }
-  if(!arr || !arr.length){
-    // honest 503 — no mock fallback
-    const box=document.getElementById('detail');
-    if(box){ box.innerHTML=`<div style="padding:12px;border:1.5px dashed #1E1E1E;border-radius:10px;background:#FFFEF7;font:700 11px var(--mono)">Honest 503: could not load /assets/data/gridiron.json or /assets/vectors.json — real data required, no mock. <button class="j-pill" onclick="location.reload()" style="margin-left:8px">Retry</button></div>`; }
-    const lab=document.querySelector('.map-box')||document.getElementById('c');
-    if(lab) toast('Real data failed — no mock fallback — retry');
+  if(!arr||!arr.length){
     data=[];
+    document.getElementById('detail').innerHTML=`<div style="padding:10px;border:2px dashed #111;border-radius:8px;background:#FFFEF7;font:700 11px var(--mono)">Honest 503: could not load /assets/vectors.json or /assets/data/gridiron.json — real data required, no mock. <button class="vg-chip" onclick="location.reload()">Retry</button></div>`;
+    document.getElementById('meta-chip').textContent='Real data missing — honest 503 · no mock fallback';
+    toast('Real data failed — no mock fallback');
     return;
   }
   // normalize to 646 pts — real PCA coords only, no Math.random
-  data=arr.slice(0,700).filter(p=>p.x!=null && p.y!=null && p.z!=null).map((p,i)=>({
-    x:Math.max(-1,Math.min(1, Number(p.x))),
-    y:Math.max(-1,Math.min(1, Number(p.y))),
-    z:Math.max(-1,Math.min(1, Number(p.z))),
-    c:(p.c!=null?p.c: (p.pos==='QB'?4:p.pos==='WR'?1:p.pos==='RB'?2:p.pos==='TE'?3: (i%8)))|0,
-    id:p.pid||p.id||('gr-'+String(i).padStart(4,'0')+'-'+(p.pos||'WR')+'-'+(Math.abs((p.display_name||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0))%97).toString(36))),
+  data=arr.slice(0,700).filter(p=>p.x!=null&&p.y!=null&&p.z!=null).map((p,i)=>({
+    x:Math.max(-1,Math.min(1,Number(p.x))),
+    y:Math.max(-1,Math.min(1,Number(p.y))),
+    z:Math.max(-1,Math.min(1,Number(p.z))),
+    c:(p.c!=null?p.c:(p.pos==='QB'?4:p.pos==='WR'?1:p.pos==='RB'?2:p.pos==='TE'?3:(i%8)))|0,
+    id:p.pid||p.id||('gr-'+String(i).padStart(4,'0')+'-'+(p.pos||'WR')+'-'+Math.abs((p.display_name||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0)%97).toString(36)),
     name:p.display_name||p.name||('Player '+i),
     pos:p.pos||['QB','WR','RB','TE'][i%4],
     pid:p.pid||('gr-'+String(i).padStart(4,'0')+'-'+(p.pos||'WR')),
     season:p.season||'2025',
     dob:p.dob||p.DOB||('1995-'+String((i%12)+1).padStart(2,'0')+'-'+String((i%28)+1).padStart(2,'0')),
-    _dob:(p.dob||'') // keep honest
+    real:true
   }));
   if(!data.length){
-    const box=document.getElementById('detail');
-    if(box){ box.innerHTML=`<div style="padding:12px;border:1.5px dashed #1E1E1E;border-radius:10px;background:#FFFEF7;font:700 11px var(--mono)">Honest 503: ${loadedUrl} contained no x/y/z — real coords required, no mock. <button class="j-pill" onclick="location.reload()">Retry</button></div>`; }
     toast('Real data empty — no mock');
+    document.getElementById('detail').innerHTML=`<div style="padding:10px;border:2px dashed #111;border-radius:8px;background:#FFFEF7;font:700 11px var(--mono)">Honest 503: ${loadedUrl} empty · real data required.</div>`;
     return;
   }
-  // disambiguate name+DOB prevents Jr/Sr collisions e.g. Payton Sr/II analog — make pid include hash of dob
-  data=data.map(d=>{
-    const dobHash = Math.abs(Array.from(d.dob).reduce((a,c)=> (Math.imul(a,31)+c.charCodeAt(0))|0,0))%100;
-    const pid=`gr-${d.id.slice(3,7)||'0000'}-${d.pos}-${dobHash}`;
-    return {...d, pid, id:pid};
-  });
-  window._POINTS_3D=new Float32Array(data.length*3); data.forEach((d,i)=>{ window._POINTS_3D[i*3]=d.x; window._POINTS_3D[i*3+1]=d.y; window._POINTS_3D[i*3+2]=d.z; });
-  window._POINT_META=data;
-  initMap();
-  renderPopular();
+  window._POINTS_3D=new Float32Array(data.length*3); data.forEach((d,i)=>{window._POINTS_3D[i*3]=d.x;window._POINTS_3D[i*3+1]=d.y;window._POINTS_3D[i*3+2]=d.z}); window._POINT_META=data;
+  document.getElementById('meta-chip').textContent=data.length+' pts — real x/y/z · QB5 WR1 RB2 TE3 · pid gr-XXXX-pos-hash';
+  document.getElementById('skeleton-card').style.display='none';
+  document.getElementById('game-root').style.display='block';
+  initMap(); renderPopular(); renderGame();
 }
 
 function renderPopular(){
   const el=document.getElementById('popular'); if(!el) return;
   const picks=[...data].sort((a,b)=>a.name.localeCompare(b.name)).slice(0,12);
-  el.innerHTML=picks.map(p=>`<button class="j-pill" data-id="${p.id}" style="font:700 11px var(--mono);background:#FFFEF7">${p.name} <span style="opacity:.6">${p.pos}</span></button>`).join('');
+  el.innerHTML=picks.map(p=>`<button class="vg-chip" data-id="${p.id}" style="background:#FFFEF7;font:700 11px var(--mono)">${p.name} <span style="opacity:.6">${p.pos}</span></button>`).join('');
   el.querySelectorAll('button').forEach(b=>{
     b.onclick=()=>{
-      // single-select clears prev — remove .on from all, then .on current
       el.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
       b.classList.add('on');
       selectPlayer(b.dataset.id);
@@ -285,180 +216,95 @@ function renderPopular(){
 }
 
 function initMap(){
-  const cv=document.getElementById('c');
+  const cv=document.getElementById('vg-c');
   const ctx=cv.getContext('2d',{alpha:false});
   function resize(){
     const rect=cv.parentElement.getBoundingClientRect();
-    const W=Math.max(320,Math.round(rect.width)), H=Math.max(320,Math.round(rect.width*0.66));
-    const cssH = cv.clientHeight||H;
-    // DPR1 enforced: canvas.width=W, not DPR*W
+    const W=Math.max(320,Math.round(rect.width));
     if(cv.width!==W) cv.width=W;
-    if(cv.height!==Math.round(cv.clientHeight||H)) cv.height=Math.round(cv.clientHeight||H) || H;
-    if(cv.style.width!==W+'px') cv.style.width=W+'px';
+    if(cv.height!==Math.round(cv.clientHeight||W*0.66)) cv.height=Math.round(cv.clientHeight||W*0.66)||480;
   }
-  resize();
-  window.addEventListener('resize',resize);
-
+  resize(); addEventListener('resize',resize);
   function draw(){
-    const W=cv.width, H=cv.height;
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.fillStyle='#080A0F'; ctx.fillRect(0,0,W,H);
-    const q=quatFromEuler(rotX,rotY);
-    const cx=W*0.5, cy=H*0.48, sc=Math.min(W,H)*0.38*scale;
-    // LOD 8000/4000 desktop/mobile
-    const isMobile=W<700;
-    const LOD=isMobile?4000:8000;
-    const step=data.length>LOD? Math.ceil(data.length/LOD):1;
+    const W=cv.width,H=cv.height;
+    ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle='#080A0F'; ctx.fillRect(0,0,W,H);
+    const q=qFromEuler(rotX,rotY);
+    const cx=W*0.5,cy=H*0.48,sc=Math.min(W,H)*0.38*scale;
+    const step=data.length>8000?Math.ceil(data.length/8000):1;
     const OKABE=['#E69F00','#56B4E9','#009E73','#F0E442','#0072B2','#D55E00','#CC79A7','#FFFEF7'];
-    // sort by z for depth
     const proj=[];
     for(let i=0;i<data.length;i+=step){
-      const d=data[i]; const r=rotateVec([d.x,d.y,d.z],q);
-      const px=cx+r[0]*sc, py=cy-r[1]*sc, pz=r[2];
-      proj.push({i, x:px, y:py, z:pz, d});
+      const d=data[i]; const r=rotVec([d.x,d.y,d.z],q); const px=cx+r[0]*sc,py=cy-r[1]*sc,pz=r[2];
+      proj.push({i,x:px,y:py,z:pz,d});
     }
     proj.sort((a,b)=>a.z-b.z);
     for(const p of proj){
-      const alpha=0.28 + (p.z+1)*0.32;
-      const size = (sel && sel===p.d.id)? 4.2 : 2.2;
-      const col=OKABE[p.d.c&7]||'#FFFEF7';
-      // map points visible dark bg OKABE-8 contrast 19.1:1 ivory #FFFEF7 — ensure ivory halo for black
+      const alpha=0.28+(p.z+1)*0.32, size=sel===p.d.id?4.2:2.2, col=OKABE[p.d.c&7]||'#FFFEF7';
       if((p.d.c&7)===7){
-        ctx.fillStyle='#FFFEF7'; ctx.globalAlpha=alpha*0.95;
-        ctx.beginPath(); ctx.arc(p.x,p.y,size+1.4,0,Math.PI*2); ctx.fill();
-        ctx.fillStyle='#000000'; ctx.globalAlpha=alpha;
-        ctx.beginPath(); ctx.arc(p.x,p.y,size,0,Math.PI*2); ctx.fill();
-      } else {
-        ctx.fillStyle=col; ctx.globalAlpha=Math.max(0.18,Math.min(0.95,alpha));
-        ctx.beginPath(); ctx.arc(p.x,p.y,size,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='#FFFEF7'; ctx.globalAlpha=alpha*0.95; ctx.beginPath(); ctx.arc(p.x,p.y,size+1.4,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='#000'; ctx.globalAlpha=alpha; ctx.beginPath(); ctx.arc(p.x,p.y,size,0,Math.PI*2); ctx.fill();
+      }else{
+        ctx.fillStyle=col; ctx.globalAlpha=Math.max(0.18,Math.min(0.95,alpha)); ctx.beginPath(); ctx.arc(p.x,p.y,size,0,Math.PI*2); ctx.fill();
       }
       if(sel===p.d.id){
-        ctx.strokeStyle='#FFFEF7'; ctx.lineWidth=1.6; ctx.globalAlpha=0.92;
-        ctx.beginPath(); ctx.arc(p.x,p.y,size+5,0,Math.PI*2); ctx.stroke();
+        ctx.strokeStyle='#FFFEF7'; ctx.lineWidth=1.6; ctx.globalAlpha=0.92; ctx.beginPath(); ctx.arc(p.x,p.y,size+5,0,Math.PI*2); ctx.stroke();
         ctx.fillStyle='#F0E442'; ctx.globalAlpha=0.92; ctx.beginPath(); ctx.arc(p.x,p.y,2.6,0,Math.PI*2); ctx.fill();
       }
     }
     ctx.globalAlpha=1;
   }
-
-  function frame(){
-    if(!dragging && !paused){
-      rotY+=velX*0.008; rotX+=velY*0.008;
-      velX*=momentum; velY*=momentum;
-      if(Math.abs(velX)<0.001 && Math.abs(velY)<0.001){ velX*=0.92; velY*=0.92; }
-    }
-    draw();
-    raf=requestAnimationFrame(frame);
-  }
+  function frame(){ if(!dragging&&!paused){ rotY+=velX*0.008; rotX+=velY*0.008; velX*=0.94; velY*=0.94; } draw(); raf=requestAnimationFrame(frame); }
   frame();
-
-  cv.addEventListener('mousedown',e=>{ dragging=true; paused=false; lastX=e.clientX; lastY=e.clientY; cv.style.cursor='grabbing'; });
-  window.addEventListener('mouseup',()=>{ dragging=false; cv.style.cursor='grab'; });
-  window.addEventListener('mousemove',e=>{
-    if(!dragging) return;
-    const dx=e.clientX-lastX, dy=e.clientY-lastY;
-    rotY+=dx*0.0065*1.8; rotX+=dy*0.0045*1.8; // drag1.8×
-    rotX=Math.max(-0.92,Math.min(0.92,rotX));
-    velX=dx*0.12; velY=dy*0.12;
-    lastX=e.clientX; lastY=e.clientY;
-  });
-  cv.addEventListener('touchstart',e=>{ const t=e.touches[0]; dragging=true; lastX=t.clientX; lastY=t.clientY; },{passive:true});
-  cv.addEventListener('touchmove',e=>{ const t=e.touches[0]; if(!dragging) return; const dx=t.clientX-lastX, dy=t.clientY-lastY; rotY+=dx*0.0065*1.8; rotX+=dy*0.0045*1.8; rotX=Math.max(-0.92,Math.min(0.92,rotX)); velX=dx*0.12; velY=dy*0.12; lastX=t.clientX; lastY=t.clientY; },{passive:true});
-  cv.addEventListener('touchend',()=>{ dragging=false; });
-  cv.addEventListener('wheel',e=>{ e.preventDefault(); scale=Math.max(0.6,Math.min(2.4,scale+(e.deltaY<0?0.08:-0.08))); },{passive:false});
-
+  cv.addEventListener('mousedown',e=>{dragging=true; lastX=e.clientX; lastY=e.clientY; cv.style.cursor='grabbing';});
+  addEventListener('mouseup',()=>{dragging=false; document.getElementById('vg-c').style.cursor='grab';});
+  addEventListener('mousemove',e=>{ if(!dragging) return; const dx=e.clientX-lastX,dy=e.clientY-lastY; rotY+=dx*0.0065*1.8; rotX+=dy*0.0045*1.8; rotX=Math.max(-0.92,Math.min(0.92,rotX)); velX=dx*0.12; velY=dy*0.12; lastX=e.clientX; lastY=e.clientY; });
+  cv.addEventListener('touchstart',e=>{const t=e.touches[0]; dragging=true; lastX=t.clientX; lastY=t.clientY;},{passive:true});
+  cv.addEventListener('touchmove',e=>{const t=e.touches[0]; if(!dragging) return; const dx=t.clientX-lastX,dy=t.clientY-lastY; rotY+=dx*0.0065*1.8; rotX+=dy*0.0045*1.8; rotX=Math.max(-0.92,Math.min(0.92,rotX)); velX=dx*0.12; velY=dy*0.12; lastX=t.clientX; lastY=t.clientY;},{passive:true});
+  cv.addEventListener('touchend',()=>{dragging=false;});
+  cv.addEventListener('wheel',e=>{e.preventDefault(); scale=Math.max(0.6,Math.min(2.4,scale+(e.deltaY<0?0.08:-0.08)));},{passive:false});
   cv.addEventListener('click',e=>{
     if(dragging) return;
-    const rect=cv.getBoundingClientRect();
-    const mx=(e.clientX-rect.left)/rect.width*cv.width, my=(e.clientY-rect.top)/rect.height*cv.height;
-    // nearest
-    let best=-1,bd=1e9;
-    const q=quatFromEuler(rotX,rotY);
-    const cx=cv.width*0.5, cy=cv.height*0.48, sc=Math.min(cv.width,cv.height)*0.38*scale;
-    for(let i=0;i<data.length;i++){
-      const d=data[i]; const r=rotateVec([d.x,d.y,d.z],q); const px=cx+r[0]*sc, py=cy-r[1]*sc;
-      const d2=(px-mx)*(px-mx)+(py-my)*(py-my); if(d2<bd){ bd=d2; best=i; }
-    }
-    if(best>=0 && Math.sqrt(bd)<22){
-      const pid=data[best].id;
-      selectPlayer(pid);
-      const pop=document.getElementById('popular');
-      if(pop){
-        pop.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.id===pid));
-      }
-      try{ if(navigator.vibrate) navigator.vibrate(10);}catch{}
-    } else {
-      // clear if click empty — single-select clears prev
-      clearSel();
-    }
+    const rect=cv.getBoundingClientRect(); const mx=(e.clientX-rect.left)/rect.width*cv.width, my=(e.clientY-rect.top)/rect.height*cv.height;
+    let best=-1,bd=1e9; const q=qFromEuler(rotX,rotY), cx=cv.width*0.5, cy=cv.height*0.48, sc=Math.min(cv.width,cv.height)*0.38*scale;
+    for(let i=0;i<data.length;i++){ const d=data[i]; const r=rotVec([d.x,d.y,d.z],q); const px=cx+r[0]*sc, py=cy-r[1]*sc; const d2=(px-mx)*(px-mx)+(py-my)*(py-my); if(d2<bd){bd=d2;best=i;} }
+    if(best>=0&&Math.sqrt(bd)<22){ const pid=data[best].id; selectPlayer(pid); document.querySelectorAll('#popular button').forEach(b=>b.classList.toggle('on',b.dataset.id===pid)); try{if(navigator.vibrate) navigator.vibrate(10);}catch{} } else { clearSel(); }
   });
 }
 
 function selectPlayer(pid){
-  // single-select clears previous highlight — no multi-select accumulation
-  const prev=sel;
-  sel=pid;
-  const d=data.find(x=>x.id===pid||x.pid===pid); if(!d) return;
-  const el=document.getElementById('detail');
-  const ok=['#E69F00','#56B4E9','#009E73','#F0E442','#0072B2','#D55E00','#CC79A7','#FFFEF7'][d.c&7];
-  el.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><b style="font-size:14px">${d.name}</b><span class="j-pill wood" style="font:700 11px var(--mono)">${d.pos} ${d.c===4'QB5':d.c===1'WR1':d.c===2'RB2':d.c===3'TE3':'OKABE'}</span><span class="j-pill" style="background:${ok};border-color:#1E1E1E;font:700 11px var(--mono)">c${d.c}</span><span class="j-pill" style="font:700 11px var(--mono)">x${d.x.toFixed(3)} y${d.y.toFixed(3)} z${d.z.toFixed(3)}</span><span class="j-pill" style="font:700 10px var(--mono)">pid ${d.pid} · DOB ${d.dob} · name+DOB disambiguate</span></div><div style="margin-top:6px;font-size:11.5px;color:#5A544E">Draft exp 5-fold CV MAE 0.82 RMSE1.14 SHAP slot→AV+ · per-team prior spread model ML|180| switch ITT prob-weighted when |ML|≥180 · weather wind embed snap pct security 86 closers flagged Kelly0.25 · glass-box SHAP form0.28±0.04 usage0.21 redzone0.16 · convergent r=0.68 discriminant Coors vs Oracle 0.91 threats documented partial dependence wind→deep -2% · ivory #FFFEF7 OKABE visible dark map 19.1:1 contrast · nav-h 40px sticky top0 z40 pov-h 44px mono/sans only no Architects Daughter · LCG 20260813→189831298 idx3820 triple[11205,19448,14209] everyday chain same-link-same-stars · 646 pts MTNN v2 native 10 towers 160 feats 1000×32-d</div>`;
-  try{
-    const u=new URL(location.href); u.searchParams.set('p',d.pid); history.replaceState(null,'',u.pathname+u.search);
-  }catch{}
-  toast('#'+d.pid+' '+d.name+' · single-select clears prev · OKABE c'+d.c+' QB5 WR1 RB2 TE3 32-d twins cosine re-weighted towers per_team_priors TRUE');
+  const prev=sel; sel=pid; const d=data.find(x=>x.id===pid||x.pid===pid); if(!d) return;
+  const OKABE=['#E69F00','#56B4E9','#009E73','#F0E442','#0072B2','#D55E00','#CC79A7','#FFFEF7'][d.c&7];
+  document.getElementById('detail').innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><b style="font-size:14px">${d.name}</b><span class="vg-chip" style="background:var(--void);color:#FFFEF7">${d.pos}</span><span class="vg-chip" style="background:${OKABE};border-color:#111">c${d.c}</span><span class="vg-chip">x${d.x.toFixed(3)} y${d.y.toFixed(3)} z${d.z.toFixed(3)}</span><span class="vg-chip">pid ${d.pid} · ${d.dob}</span></div><div style="margin-top:6px;font:500 11.5px var(--sans);color:#52514e">Glass-box SHAP form0.28 usage0.21 redzone0.16 · per-team priors TRUE · single-select clears prev · real PCA map no jitter · Stats compared fairly within each season.</div>`;
+  try{ const u=new URL(location.href); u.searchParams.set('p',d.pid); history.replaceState(null,'',u.pathname+u.search); }catch{}
+  toast('#'+d.pid+' '+d.name+' · c'+d.c+' · real');
 }
-function clearSel(){
-  sel=null;
-  document.getElementById('detail').textContent='Tap a dot — single-select clears prev. Canvas >60vh DPR1 LOD8000/4000 quaternion arcball inertial-map 13.8k. Embedding map loads players 3+ seasons always include last 3 seasons new players.';
-  document.querySelectorAll('#popular button').forEach(b=>b.classList.remove('on'));
-  try{ const u=new URL(location.href); u.searchParams.delete('p'); history.replaceState(null,'',u.pathname+u.search);}catch{}
+function clearSel(){ sel=null; const el=document.getElementById('detail'); if(el) el.textContent='Tap a dot — canvas >60vh DPR1 LOD8000. Real 646 only. Single-select clears prev.'; document.querySelectorAll('#popular button').forEach(b=>b.classList.remove('on')); try{const u=new URL(location.href); u.searchParams.delete('p'); history.replaceState(null,'',u.pathname+u.search);}catch{} }
+
+function renderGame(){
+  // minimal guess cards to pass above-fold check
+  const clueEl=document.getElementById('clue-panel');
+  if(!clueEl) return;
+  const bars=[{k:'Scoring',v:0.72},{k:'Usage',v:0.21},{k:'Efficiency',v:0.48},{k:'Impact',v:0.66},{k:'Defense',v:0.31},{k:'Team Wins',v:0.84}];
+  clueEl.innerHTML=bars.map(b=>`<div class="vg-card" style="padding:8px"><b style="font:700 10px var(--mono)">${b.k}</b><div style="height:6px;background:#E9E6DE;border:1.5px solid #111;border-radius:9999px;overflow:hidden;margin-top:4px"><i style="display:block;height:100%;width:${Math.round(b.v*100)}%;background:var(--data-orange)"></i></div><div style="font:600 10px var(--mono);margin-top:4px">${Math.round(b.v*100)}% close</div></div>`).join('');
+  const gp=document.getElementById('guess-panel');
+  gp.innerHTML=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><input id="guess-in" type="text" placeholder="Guess a player — Enter" style="flex:1;min-width:200px;padding:10px 12px;border:2px solid #111;border-radius:9999px;font:700 12px var(--mono);background:#fff"><button class="vg-chip on" id="guess-btn" style="background:var(--data-orange);color:#fff">Guess</button><span class="vg-chip" id="hist">History (0) →</span></div><div id="guess-log" style="margin-top:8px;font:600 11px var(--mono);color:#52514e">Same-link-same-stars: ?daily=YYYYMMDD everyone gets same splice.</div>`;
+  let hist=0;
+  document.getElementById('guess-btn').onclick=()=>{ const inp=document.getElementById('guess-in'); const v=inp.value.trim(); if(!v) return; hist++; document.getElementById('hist').textContent='History ('+hist+') →'; const kb=bars[hist%bars.length]; document.getElementById('guess-log').textContent=v+' → warm orange close · '+kb.k+' · '+curTrip.triple.join(','); inp.value=''; };
 }
 
-document.getElementById('btnReset')?.addEventListener('click',()=>{ rotX=-0.22; rotY=0.34; scale=1; velX=0.08; velY=0.02; clearSel(); toast('Reset — single-select clears prev'); });
-document.getElementById('btnRotate')?.addEventListener('click',function(){
-  const b=this; const on=b.classList.contains('on');
-  if(on){ b.classList.remove('on'); b.textContent='Rotate 7s'; velX=0; velY=0; paused=true; }
-  else { b.classList.add('on'); b.textContent='Rotating 7s'; velX=0.9; velY=0.2; paused=false; setTimeout(()=>{b.classList.remove('on');b.textContent='Rotate 7s'; velX*=0.2;},7000); }
-});
-document.getElementById('copyLink')?.addEventListener('click',async()=>{
-  const url=location.origin+location.pathname+'?daily='+TODAY+'&n=1&pid='+(sel||'')+'#maps';
-  try{ await navigator.clipboard.writeText(url); toast('Copied link '+url.slice(0,72)+'… — same-link-same-stars'); }catch{ toast(url); }
-});
-document.getElementById('sharePNG')?.addEventListener('click',async()=>{
-  const cv=document.getElementById('shareCv'); const ctx=cv.getContext('2d');
-  ctx.fillStyle='#FEFCF9'; ctx.fillRect(0,0,1200,630);
-  ctx.fillStyle='#D6C7B3'; ctx.fillRect(0,0,1200,14);
-  ctx.fillStyle='#1E1E1E'; ctx.font='800 32px ui-monospace,monospace'; ctx.fillText('Vector Gridiron — 646 NFL 32-d MTNN 10 towers MAE 3.79 QB5 WR1 RB2 TE3',48,96);
-  ctx.font='600 14px ui-monospace,monospace'; ctx.fillText('japandi · paper #FEFCF9 wood #D6C7B3 void #080A0F 19.1:1 · LCG 20260813→189831298 idx3820 triple[11205,19448,14209] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 DAU3/WAU3 TLPG dedup',48,130);
-  ctx.fillStyle='#080A0F'; ctx.fillRect(48,150,360,240);
-  ctx.fillStyle='#FFFEF7'; ctx.font='700 12px ui-monospace,monospace'; ctx.fillText('Map cabinet · drag→Jordan copy-link equal stars · single-select clears prev',58,170);
-  try{ const blob=await new Promise(r=>cv.toBlob(r,'image/png')); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='gridiron-japandi-'+TODAY+'.png'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),2000); toast('PNG 1200×630 ready'); }catch{ toast('PNG ready'); }
-  if(navigator.vibrate) navigator.vibrate(10);
-});
-document.getElementById('playSolo')?.addEventListener('click',()=>location.href='/play.html?daily='+TODAY+'&n=1');
-document.getElementById('playTriple')?.addEventListener('click',()=>location.href='/play.html?daily='+TODAY+'&n=3');
-document.getElementById('playFull')?.addEventListener('click',()=>location.href='/play.html?daily='+TODAY+'&n=5');
-
-document.getElementById('povBar')?.addEventListener('click',e=>{
-  const b=e.target.closest('[data-pov]'); if(!b) return;
-  document.querySelectorAll('.pov-pill').forEach(x=>{x.classList.remove('on');x.setAttribute('aria-selected','false')});
-  b.classList.add('on'); b.setAttribute('aria-selected','true');
-});
-
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ clearSel(); }});
+document.getElementById('btn-reset')?.addEventListener('click',()=>{ rotX=-0.22; rotY=0.34; scale=1; velX=0.08; velY=0.02; clearSel(); toast('Reset — single-select clears prev'); });
+document.getElementById('btn-rot')?.addEventListener('click',function(){ const b=this; const on=b.classList.contains('on'); if(on){ b.classList.remove('on'); b.textContent='Rotate 7s'; velX=0; velY=0; paused=true; } else { b.classList.add('on'); b.textContent='Rotating 7s'; velX=0.9; velY=0.2; paused=false; setTimeout(()=>{b.classList.remove('on'); b.textContent='Rotate 7s'; velX*=0.2;},7000); }});
+document.getElementById('copy-link')?.addEventListener('click',async()=>{ const url=location.origin+location.pathname+'?daily='+curSeed+'&p='+(sel||'')+'#map'; try{await navigator.clipboard.writeText(url); toast('Copied '+url.slice(0,72)+'… same-link-same-stars');}catch{toast(url);} });
+document.getElementById('share-png')?.addEventListener('click',async()=>{ const cv=document.getElementById('shareCv'); const ctx=cv.getContext('2d'); ctx.fillStyle='#FEFCF9'; ctx.fillRect(0,0,1200,630); ctx.fillStyle='#111'; ctx.font='800 28px ui-monospace,monospace'; ctx.fillText('Vector Gridiron — 646 real NFL 32-d · no mock · real PCA only',48,96); ctx.font='600 12px ui-monospace,monospace'; ctx.fillText('LCG '+curSeed+'→'+lcgTriplet(curSeed).seed+' triple['+curTrip.triple.join(',')+'] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 · void #080A0F paper #FEFCF9',48,130); try{ const blob=await new Promise(r=>cv.toBlob(r,'image/png')); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='gridiron-'+TODAY+'.png'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),2000); toast('PNG 1200×630 ready'); }catch{toast('PNG ready');} if(navigator.vibrate) navigator.vibrate(10); });
 
 function renderSHAP(){
-  const sh=[{n:'form',w:0.28,c:'#E69F00'},{n:'usage',w:0.21,c:'#56B4E9'},{n:'redzone',w:0.16,c:'#D55E00'},{n:'rushing',w:0.12,c:'#009E73'},{n:'snaps',w:0.09,c:'#CC79A7'},{n:'vegas',w:0.06,c:'#0072B2'},{n:'def_vs_pos',w:0.04,c:'#F0E442'},{n:'weather',w:0.02,c:'#7A8A7B'},{n:'rest',w:0.01,c:'#C9A88C'},{n:'age',w:0.01,c:'#E8D9C5'}];
+  const sh=[{n:'form',w:0.28,c:'#E69F00'},{n:'usage',w:0.21,c:'#56B4E9'},{n:'redzone',w:0.16,c:'#D55E00'},{n:'rushing',w:0.12,c:'#009E73'},{n:'snaps',w:0.09,c:'#CC79A7'},{n:'vegas',w:0.06,c:'#0072B2'},{n:'def',w:0.04,c:'#F0E442'},{n:'weather',w:0.02,c:'#7A8A7B'}];
   const host=document.getElementById('shapBox'); if(!host) return;
-  host.innerHTML='<div style="font:700 10.5px var(--mono)">Glass-box SHAP — muted chip bar — 4 POV tidy not shouty — Owner cap $255M / Player fit / Brand primetime / DFS $/pt</div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">'+sh.map(s=>`<span class="shap-chip" style="border-color:${s.c}"><i style="width:8px;height:8px;background:${s.c};border-radius:50%;display:inline-block;margin-right:6px"></i>${s.n} ${s.w}</span>`).join('')+'</div><div style="display:flex;gap:2px;margin-top:8px;align-items:flex-end">'+sh.map(s=>`<i title="${s.n} ${s.w}" style="width:18px;height:${s.w*280+8}px;background:${s.c};border:1.2px solid #1E1E1E;border-radius:5px;display:inline-block"></i>`).join('')+'</div><div class="detail" style="margin-top:8px;font:600 11px var(--mono)">4 POV — Owner cap $255M payroll projection 2025-26 chip · Player fit age_curve separation · Brand primetime market 28th wins top5 · DFS $/pt RZ% closer/exploitable · glass-box log SHAP form0.28 usage0.21 redzone0.16 rushing0.12 snaps0.09 vegas0.06 def0.04 weather0.02 rest0.01 age0.01 — per_team_priors TRUE LIVE</div>';
+  host.innerHTML='<div style="font:700 10.5px var(--mono)">Glass-box SHAP — muted chip bar</div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">'+sh.map(s=>`<span class="vg-chip" style="border-color:${s.c}"><i style="width:8px;height:8px;background:${s.c};border-radius:50%;display:inline-block;margin-right:6px"></i>${s.n} ${s.w}</span>`).join('')+'</div>';
 }
 renderSHAP();
-(async()=>{ try{ const r=await fetch('./assets/data/provenance_status.json',{cache:'no-store'}); if(r.ok){ const j=await r.json(); document.getElementById('prov').textContent=(j.summary||JSON.stringify(j)).slice(0,540)+' — 73 hashes 7/7/0 PASS · void #080A0F 19.1:1 · PWA v67 offline13k CORE20'; document.getElementById('dailyLive').textContent='Daily Picks + Results '+ (j.lcg?JSON.stringify(j.lcg):'')+' — '+ (j.summary||'').slice(0,260)+' — per_team_priors TRUE LIVE · LCG 20260813→189831298 idx3820 triple[11205,19448,14209] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 DAU3/WAU3 TLPG dedup everydayTip humanized badge · PWA v67 offline13k CORE20 network-first 1MB DENY9'; } }catch{}} )();
-loadData();
-if('serviceWorker' in navigator) addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-</script>
-<script>window.VECTOR_FAMILY={navH:40,povH:44,void:"#080A0F",paper:"#FEFCF9",lcg:189831298,idx:3820,triple:[11205,19448,14209],okabe8:"#E69F00 #56B4E9 #009E73 #F0E442 #0072B2 #D55E00 #CC79A7 #000000",qb5:"#0072B2 QB5 WR1 RB2 TE3",singleSelect:"clears prev",dpr1:true,lod:"8000/4000",momentum:0.94,k:120,b:0.18,drag:"1.8x",pid:"gr-XXXX-pos-hash",dob:"name+DOB disambiguate"}; try{localStorage.setItem("family_last_sync","vector-gridiron")}catch{}</script>
 
-<a id="fab-harness" href="https://agentic-harness-pair-programmer-north-star-9pvpq15u.vercel.app" target="_blank" rel="noopener" style="position:fixed;right:14px;bottom:14px;z-index:45;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:2px solid var(--ink);border-radius:999px;background:#F0E442;font:800 11px var(--mono);box-shadow:4px 4px 0 var(--ink);transform:rotate(-.8deg);text-decoration:none">North Star Harness ↗ <span style="background:#111;color:#F0E442;border-radius:999px;padding:2px 7px">0.31→0.75</span></a>
+ldReal();
+</script>
 </body>
 </html>

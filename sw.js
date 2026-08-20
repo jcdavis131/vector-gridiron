@@ -9,10 +9,28 @@
    - network-first JSON 1MB DENY binary f32|bin|wasm|onnx|npz|pt provenance 7/7/0 59 hashes
    - zero-deps true stdlib only — per_team_priors TRUE LIVE boards 21 entries 9PP6K6DK
 */
-const CACHE_NAME = 'vector-gridiron-v67-japandi-offline13k';
+const CACHE_NAME = 'vector-gridiron-v67-3-japandi-offline13k-73hash';
 const CORE = [
-'/', '/index.html', '/manifest.json', '/offline.html',
-'/assets/tokens.css','/assets/shared-map.js','/assets/inertial-map.js','/assets/site-nav.js','/assets/shell.css','/assets/responsive.css','/assets/icon-192.png','/assets/icon-512.png','/assets/error-boundary.js','/assets/keyboard-a11y.js','/assets/explainer.js'
+'/',
+'/index.html',
+'/manifest.json',
+'/offline.html',
+'/assets/tokens.css',
+'/assets/shared-map.js',
+'/assets/inertial-map.js',
+'/assets/site-nav.js',
+'/assets/shell.css',
+'/assets/responsive.css',
+'/assets/icon-192.png',
+'/assets/icon-512.png',
+'/assets/error-boundary.js',
+'/assets/keyboard-a11y.js',
+'/assets/explainer.js',
+'/assets/prove.js',
+'/assets/insights.js',
+'/assets/dashboard.css',
+'/assets/gridiron.css',
+'/assets/players-page.js',
 ];
 const DENY = [
 '/assets/vectors.json',

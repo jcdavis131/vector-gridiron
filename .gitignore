@@ -1,3 +1,12 @@
+**/*_api_key
+**/dev_key
+*.log
 .DS_Store
-node_modules
+.env.local
+.scout/
 .vercel
+__pycache__/
+checkpoints/
+dev-api-audit.log
+node_modules
+node_modules/

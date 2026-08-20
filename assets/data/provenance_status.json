@@ -1,6 +1,6 @@
 {
   "built": "2026-08-18T13:35:58Z football-live-lines NFL+CFB",
-  "version": "v67.2 CORE20 offline13k LOD4000/8000 DPR1 football-live",
+  "version": "v67.2 CORE20 offline13k LOD4000/8000 DPR1 football-live 73hash",
   "lcg": {
     "seed": 20260813,
     "lcg": 189831298,
@@ -101,11 +101,21 @@
   "provenance": {
     "checks": "7/7",
     "fails": 0,
-    "hashes_count": 59,
+    "hashes_count": 73,
     "LCG": "20260813\u2192189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,11701,18524] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 open\u2192drag-map\u2192Jordan copy-link equal stars DAU3/WAU3 TLPG dedup everydayTip humanized badge",
     "honest": true,
     "honest_lcg": "synthetic_deterministic_stdlib_LCG_189831298_honest",
-    "pattern": "DM_PROVENANCE 7/7/0 59 hashes"
+    "pattern": "DM_PROVENANCE 7/7/0 73 hashes",
+    "hash_breakdown": {
+      "hoops": 12,
+      "gridiron": 10,
+      "pitch": 5,
+      "equities": 9,
+      "tennis": 16,
+      "unified": 14,
+      "scout_cli": 7,
+      "total": 73
+    }
   },
   "pwa": {
     "version": "v67.2",
@@ -119,8 +129,8 @@
     "manifest_bg": "#080A0F",
     "theme": "#080A0F",
     "standalone": true,
-    "start_url": "/?pov=owner",
-    "id": "/?pov=owner",
+    "start_url": "/",
+    "id": "/",
     "CORE20": true,
     "shell": "offline.html 13k",
     "network_first_json": true
@@ -244,8 +254,8 @@
     "system": "mono/sans only no Architects Daughter",
     "bg": "#080A0F",
     "theme": "#080A0F",
-    "standalone": "/?pov=owner",
-    "id": "/?pov=owner",
+    "standalone": "/",
+    "id": "/",
     "CORE20": "offline13k void card 13k sw.js CORE20 shell offline.html 13k network-first for .json void card 13k",
     "offline13k": true,
     "LOD": "4000/8000 DPR1"

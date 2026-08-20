@@ -38,7 +38,7 @@
             "type": "image/png"
         }
     ],
-    "id": "/?pov=owner",
+    "id": "/",
     "lang": "en",
     "name": "Vector Gridiron \u2014 646 NFL 32-d \u00b7 japandi book",
     "orientation": "any",
@@ -79,9 +79,9 @@
             ],
             "name": "Open Lab \u2014 Owner/Player/Brand/DFS",
             "short_name": "Lab",
-            "url": "/model?pov=owner&utm_source=pwa_shortcut"
+            "url": "/model&utm_source=pwa_shortcut"
         }
     ],
-    "start_url": "/?pov=owner",
-    "theme_color": "#FEFCF9"
+    "start_url": "/",
+    "theme_color": "#080A0F"
 }

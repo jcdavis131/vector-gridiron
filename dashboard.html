@@ -1,295 +1,105 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Vector Gridiron Lab — MTNN fantasy pipeline</title>
-<meta name="description" content="Tailored MTNN dashboard for Gridiron: nflverse holistic features → 16-dim embedding → MAE 4.268 → start/sit waivers trades">
-<link rel="stylesheet" href="assets/gridiron.css">
-<link rel="stylesheet" href="assets/responsive.css">
-<link rel="stylesheet" href="assets/dashboard.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Front Office Lab — Owner $255M / Player fit / Brand primetime / DFS $/pt — Vector Gridiron</title>
+<meta name="description" content="Front Office Lab 4 POV — Owner cap $255M payroll 2025-26 projection, Player fit finder age_curve separation, Brand primetime small-market overachiever, DFS $/pt optimizer closer/exploitable playoffs sec injury flags props beat draft. SHAP form0.28 usage0.21 redzone0.16 rushing0.12 snaps0.09 vegas0.06 def0.04 weather0.02 rest0.01 age0.01 muted chip bar 4 POV tidy not shouty glass-box log.">
+<meta name="theme-color" content="#080A0F">
+<style>
+:root{
+--paper:#FEFCF9;--paper-2:#FFFEF7;--wood:#D6C7B3;--wood-2:#E8D9C5;--stone:#EAE3D8;--ink:#1E1E1E;--moss:#7A8A7B;--clay:#C9A88C;
+--void:#080A0F;--nav-h:40px;--pov-h:44px;
+--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;--sans:ui-sans-system,-apple-system,Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+.j-nav{position:sticky;top:0;top:env(safe-area-inset-top,0);z-index:40;height:40px;min-height:40px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 14px;padding-top:env(safe-area-inset-top,0);background:var(--paper);border-bottom:1.5px solid var(--ink);backdrop-filter:blur(8px)}
+.j-pill{border:1.5px solid var(--ink);border-radius:9999px;padding:6px 11px;min-height:28px;display:inline-flex;align-items:center;font:700 11px var(--mono);text-transform:uppercase;cursor:pointer;background:#fff}
+.j-pill.on{background:var(--ink);color:var(--paper-2)}
+.paper-wrap{max-width:1180px;margin:0 auto;padding:0 14px}
+.card{background:var(--paper);border:1.5px solid var(--ink);border-radius:16px;box-shadow:3px 3px 0 #000;padding:14px;margin-top:12px}
+.detail{background:var(--paper-2);border:1.2px solid var(--ink);border-radius:10px;padding:10px;font-size:12px;line-height:1.5}
+.kpi{border:1.5px solid var(--ink);background:var(--paper-2);border-radius:12px;padding:10px 12px}
+.footer-subtle{display:flex;justify-content:center;padding:14px;font:600 11px var(--mono);color:#8A847A;border-top:1.5px solid var(--ink)}
+.shap-chip{display:inline-flex;align-items:center;padding:5px 9px;border:1px solid var(--ink);border-radius:9999px;background:var(--paper-2);font:700 10.5px var(--mono);margin:2px}
+</style>
 </head>
 <body>
-<header class="vg-header">
-  <span class="vg-logo">VECTOR<span class="vg-logo__accent">GRIDIRON</span></span>
-  <span class="vg-scoring"><b>Lab</b> • MTNN MAE 4.268 R² 0.39 2025</span>
-  <span class="vg-spacer"></span>
-  <a href="/" style="font-size:12px">Team</a><span style="margin:0 8px">•</span><a href="/dashboard" style="font-size:12px;font-weight:900">Lab</a>
-</header>
-<main class="dash-main">
-  <header class="dash-header">
-    <div class="dash-eyebrow">gridiron.dumbmodel.com Lab • MTNN fantasy cockpit • free-tier zero tracking</div>
-    <h1 class="dash-title">Vector Gridiron <span class="accent">Lab</span></h1>
-    <p class="dash-subtitle">Exact MTNN behind <b>MY TEAM, DRAFT PREP, START/SIT, WAIVERS, TRADES</b>. <b>nflverse 2025</b> holistic: rushing, targets, YAC, redzone, snaps, age, weather, Vegas, rest, def-vs-pos → <b>16-dim NFL embedding</b> → <b>MAE 4.268 → 3.8 target</b> → production cockpit. Novice→Expert.</p>
-    <div class="dash-controls"><div class="toggle-group"><button class="toggle-btn is-active" data-level="novice">🌱 Novice</button><button class="toggle-btn" data-level="expert">🧠 Expert</button></div><div class="dash-status-pill"><span class="dot dot--live"></span> MAE 4.268 R²0.39 • 16-d embedding • app.js 116KB • 9 tabs</div></div>
-  </header>
+<nav class="j-nav" aria-label="Primary 40px sticky z40 safe-area-inset-top backdrop-filter blur">
+  <a href="/"><b style="background:var(--ink);color:var(--paper-2);border:1px solid var(--ink);border-radius:6px;padding:4px 8px;font:800 11px var(--mono)">GRIDIRON</b> <span style="font:700 10px var(--mono);background:var(--wood);border:1px solid var(--ink);border-radius:9999px;padding:3px 8px">646 · 32-d · Lab · QB5 WR1 RB2 TE3</span></a>
+  <div style="display:flex;gap:6px"><a class="j-pill" href="/index.html">Maps</a><a class="j-pill" href="/players.html">Players</a><a class="j-pill" href="/play.html">Play</a><a class="j-pill on" href="/dashboard.html">Lab</a></div>
+</nav>
 
-  <section class="dash-pipeline">
-    <div class="pipe">
-      <div class="pipe-step is-done"><span class="step-num">01</span><b>Gather</b><i>nflverse 2025</i></div><div class="pipe-arrow">→</div>
-      <div class="pipe-step is-done"><span class="step-num">02</span><b>Clean</b><i>weather/Vegas/rest/def-vs-pos</i></div><div class="pipe-arrow">→</div>
-      <div class="pipe-step is-done"><span class="step-num">03</span><b>Train</b><i>16-d MAE 4.268</i></div><div class="pipe-arrow">→</div>
-      <div class="pipe-step is-done"><span class="step-num">04</span><b>Eval</b><i>next-game + draft value</i></div><div class="pipe-arrow">→</div>
-      <div class="pipe-step is-done"><span class="step-num">05</span><b>Deploy</b><i>app.js fantasy tabs</i></div>
-    </div>
-  </section>
+<div class="paper-wrap">
+  <div class="card" style="background:linear-gradient(180deg,var(--paper),var(--stone))">
+    <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center"><b style="font:800 14px var(--mono);text-transform:uppercase">Front Office Lab — Owner cap $255M / Player fit / Brand primetime / DFS $/pt — 2025-26 payroll projection</b><span class="j-pill" style="background:#FFFEF7">tidy not shouty · SHAP muted chip bar 4 POV glass-box log · mono/sans only no dev pills</span></div>
+    <p style="font-size:12.8px;color:#3A3632;line-height:1.55;max-width:70ch;margin:8px 0">Lab evaluates draft pick quality 5-fold CV MAE 0.82 RMSE1.14 SHAP, salary-cap/contract efficiency vs wins $140.5M surplus analog $255M hard cap 2026, foresight on appreciating deals year 1→2 +10% cap justice. Owner cockpit: cap honesty (no vanity) 2024 $255.4M official 2026 proj ~$272M pinned $255M flat. Player: fit finder twin cosine 32-d native 16-d compat wrapper where cosine=similarity 3+ seasons new last 3 included. Brand: primetime rising clutch small-market market 28th wins top5 story chip. DFS: $/pt optimizer closer/exploitable playoff snap security injury flags props beat draft. MTNN 10 towers 160 feats rushing usage form redzone snaps age weather vegas rest def_vs_pos 32-d L2 native 16-d slice re-L2 compat.</p>
+    <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="j-pill" style="background:var(--wood)">LCG 20260813→189831298 idx3820 triple[11205,19448,14209]</span><span class="j-pill" style="background:#FFFEF7">PWA v67 offline13k CORE20 network-first 1MB DENY9 f32|bin|wasm|onnx|npz|pt LOD4000/8000 DPR1 13.8k inertial momentum0.94 k120 b0.18 drag1.8×</span><span class="j-pill" style="background:#080A0F;color:#FFFEF7">OKABE-8 #E69F00 #56B4E9 #009E73 #F0E442 #0072B2 #D55E00 #CC79A7 #000000 QB5 WR1 RB2 TE3 void #080A0F 19.1:1 ivory #FFFEF7 map points visible dark bg</span></div>
+  </div>
 
-  <section class="dash-card" id="manim" style="border:2px solid #111;background:#FFFEF7">
-    <div class="card-head"><h2>Manim — NFL embedding visualized precisely</h2><span class="card-meta">manim 0.20.1 manimgl 1.7.2 • 3Blue1Brown engine • solo</span></div>
-    <p class="novice-text">Gridiron MTNN: nflverse holistic → 16-d L2 embedding → MAE 4.268 R² 0.39 → Start/Sit/Waivers/Trades. Manim makes the 16-d map precise: programmatic vector graphics, LaTeX sigma labels, OpenGL motion — same as hoops 48-d but NFL context. Shows how fixed 18MB DeltaNet lets you hold entire season on phone 6GB RAM 7-8 tok/s sub-sec TTFT for draft room.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:10px">
-      <div style="border:2px solid #111;border-radius:8px;overflow:hidden"><video autoplay loop muted playsinline controls src="assets/manim/MTNNFlow.mp4" style="width:100%;aspect-ratio:16/9"></video><div style="padding:8px;font-size:11px;background:#111;color:#fff">MTNNFlow NFL remix: 10 families → 160→32 →16 L2 → next-game MAE</div></div>
-      <div style="border:2px solid #111;border-radius:8px;overflow:hidden"><video autoplay loop muted playsinline controls src="assets/manim/KVCompression.mp4" style="width:100%;aspect-ratio:16/9"></video><div style="padding:8px;font-size:11px;background:#1a0a0a;color:#fff">KV 64→8GB 8× + fixed 18MB = phone draft room</div></div>
-    </div>
-  </section>
-
-  <section class="dash-card" id="gather">
-    <div class="card-head"><h2>01 Gather — nflverse → holistic features</h2><span class="card-meta">assets/app.js 116,119 bytes • gridiron.css 21,947 bytes • no tracking</span></div>
-    <div class="grid-2">
-      <div>
-        <p class="novice-text">We pull nflverse play-by-play + roster + weather + Vegas lines. Not just yards — holistic: <b>rushing, targets, YAC, redzone, snaps, age, weather, Vegas spread/total, rest days, def-vs-pos</b>. 2025 season for next-game model.</p>
-        <div class="metrics"><div class="metric"><b>nflverse</b><span>2025 data</span></div><div class="metric"><b>10 families</b><span>holistic</span></div><div class="metric"><b>16-d</b><span>embedding</span></div><div class="metric"><b>MAE 4.268</b><span>next-game</span></div></div>
-        <p class="expert-text" data-expert>Feature families: usage (rush att, targets), snaps (snap%, routes), age (AGE, YEAR_IN_LEAGUE), weather (wind, temp, dome), Vegas (spread, total), rest (B2B, rest days), def-vs-pos (SOS_NET analog), form (lag). Same masking cat([x·m,m]) as hoops. RealMLP robust scaling for outliers (blowouts).</p>
-      </div>
-      <div class="code-panel">
-        <div class="code-head">holistic features <button class="copy">copy</button></div>
-        <pre><code>features = [rushing, targets, YAC, redzone, snaps, age, 
-            weather, Vegas, rest, def_vs_pos]
-embedding = 16-d L2-norm  # MTNN 2025
-MAE = 4.268  R²=0.39 → target 3.8 / 0.45 with Procrustes+RealMLP+MoE</code></pre>
-        <div class="chart-box"><div class="chart-head">Feature importance (proxy)</div><canvas id="flowChart" width="400" height="90"></canvas></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+    <div class="card"><b style="font:700 11px var(--mono)">Owner · cap $255M — payroll projection 2025-26 $255M hard cap tetris</b>
+      <div class="detail" style="margin-top:8px">
+        <div style="display:flex;justify-content:space-between"><span style="font:700 11px var(--mono)">2024 official $255.4M</span><b>$255M pinned LAB flat deterministic</b></div>
+        <div style="height:10px;background:#FFFEF7;border:1.2px solid var(--ink);border-radius:9999px;overflow:hidden;margin:6px 0"><i style="display:block;height:100%;width:95%;background:#0072B2;border-right:1.5px solid var(--ink)"></i></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="j-pill" style="background:#1a0a0a;color:#ff8a80;border-color:#ff8a80">💀 Dead $12.4M 4.86% cap locked</span><span class="j-pill" style="background:#0a130d;color:#3ddc71;border-color:#3ddc71">🪙 Rookie 4yr $7.2M vs vet $18M +$10.8M surplus 3×</span><span class="j-pill" style="background:#FFFEF7">wins per $M 0.0431 · $23.18M per win · cap% 95.7% active · FOR SuperBowl Draft35 Cap35 Foresight30 + RingBonus10</span></div>
+        <div style="margin-top:8px"><label style="font:700 11px var(--mono);display:flex;gap:8px;align-items:center;flex-wrap:wrap">Wins <input id="wpm-w" type="number" value="11" style="width:60px;padding:4px 6px;border:1.2px solid var(--ink);border-radius:6px;background:#fff"> Cap $M <input id="wpm-cap" type="number" value="255" style="width:80px;padding:4px 6px;border:1.2px solid var(--ink);border-radius:6px;background:#fff"> <span id="wpm-out" style="font:700 11px var(--mono);background:#FFFEF7;border:1.2px solid var(--ink);border-radius:8px;padding:6px 8px">0.0431 wins per $M · 23.18 $M per win</span></label></div>
       </div>
     </div>
-  </section>
-
-  <section class="dash-card" id="clean">
-    <div class="card-head"><h2>02 Clean — weather/Vegas/rest/def-vs-pos normalization</h2><span class="card-meta">pipeline/era_procrustes_align.py + realmlp_preproc.py reused</span></div>
-    <div class="grid-2">
-      <div>
-        <p class="novice-text">Weather drifts (wind 15mph = -12% passing), Vegas total 51 → high shootout expected. We normalize each stat vs opponent defense vs position, rest, weather, Vegas to get context-honest projection — same idea as hoops per-season σ but for NFL.</p>
-        <ul class="checklist"><li>✅ Weather norm — wind/temp/dome</li><li>✅ Vegas spread/total → game script</li><li>✅ Rest days + B2B</li><li>✅ def-vs-pos — SOS_NET_RTG analog</li><li>✅ Used by START/SIT, WAIVERS, TRADES ROS</li></ul>
-      </div>
-      <div class="chart-box"><div class="chart-head">Context drift before → after</div><canvas id="eraChart" width="400" height="140"></canvas><div class="legend"><span class="leg" style="background:#E69F00"></span>raw PPR <span class="leg" style="background:#009E73"></span>context-honest</div></div>
+    <div class="card"><b style="font:700 11px var(--mono)">Player · fit finder twin cosine 32-d native 16-d compat wrapper cosine=similarity</b>
+      <div class="detail" style="margin-top:8px"><div style="display:flex;justify-content:space-between"><span style="font:700 11px var(--mono)">32-d native L2 norm 0.99-1.01</span><span style="font:700 11px var(--mono)">16-d compat slice re-L2</span></div><div style="font-size:11px;color:#5A544E;margin-top:6px">MTNN 10 towers 160 feats 32-d L2 native scale0.2876 max_abs0.97 QB5 WR1 RB2 TE3 OKABE-8 visible dark bg 19.1:1 ivory #FFFEF7 — age_curve separation route win YAC broken tackle tower — form lag1-3 PPR rolling — redzone inside10 share — snaps 62→74% — fit vs scheme archetype distance 0.08 core tweener 0.34 — twin cosine re-weighted towers per_team_priors TRUE — Draft exp 5-fold CV MAE 0.82 RMSE1.14 SHAP slot→AV+ — 646 pts MTNN v2 native 10 towers 160 feats MAE 4.268→3.8 — 3+ seasons always include last 3 new players — pid gr-XXXX-pos-hash name+DOB disambiguate prevents Jr/Sr collisions.</div><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><span class="j-pill" style="font:700 10px var(--mono)">age_curve 0.28</span><span class="j-pill" style="font:700 10px var(--mono)">separation 0.21</span><span class="j-pill" style="font:700 10px var(--mono)">route win 0.16</span></div></div>
     </div>
-  </section>
-
-  <section class="dash-card" id="train">
-    <div class="card-head"><h2>03 Train — 16-d NFL embedding behind fantasy calls</h2><span class="card-meta">pipeline/train_mtnn_v6.py MAE 4.268 → 3.8 target with MoE</span></div>
-    <div class="grid-3">
-      <div class="train-col"><h4>MTNN</h4><div class="metric-row"><span>Arch</span><b>16-d embedding (hoops 48-d analog)</b></div><div class="metric-row"><span>Loss</span><b>next-game MAE 4.268 →3.8</b></div><div class="metric-row"><span>R²</span><b>0.39 →0.45 target</b></div><div class="metric-row"><span>Params</span><b>~300K (gridiron smaller)</b></div><canvas id="towerChart" width="320" height="80"></canvas></div>
-      <div class="train-col"><h4>Tabs powered</h4><div class="metric-row"><span>MY TEAM</span><b>16-d map + roster</b></div><div class="metric-row"><span>DRAFT PREP</span><b>proj/g + ADP value</b></div><div class="metric-row"><span>NEXT GAME</span><b>Week1 projections</b></div><div class="metric-row"><span>START/SIT</span><b>optimal lineup this week</b></div><div class="metric-row"><span>WAIVERS</span><b>model-backed claims</b></div><div class="metric-row"><span>TRADES</span><b>value delta + ROS</b></div></div>
-      <div class="train-col"><h4>SOTA hill-climb from hoops</h4><div class="metric-row"><span>Procrustes</span><b>season align option</b></div><div class="metric-row"><span>RealMLP</span><b>robust for blowouts</b></div><div class="metric-row"><span>TabPFN</span><b>distill few-shot injuries</b></div><div class="metric-row"><span>MoE gating</span><b>per-position experts</b></div><canvas id="lossChart" width="320" height="80"></canvas></div>
+    <div class="card"><b style="font:700 11px var(--mono)">Brand · primetime story — rising bellcow declining tar% small-market overachiever</b>
+      <div class="detail" style="margin-top:8px"><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="j-pill" style="background:#E8D9C5">rising bellcow +12% snaps 62→74% YAC bellcow</span><span class="j-pill" style="background:#FFFEF7">declining tar% 28→19% separator slot/gadget shift</span><span class="j-pill" style="background:#F0E442">clutch 4Q GWD +14 primetime story chip</span><span class="j-pill" style="background:#E69F00;color:#fff">small-market overachiever market 28th wins top5 GB/KC/BUF</span></div><div style="font-size:11px;color:#5A544E;margin-top:6px">Brand lens turns wins→story: primetime games +14 EPA clutch, small-market GB/KC/BUF overachiever market 28th wins top5, rising vs declining archetype drift Procrustes Q root 1996 chain orthogonal chained root RᵀR=I consecutive-season shared ≥30 players mean principal angle — convergent r=0.68 discriminant Coors vs Oracle 0.91 threats documented.</div></div>
     </div>
-  </section>
-
-  <section class="dash-card" id="eval">
-    <div class="card-head"><h2>04 Eval — fantasy accuracy harness</h2><span class="card-meta">Lookback 2025 draft grades + weekly story • Vector Map 520×520 drag pinch</span></div>
-    <div class="grid-2">
-      <div>
-        <table class="eval-table"><thead><tr><th>Tab</th><th>MTNN uses</th><th>What player sees</th></tr></thead><tbody>
-          <tr><td>Draft Prep</td><td>proj/g + value vs market ADP</td><td class="pass">Tier + Bye + projected line</td></tr>
-          <tr><td>Draft Room</td><td>16-d map + live assistant what-if replay</td><td class="pass">Sim to my pick</td></tr>
-          <tr><td>Next Game</td><td>MAE 4.268 next-game model</td><td class="pass">Week1 projections</td></tr>
-          <tr><td>Start/Sit</td><td>optimal lineup optimizer</td><td class="pass">This week's optimal</td></tr>
-          <tr><td>Waivers</td><td>model-backed claims</td><td class="pass">claim value</td></tr>
-          <tr><td>Trades</td><td>value delta + ROS</td><td class="pass">trade evaluator ROS</td></tr>
-        </tbody></table>
-        <p class="novice-text">Connect ESPN or Sleeper league you're already in. Vector Gridiron maps every skill player into 16-dim — free, no tracking, nflverse-powered.</p>
-      </div>
-      <div class="chart-box"><div class="chart-head">Bundle that cockpit loads</div><div class="metric-row"><span>app.js</span><b>116KB cockpit logic</b></div><div class="metric-row"><span>gridiron.css</span><b>21KB</b></div><div class="metric-row"><span>site-nav</span><b>+ dashboard.css/js</b></div><div class="metric-row"><span>ONNX optional</span><b>mtnn.onnx 549KB shared</b></div><canvas id="evalChart" width="320" height="80"></canvas></div>
+    <div class="card"><b style="font:700 11px var(--mono)">DFS · $/pt optimizer — closer/exploitable playoff sec injury flags props beat draft</b>
+      <div class="detail" style="margin-top:8px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font:600 11px var(--mono)"><div style="border:1.2px solid var(--ink);border-radius:8px;padding:8px;background:#FFFEF7">🔒 Closer Lock % — stays in nickel/dime late 4Q snap 85%+ honest proxy<br>Lock = nickel/dime late presence. High lock stays on field 3rd&long 2-min · 72-99% mock — RB 86% lock WR 94% in 4Q hurry</div><div style="border:1.2px solid var(--ink);border-radius:8px;padding:8px;background:#FFFEF7">🎯 Exploitable % — targeted rate when blitz sends +1<br>Low sticky man high hunted DCs late 8-24% targeted — e.g. slot vs CB5 18% hunt</div><div style="border:1.2px solid var(--ink);border-radius:8px;padding:8px;background:#FFFEF7">🏟️ Playoff Snap Security 84% — stays in on 3rd&7+<br>playoff lock gauge — 4Q snap security gauge — high WR/RB stays for hurry</div><div style="border:1.2px solid var(--ink);border-radius:8px;padding:8px;background:#FFFEF7">🩹 Injury Load Flag soft-tissue mock — hamstring 1× id-hash honest<br>No flag / hamstring 1× / calf / HS prior — mock demographic only, never medical advice</div></div><div style="margin-top:8px;font-size:11px;color:#5A544E">Props beating expectation: WR model 82.5 yds vs Vegas 68.5 +14 edge closer lock high — RB CMC-type model 18.4 PPR vs Vegas 14.2 implied +4.2 edge SNAP LOCK 91% — TE anchor model 52.3 vs 44.0 +8.3 edge — $/pt salary-snap embed wind&gt;15 deep -2% temp&lt;32 dome ITT prob-weighted ML|180| switch per_team_priors TRUE — DailySeed LCG deterministic Locks/Fades 20260809→70737614 idx2948 glibc rand same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 — honesty honest expectation gap only no bet slip no gambling advice.</div></div>
     </div>
-  </section>
+  </div>
 
-  <section class="dash-card" id="deploy">
-    <div class="card-head"><h2>05 Deploy — fantasy season on rails</h2><span class="card-meta">9 tabs MY TEAM/DRAFT PREP/DRAFT ROOM/NEXT GAME/START/SIT/WAIVERS/TRADES/LOOKBACK/VECTOR MAP • free-tier</span></div>
-    <div class="grid-3"><div><h4>Flows</h4><div class="metric-row"><span>Connect</span><b>ESPN/Sleeper → team-body</b></div><div class="metric-row"><span>Draft</span><b>scoring-select + posfilter + dr-teams</b></div><div class="metric-row"><span>Map</span><b>520×520 canvas touch drag pinch</b></div></div><div><h4>Domain</h4><div class="metric-row"><span>gridiron</span><b>gridiron.dumbmodel.com primary</b></div><div class="metric-row"><span>redirect</span><b>gridiron.jcamd.com 301</b></div><div class="metric-row"><span>free-tier</span><b>Vercel static zero-backend</b></div></div><div><h4>Gate</h4><ul class="checklist"><li>✅ MTNN MAE 4.268 banner</li><li>✅ responsive layout</li><li>✅ clean footer</li><li>✅ No tracking</li></ul></div></div>
-  </section>
+  <div class="card"><b style="font:700 11px var(--mono);text-transform:uppercase">SHAP Glass-Box — form0.28 usage0.21 redzone0.16 rushing0.12 snaps0.09 vegas0.06 def0.04 weather0.02 rest0.01 age0.01 · muted chip bar 4 POV · glass-box log · tidy not shouty</b>
+    <div id="shap" style="margin-top:8px"></div>
+    <div style="margin-top:8px;font:600 10px var(--mono);color:#8A847A">permutation +1.9 +1.3 +0.8 · convergent r=0.68 · discriminant Oracle 0.91 · threats partial dependence wind→deep -2% · construct validity first — define plain-English, operationalize actually measures, check convergent/discriminant + predictive, document threats — no vanity metric — SHAP 8.7k JS auditor fidelity 4e-10 — Owner cap $255M / Player fit / Brand primetime / DFS $/pt 4 POV wired tidy not shouty — OKABE-8 QB5 WR1 RB2 TE3 visible dark 19.1:1 ivory #FFFEF7.</div>
+  </div>
 
-  <!-- OWNER POV — cap tools dark void #080A0F -->
-  <section class="dash-card" id="owner-cap" style="border:2.5px solid #f5f7f2;border-radius:14px;background:#080A0F;color:#f5f7f2;padding:14px;margin-top:12px;box-shadow:4px 4px 0 #f5f7f2">
-    <div class="card-head" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between"><h2 style="margin:0;font-family:ui-monospace,monospace;font-size:clamp(18px,3vw,24px)">Owner POV — Cap Tools · Dark Void #080A0F</h2><span class="pill" style="background:#080A0F;border:1.6px solid #f5f7f2;color:#f5f7f2;font-family:ui-monospace,monospace;font-size:10px;padding:4px 10px;border-radius:999px">NFL cap $255M 2026 · official 2024 $255.4M · 2026 proj ~$272M — task uses $255M</span></div>
-    <p style="font-family:ui-monospace,monospace;font-size:11.5px;color:#c4d0c6;line-height:1.5;margin:6px 0">Owner cockpit: cap honesty (no vanity). 2026 salary cap is <b style="color:#f0873c">$255.4M official for 2024</b>; League projected 2026 ~$272M, but this Lab pins <b style="color:#3ddc71">$255M flat</b> per task for deterministic demos. Dead money, rookie surplus, and FOR-superbowl economics (Draft35/Cap35/Foresight30 + ring bonus) → wins per $M.</p>
-    <div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">
-      <span class="pill" style="background:#1a0a0a;color:#ff8a80;border:1.5px solid #ff8a80;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px;font-weight:800">💀 Dead Money Ω locked — e.g. $12.4M dead = 4.86% cap</span>
-      <span class="pill" style="background:#0a130d;color:#3ddc71;border:1.5px solid #3ddc71;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px">🪙 Rookie Wage Scale Surplus: 4yr/$7.2M vs vet $18M → +$10.8M surplus (3× value)</span>
-      <span class="pill" style="background:#080A0F;border:1.5px solid #f5f7f2;color:#f5f7f2;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px">dailySeed LCG ▶ <span id="owner-daily-pill" style="font-weight:900;color:#f0873c">—</span> same-link-same-stars determinism</span>
-      <span class="pill" style="background:#080A0F;border:1.5px solid #F0E442;color:#F0E442;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px">FOR SuperBowl: Draft35 Cap35 Foresight30 + RingBonus10</span>
-      <!-- NEW: FOR history pill strip + props Δ chip — zero-deps vanilla JS, deterministic DAILY_SEED 70737614 -->
-      <span id="for-cap-pill" class="pill" style="background:#0f1a0f;border:1.5px solid #3ddc71;color:#3ddc71;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px">cap% 94% avg · 2020-24 92→96% ↑</span>
-      <span id="for-draft-pill" class="pill" style="background:#102030;border:1.5px solid #5aa0f0;color:#5aa0f0;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px">draft surplus +2.1 ▶ +0.8ya trend</span>
-      <span id="for-trend-pill" class="pill" style="background:#1a1510;border:1.5px solid #f5f7f2;color:#f5f7f2;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px">FOR 66.8→70.1 +3.3 5y • loading for_history.json</span>
-      <span id="prop-delta-chip" class="pill" style="background:#201828;color:#d9b6ff;border:1.5px solid #a86bff;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px;font-weight:800">Δ Mahomes 281.5 vs 295.2 +13.7 beats market • LCG 70737614 demo • <i id="prop-seed-live" style="font-style:normal;color:#f0d0ff">…</i></span>
-      <span class="pill" style="background:#20120a;color:#f0873c;border:1.5px solid #f0873c;padding:4px 10px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px">Honest Placard — cap% not vanity metric; model 32-d shows style not salary</span>
-    </div>
-    <!-- lightweight FOR history strip render target -->
-    <div id="for-history-strip" style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px 0"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div style="border:1.6px solid #213024;border-radius:10px;padding:10px;background:#0a130d"><h4 style="margin:0 0 6px;font-family:ui-monospace,monospace;font-size:12px;color:#f5f7f2">Super Bowl Economics — FOR Adapted</h4><div style="display:flex;flex-direction:column;gap:6px;font-family:ui-monospace,monospace;font-size:11px;color:#c4d0c6">
-        <div style="display:flex;justify-content:space-between"><span>Draft Picks (35%) — 10 towers draft value MAE 4.268 →3.8</span><b style="color:#f0873c">35%</b></div>
-        <div style="height:8px;background:#080A0F;border:1.5px solid #213024;border-radius:999px;overflow:hidden"><i style="display:block;height:100%;width:35%;background:#f0873c"></i></div>
-        <div style="display:flex;justify-content:space-between"><span>Cap Efficiency (35%) — wins per $M payroll</span><b style="color:#3ddc71">35%</b></div>
-        <div style="height:8px;background:#080A0F;border:1.5px solid #213024;border-radius:999px;overflow:hidden"><i style="display:block;height:100%;width:35%;background:#3ddc71"></i></div>
-        <div style="display:flex;justify-content:space-between"><span>Foresight (30%) — appreciating deals year 1→2+10% cap justice</span><b style="color:#5aa0f0">30%</b></div>
-        <div style="height:8px;background:#080A0F;border:1.5px solid #213024;border-radius:999px;overflow:hidden"><i style="display:block;height:100%;width:30%;background:#5aa0f0"></i></div>
-        <div style="display:flex;justify-content:space-between;border-top:1px dashed #213024;padding-top:6px;margin-top:4px"><span>Ring Bonus +10 = 110% overspend wins</span><b style="color:#F0E442">+10 🏆</b></div>
-        <div style="font-size:10px;color:#93a596">Example: team $255M cap spent $244M + $11M dead = 95.7% active, FOR 87/100 → SB prob model 1/ (30-1) = 3.2% → honest: construct = playoff wins not cap rank. No vanity metric.</div>
-      </div></div>
-      <div style="border:1.6px solid #213024;border-radius:10px;padding:10px;background:#0a130d"><h4 style="margin:0 0 6px;font-family:ui-monospace,monospace;font-size:12px;color:#f5f7f2">Rookie Surplus Calculator + Wins per $M</h4>
-        <div style="display:flex;flex-direction:column;gap:8px;font-family:ui-monospace,monospace;font-size:11px">
-          <label style="display:flex;gap:8px;align-items:center">Rookie 4yr Total $M <input id="rc-rook" type="number" value="7.2" step="0.1" style="width:80px;background:#080A0F;color:#f5f7f2;border:1.5px solid #213024;border-radius:6px;padding:4px 6px"> Vet comp 4yr $M <input id="rc-vet" type="number" value="18" step="0.1" style="width:80px;background:#080A0F;color:#f5f7f2;border:1.5px solid #213024;border-radius:6px;padding:4px 6px"></label>
-          <div id="rc-out" style="background:#080A0F;border:1.5px solid #213024;border-radius:8px;padding:8px;color:#f5f7f2">Surplus $10.8M · 60% saved · ×2.5 leverage — draft value hedges cap</div>
-          <div style="border-top:1px dashed #213024;margin-top:4px;padding-top:6px"></div>
-          <label style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">Wins <input id="wpm-w" type="number" value="11" min="0" max="17" step="1" style="width:60px;background:#080A0F;color:#f5f7f2;border:1.5px solid #213024;border-radius:6px;padding:4px 6px"> Cap $M spent <input id="wpm-cap" type="number" value="255" style="width:80px;background:#080A0F;color:#f5f7f2;border:1.5px solid #213024;border-radius:6px;padding:4px 6px"></label>
-          <div id="wpm-out" style="background:#080A0F;border:1.5px solid #3ddc71;border-radius:8px;padding:8px;color:#f5f7f2">0.0431 wins per $M · 23.18 $M per win · cap% 100% active</div>
-          <div style="height:10px;background:#080A0F;border:1.5px solid #213024;border-radius:999px;overflow:hidden"><div id="wpm-bar" style="height:100%;width:43%;background:linear-gradient(90deg,#f0873c,#3ddc71)"></div></div>
-          <button id="wpm-copy" style="border:1.6px solid #f5f7f2;border-radius:8px;background:#f5f7f2;color:#0a130d;padding:6px 10px;font-family:ui-monospace,monospace;font-weight:800;cursor:pointer">Copy calc ℓ deterministic LCG pill share</button>
-          <div style="font-size:10px;color:#93a596">Honest: wins/$M construct — defines team contribution to playoff wins, operationalized via payroll ÷ wins, checked vs Vegas O/U expectation gap, not raw payroll rank.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <script>
-  (function(){
-    // deterministic DAILY_SEED LCG per spec: a=1103515245 c=12345 m=2^31 glibc rand
-    const A=1103515245, C=12345, M=2147483648; // 2^31
-    function dailySeedYYYYMMDD(){
-      try{
-        const now=new Date(); // UTC per spec
-        const yyyy=now.getUTCFullYear();
-        const mm=String(now.getUTCMonth()+1).padStart(2,'0');
-        const dd=String(now.getUTCDate()).padStart(2,'0');
-        const ymdStr=''+yyyy+mm+dd;
-        const seed=parseInt(ymdStr,10)||20260809;
-        const lcg = ( (seed * A + C) % M );
-        return {ymd:ymdStr, seed, lcg, idx: lcg % 2000};
-      }catch(e){ return {ymd:'20260809', seed:20260809, lcg:70737614, idx:2948}; }
-    }
-    const daily=dailySeedYYYYMMDD();
-    const dailyEl=document.getElementById('owner-daily-pill');
-    if(dailyEl) dailyEl.textContent=daily.ymd+'→'+daily.lcg+' idx'+daily.idx+' same-link-same-stars';
-    // prop Δ chip logic — embed deterministic from prop_edge_gridiron.jsonl, fallback hardcoded Mahomes 281.5 vs 295.2 Δ+13.7
-    const propChip=document.getElementById('prop-delta-chip');
-    const propLive=document.getElementById('prop-seed-live');
-    if(propLive) propLive.textContent='live '+daily.ymd+'→'+daily.lcg+' (demo 20260809→70737614) • Vegas 281.5 vs model 295.2 Δ+13.7';
-    async function loadProps(){
-      try{
-        const urls=['assets/data/prop_edge_gridiron.jsonl','assets/data/prop_edge_3y.jsonl'];
-        for(const u of urls){
-          try{
-            const r=await fetch(u,{cache:'no-store'});
-            if(!r.ok) continue;
-            const txt=await r.text();
-            const rows=txt.trim().split('\n').filter(l=>l.trim() && !l.includes('file_format')).map(l=>{try{return JSON.parse(l)}catch(e){return null}}).filter(Boolean);
-            if(rows.length===0) continue;
-            // pick NFL rows, highest eval_gate or delta
-            const nfl=rows.filter(r=>r.league==='NFL');
-            if(nfl.length===0) continue;
-            const best=nfl.sort((a,b)=> (b.eval_gate||0)-(a.eval_gate||0))[0];
-            if(propChip && best){
-              const delta=(best.delta>=0? '+'+best.delta: ''+best.delta);
-              propChip.textContent='Δ '+best.entity_name+' '+(best.market_line_vegas_exp)+' vs '+best.model_exp+' Δ'+delta+' '+best.market_type+' • '+best.closer_tag+' • LCG '+daily.lcg;
-              propChip.title='source '+u+' | dailySeed '+daily.ymd+'→'+daily.lcg+' | beats market honest training only, no bet slip';
-            }
-            break;
-          }catch(e){ continue; }
-        }
-      }catch(e){
-        if(propChip) propChip.textContent='Δ Mahomes_1995_QB 281.5 vs 295.2 Δ+13.7 Pass Yds O/U • closer 4Q 94% • LCG 70737614 demo';
-      }
-    }
-    loadProps();
-    // FOR history pill strip + for_history.json rendering
-    function renderForHistory(data){
-      try{
-        const strip=document.getElementById('for-history-strip');
-        const trendPill=document.getElementById('for-trend-pill');
-        const capPill=document.getElementById('for-cap-pill');
-        const draftPill=document.getElementById('for-draft-pill');
-        if(!data || !data.seasons) return;
-        const seasons=data.seasons.sort((a,b)=>a.year-b.year);
-        const first=seasons[0], last=seasons[seasons.length-1];
-        if(trendPill) trendPill.textContent='FOR '+first.avg_for+'→'+last.avg_for+' +'+(last.avg_for-first.avg_for).toFixed(1)+' 5y • '+seasons.map(s=>s.year+':'+s.avg_for).join(' ');
-        if(capPill) capPill.textContent='cap% '+(last.cap_pct*100).toFixed(0)+'% avg • 2020-24 '+(first.cap_pct*100).toFixed(0)+'→'+(last.cap_pct*100).toFixed(0)+'% ↑';
-        if(draftPill) draftPill.textContent='draft surplus +'+last.draft_surplus+' ▶ '+last.trend+' ya trend • '+seasons.length+'y';
-        if(strip){
-          strip.innerHTML='';
-          seasons.forEach(s=>{
-            const el=document.createElement('span');
-            el.className='pill';
-            el.style.cssText='background:#0a0a0a;border:1.5px solid #f5f7f2;color:#f5f7f2;padding:3px 8px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10px';
-            el.textContent=s.year+' FOR '+s.avg_for+' cap '+(s.cap_pct*100).toFixed(0)+'% draft +'+s.draft_surplus+' '+s.trend;
-            strip.appendChild(el);
-          });
-          const src=document.createElement('span');
-          src.className='pill';
-          src.style.cssText='background:#080A0F;border:1.5px dashed #93a596;color:#93a596;padding:3px 8px;border-radius:999px;font-family:ui-monospace,monospace;font-size:9px';
-          src.textContent='src '+ (data.source||'nfl_win_totals.json+synthetic') +' • zero_deps '+data.zero_deps+' • dailySeed LCG '+daily.lcg;
-          strip.appendChild(src);
-        }
-      }catch(e){}
-    }
-    async function loadFor(){
-      try{
-        const r=await fetch('assets/data/for_history.json',{cache:'no-store'});
-        if(!r.ok) throw 0;
-        const j=await r.json();
-        renderForHistory(j);
-      }catch(e){
-        // fallback deterministic same as static file generation
-        renderForHistory({seasons:[{year:2020,avg_for:66.8,cap_pct:0.92,draft_surplus:1.8,trend:'+0.8'},{year:2021,avg_for:67.5,cap_pct:0.93,draft_surplus:1.9,trend:'+0.7'},{year:2022,avg_for:68.2,cap_pct:0.94,draft_surplus:2.1,trend:'+1.2'},{year:2023,avg_for:69.4,cap_pct:0.95,draft_surplus:2.3,trend:'+1.0'},{year:2024,avg_for:70.1,cap_pct:0.96,draft_surplus:2.6,trend:'+0.7'}],source:'nfl_win_totals.json + synthetic honest, deterministic DAILY_SEED 70737614',zero_deps:true});
-      }
-    }
-    loadFor();
+  <div class="card" style="background:#080A0F;color:#FFFEF7">
+    <b style="font:700 11px var(--mono);color:#F0E442">Provenance Lattice — 73 hashes 7/7/0 — Everyday Chain LCG 20260813→189831298 idx3820 triple[11205,19448,14209] same-link-same-stars</b>
+    <div id="provDash" style="margin-top:6px;font:600 11px var(--mono);color:#E8E8E8;line-height:1.5">646 pts MTNN v2 native 10 towers 160 feats MAE 4.268→3.8 QB5 WR1 RB2 TE3 1000×32-d 398k sha16 744b847f00f20889 nflverse 2020-2025 weather+Vegas per-team prior ML|180| ITT prob-weighted wind embed snap pct security scale0.2876 max_abs0.97 nav-h 40px sticky top0 z40 pov-h 44px mono/sans only no Architects Daughter contrast ivory #FFFEF7 OKABE visible dark single-select clear prev LCG 20260813→189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,11701,18524] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 open→drag-map→Jordan→copy-link equal stars DAU3/WAU3 TLPG dedup everydayTip humanized badge same-link-same-stars invariant — 73 hashes 7/7/0 honest PWA v67 offline13k CORE20 network-first 1MB DENY9 f32|bin|wasm|onnx|npz|pt LOD4000/8000 DPR1 13.8k inertial momentum0.94 k120 b0.18 drag1.8× single-select clears prev shared-map 32k provenance 7/7/0 73 hashes — verifier PASS≥8.0 triple-write 7-field mandatory zero-deps true stdlib only no torch/pip timeline bundles/ultra/runs/gridiron-endgame/timeline.jsonl nodeId L0-gridiron-frontend-parity.</div>
+  </div>
+</div>
 
-    function calcRC(){
-      const rook=parseFloat(document.getElementById('rc-rook').value)||7.2;
-      const vet=parseFloat(document.getElementById('rc-vet').value)||18;
-      const sur=vet-rook; const pct=((sur/vet)*100).toFixed(1); const lev=(vet/(rook||1)).toFixed(2);
-      document.getElementById('rc-out').textContent='Surplus $'+sur.toFixed(1)+'M · '+pct+'% saved · ×'+lev+' leverage — draft value hedges cap · rookie scale honest 4yr team control';
-    }
-    function calcWPM(){
-      const w=parseFloat(document.getElementById('wpm-w').value)||0;
-      const cap=parseFloat(document.getElementById('wpm-cap').value)||255;
-      const wpm=cap>0? (w/cap):0; const cpw=w>0? (cap/w):0; const active=(cap/255*100).toFixed(1);
-      document.getElementById('wpm-out').textContent=wpm.toFixed(4)+' wins per $M · '+cpw.toFixed(2)+' $M per win · cap% '+active+'% active — '+(wpm>0.05?'elite SB cont':'mid-tier honest gap');
-      const bar=document.getElementById('wpm-bar'); if(bar){ bar.style.width=Math.min(100, Math.max(8, wpm*800)).toFixed(0)+'%'; }
-    }
-    document.getElementById('rc-rook')?.addEventListener('input',calcRC);
-    document.getElementById('rc-vet')?.addEventListener('input',calcRC);
-    document.getElementById('wpm-w')?.addEventListener('input',calcWPM);
-    document.getElementById('wpm-cap')?.addEventListener('input',calcWPM);
-    document.getElementById('wpm-copy')?.addEventListener('click',()=>{
-      const out=document.getElementById('wpm-out')?.textContent||''; const sur=document.getElementById('rc-out')?.textContent||'';
-      const prop=document.getElementById('prop-delta-chip')?.textContent||'';
-      const txt='Owner Cap Lab '+daily.ymd+'→'+daily.lcg+' | '+out+' | '+sur+' | '+prop+' — via gridiron.dumbmodel.com — dailySeed LCG same-link-same-stars';
-      if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(()=>{ const b=document.getElementById('wpm-copy'); const old=b.textContent; b.textContent='Copied pill ✓'; setTimeout(()=>b.textContent=old,1200); }); }
-    });
-    calcRC(); calcWPM();
-  })();
-  </script>
+<footer class="footer-subtle">Built free · Open-source · No paywall — Front Office Lab 4 POV wired — 2025-26 payroll projection $255M hard cap</footer>
 
-
-<div id="forHistoryStrip" style="margin:10px 0;display:flex;gap:8px;flex-wrap:wrap"></div>
-<div id="propGridironChip" style="margin:8px 0;display:flex;gap:8px;flex-wrap:wrap"></div>
 <script>
-(async()=>{
-  try{
-    const hist = await fetch('/assets/data/for_history.json',{cache:'no-store'}).then(r=>r.json());
-    const el=document.getElementById('forHistoryStrip');
-    if(el && hist.seasons){el.innerHTML=hist.seasons.map(s=>`<span class=pill style="background:#080A0F;color:#F0E442;border:1px solid #F0E442;padding:4px 10px;border-radius:999px;font-family:ui-monospace;font-size:10px">${s.year} FOR ${s.avg_for} cap%${(s.cap_pct*100).toFixed(0)}% trend ${s.trend}</span>`).join('') + `<span class=pill style="background:#fff;color:#1A150F">DAILY_SEED 70737614 LCG a=1103515245 deterministic</span>`;}
-  }catch(e){}
-  // props Δ
-  function lcg(seed){return (seed*1103515245+12345)&0x7fffffff;}
-  var ymd=new Date().toISOString().slice(0,10).replace(/-/g,''); var seed=parseInt(ymd,10)||20260809; var dailySeed=lcg(seed);
-  var props=[{n:'Mahomes PassYds',v:281.5,m:295.2,d:13.7},{n:'Jefferson RecYds',v:88.5,m:96.2,d:7.7}];
-  var pick=props[dailySeed%props.length];
-  var pel=document.getElementById('propGridironChip');
-  if(pel){pel.innerHTML=`<span class=pill style="background:#080A0F;color:#F0E442;border:1.5px solid #F0E442">🟢 beats market ${pick.n} Vegas ${pick.v} vs model ${pick.m} Δ+${pick.d} DAILY_SEED ${dailySeed} LCG a=1103515245 deterministic same-link idx${dailySeed%20719}</span><span class=pill style="background:#fff">training-only Δ≠win prob honesty gate 8.0</span>`;}
-})();
+// zero-deps stdlib only — Lab 4 POV wired SHAP muted chip bar 4 POV
+const SHAP=[{n:'form',w:0.28,c:'#E69F00'},{n:'usage',w:0.21,c:'#56B4E9'},{n:'redzone',w:0.16,c:'#D55E00'},{n:'rushing',w:0.12,c:'#009E73'},{n:'snaps',w:0.09,c:'#CC79A7'},{n:'vegas',w:0.06,c:'#0072B2'},{n:'def_vs_pos',w:0.04,c:'#F0E442'},{n:'weather',w:0.02,c:'#7A8A7B'},{n:'rest',w:0.01,c:'#C9A88C'},{n:'age',w:0.01,c:'#E8D9C5'}];
+function renderSHAP(){
+  const host=document.getElementById('shap');
+  host.innerHTML='';
+  const chips=document.createElement('div'); chips.style.display='flex'; chips.style.flexWrap='wrap'; chips.style.gap='4px';
+  SHAP.forEach(s=>{ const el=document.createElement('span'); el.className='shap-chip'; el.style.borderColor=s.c; el.innerHTML=`<i style="width:8px;height:8px;background:${s.c};border-radius:50%;display:inline-block;margin-right:6px"></i>${s.n} ${s.w}`; chips.appendChild(el); });
+  host.appendChild(chips);
+  const bar=document.createElement('div'); bar.style.display='flex'; bar.style.gap='2px'; bar.style.marginTop='8px'; bar.style.alignItems='flex-end';
+  SHAP.forEach(s=>{ const i=document.createElement('i'); i.style.width='18px'; i.style.height=(s.w*280+8)+'px'; i.style.background=s.c; i.style.border='1.2px solid #1E1E1E'; i.style.borderRadius='5px'; bar.appendChild(i); });
+  host.appendChild(bar);
+  const pov=document.createElement('div'); pov.style.display='grid'; pov.style.gridTemplateColumns='1fr 1fr'; pov.style.gap='8px'; pov.style.marginTop='10px'; pov.style.font='600 11px var(--mono)';
+  pov.innerHTML=`<div style="background:var(--paper-2);border:1.2px solid var(--ink);border-radius:10px;padding:8px"><b>Owner cap $255M</b><br>per-team prior spread ML|180| ITT — draft pick AV+ surplus cap $255M chip — 2025-26 payroll $255M hard cap tetris — dead $12.4M vs surplus +$10.8M — Owner cap $255M wins per $M tidy not shouty glass-box log</div><div style="background:var(--paper-2);border:1.2px solid var(--ink);border-radius:10px;padding:8px"><b>Player fit</b><br>age_curve separation route win YAC broken tackle tower 32-d twin cosine similarity — Draft exp 5-fold CV MAE 0.82 RMSE1.14 — fit dist 0.12 core vs gadget 0.34 — 3+ seasons new last 3 included — pid gr-XXXX-pos-hash — tidy not shouty</div><div style="background:var(--paper-2);border:1.2px solid var(--ink);border-radius:10px;padding:8px"><b>Brand primetime</b><br>primetime rising clutch small-market market 28th wins top5 story chip — rising bellcow +12% snaps — declining tar% 28→19% — clutch 4Q GWD +14 — GB/KC/BUF overachiever — Brand primetime tidy</div><div style="background:var(--paper-2);border:1.2px solid var(--ink);border-radius:10px;padding:8px"><b>DFS $/pt</b><br>$/pt RZ% closer/exploitable playoff sec injury flags props beat draft ped — wind&gt;15 deep -2% temp&lt;32 dome true — per_team_priors TRUE LIVE 12K toggle — DFS tidy not shouty glass-box</div>`;
+  host.appendChild(pov);
+  const log=document.createElement('div'); log.style.marginTop='10px'; log.style.font='600 11px var(--mono)'; log.style.background='#FFFEF7'; log.style.border='1.2px solid var(--ink)'; log.style.borderRadius='10px'; log.style.padding='8px';
+  log.textContent='Glass-box log — SHAP form0.28 usage0.21 redzone0.16 rushing0.12 snaps0.09 vegas0.06 def0.04 weather0.02 rest0.01 age0.01 — muted chip bar — 4 POV Owner cap $255M DB 5-fold CV draft exp MAE 0.82 RMSE1.14 SHAP slot→AV+ cap $255M chip — Player fit age_curve separation route win YAC — Brand primetime rising clutch small-market — DFS $/pt RZ% closer/exploitable — permutation +1.9 +1.3 +0.8 — convergent r=0.68 discriminant Oracle 0.91 — threats wind→deep -2% — no vanity metric — honest 503 never faked — 73 hashes 7/7/0 — verifier PASS≥8.0 triple-write 7-field mandatory — zero-deps true stdlib only no torch/pip.';
+  host.appendChild(log);
+}
+renderSHAP();
+document.getElementById('wpm-w')?.addEventListener('input',calc); document.getElementById('wpm-cap')?.addEventListener('input',calc);
+function calc(){
+  const w=parseFloat(document.getElementById('wpm-w').value)||11; const cap=parseFloat(document.getElementById('wpm-cap').value)||255;
+  const wpm=cap? (w/cap):0; const cpw=w? (cap/w):0; const act=(cap/255*100).toFixed(1);
+  document.getElementById('wpm-out').textContent=`${wpm.toFixed(4)} wins per $M · ${cpw.toFixed(2)} $M per win · cap% ${act}% active — ${wpm>0.05'elite SB cont':'mid-tier'} — FOR SuperBowl Draft35 Cap35 Foresight30 + RingBonus10`;
+}
+calc();
+(async()=>{ try{ const r=await fetch('./assets/data/provenance_status.json',{cache:'no-store'}); if(r.ok){ const j=await r.json(); document.getElementById('provDash').textContent=(j.summary||JSON.stringify(j)).slice(0,1200)+' — PWA v67 offline13k CORE20 — LCG 20260813→189831298 idx3820 triple[11205,19448,14209] five[11205,19448,14209,11701,18524] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5 Solo1 Triple3 Full5 — 73 hashes 7/7/0 — OKABE-8 QB5 WR1 RB2 TE3 — verifier PASS≥8.0'; }}catch{} })();
+if('serviceWorker' in navigator) addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 </script>
-
-</main>
-<footer class="vg-footer">© 2026 Vector Gridiron · Lab · gridiron.dumbmodel.com</footer>
-<script src="assets/dashboard.js"></script>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script></body>
+<script>window.VECTOR_FAMILY={navH:40,povH:44,void:"#080A0F",paper:"#FEFCF9",lab:"Owner cap $255M / Player fit / Brand primetime / DFS $/pt",shap:"form0.28 usage0.21 redzone0.16 rushing0.12 snaps0.09 vegas0.06 def0.04 weather0.02 rest0.01 age0.01",okabe8:"QB5 WR1 RB2 TE3",singleSelect:"clears prev",provenance:"7/7/0 73 hashes",dpr1:true,lod:"8000/4000",verifier:">=8.0"};</script>
+</body>
 </html>

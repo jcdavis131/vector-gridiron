@@ -1,46 +1,14 @@
 {
   "cleanUrls": true,
+  "outputDirectory": "public",
+  "headers": [
+    {"source": "/(.*)", "headers": [{"key": "Cache-Control", "value": "public, max-age=0, must-revalidate"}]},
+    {"source": "/api/(.*)", "headers": [{"key": "Cache-Control", "value": "no-store"}]}
+  ],
   "rewrites": [
-    {
-      "source": "/model",
-      "destination": "/model.html"
-    },
-    {
-      "source": "/play",
-      "destination": "/play.html"
-    },
-    {
-      "source": "/players",
-      "destination": "/players.html"
-    },
-    {
-      "source": "/methods",
-      "destination": "/methods.html"
-    },
-    {
-      "source": "/trends",
-      "destination": "/trends.html"
-    },
-    {
-      "source": "/dashboard",
-      "destination": "/dashboard.html"
-    }
+    {"source": "/", "destination": "/index.html"}
   ],
   "redirects": [
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "gridiron.jcamd.com"
-        }
-      ],
-      "destination": "https://gridiron.dumbmodel.com/:path*",
-      "permanent": true
-    }
-  ],
-  "framework": null,
-  "buildCommand": null,
-  "installCommand": null,
-  "outputDirectory": "."
+    {"source": "/play", "destination": "/", "permanent": false}
+  ]
 }

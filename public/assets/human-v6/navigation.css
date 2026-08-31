@@ -1,0 +1,21 @@
+/* Human-Centered v6 — navigation 40px sticky z40 mono */
+.hv6-nav{
+  position:sticky;top:0;z-index:40;
+  height:var(--nav-height);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;
+  background:rgba(255,254,251,0.92);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--hairline);
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.hv6-nav__brand{font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px}
+.hv6-nav__brand .dot{width:6px;height:6px;border-radius:50%;background:var(--human-blue);display:inline-block}
+.hv6-nav__links{display:flex;gap:18px;align-items:center;color:var(--ink-muted)}
+.hv6-nav__link{position:relative;padding:2px 0;transition:color .15s}
+.hv6-nav__link:hover{color:var(--ink)}
+.hv6-nav__link.is-active{color:var(--ink)}
+.hv6-nav__link.is-active:after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:2px;background:var(--human-blue);border-radius:1px}

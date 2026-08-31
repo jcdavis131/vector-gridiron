@@ -1,0 +1,13 @@
+{
+  "name": "Vector Gridiron — What kind of player is this? — 646 real",
+  "short_name": "Gridiron",
+  "description": "646 real NFL player-seasons (2020-2024) — role context, same-role peers, archetype band. Human-centered v6 — who do we design for? People busy living.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFEFB",
+  "theme_color": "#2A5BD7",
+  "icons": [
+    {"src": "/assets/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src": "/assets/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}
+  ]
+}

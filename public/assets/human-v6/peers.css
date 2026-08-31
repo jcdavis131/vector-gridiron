@@ -1,0 +1,16 @@
+/* Human-Centered v6 — peers */
+.hv6-peers{display:grid;gap:10px}
+.hv6-peer{
+  background:var(--paper-raised);
+  border:1px solid var(--hairline);
+  border-radius:var(--radius-card);
+  padding:12px 14px;
+  cursor:pointer;
+  transition:all .14s ease;
+}
+.hv6-peer:hover{border-color:#D4C4B0;transform:translateY(-0.5px);box-shadow:var(--shadow-soft)}
+.hv6-peer__name{font-family:var(--font-serif);font-weight:800;font-size:15px;color:var(--ink)}
+.hv6-peer__rel{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-muted);margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
+.hv6-peer__sim{font-family:var(--font-sans);font-size:13px;line-height:1.5;color:#2A2E33;margin-top:6px}
+.hv6-peer__conf{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-faint);margin-top:6px}
+.hv6-select.is-selected{border-color:var(--human-blue);box-shadow:0 0 0 2px var(--human-blue-wash)}

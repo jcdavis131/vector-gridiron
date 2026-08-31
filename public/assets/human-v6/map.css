@@ -1,0 +1,10 @@
+/* Human-Centered v6 — map */
+.hv6-map-shell{
+  background:var(--void);
+  border:1px solid #101216;
+  border-radius:16px;
+  min-height:72vh;
+  position:relative;
+  overflow:hidden;
+}
+canvas#mapCanvas{display:block;width:100%;height:100%;flex:1;background:radial-gradient(1100px 700px at 55% 40%, #101216 0%, var(--void) 58%)}

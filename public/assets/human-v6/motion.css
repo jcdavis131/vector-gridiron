@@ -1,0 +1,9 @@
+/* Human-Centered v6 — motion */
+@media(prefers-reduced-motion:no-preference){
+  .hv6-peer,.hv6-btn,.hv6-pill{transition:all .14s ease}
+  .hv6-map-shell{transition:transform .24s ease}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+:focus-visible{outline:2px solid var(--human-blue);outline-offset:2px;border-radius:2px}

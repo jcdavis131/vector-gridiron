@@ -4,11 +4,15 @@ Cached, resumable, stdlib. All feeds land under pipeline/cache/.
 
 Feeds:
   weekly_stats / snaps / games / players / injuries  — baseline (v1)
-  depth_charts(year)   — role / starter depth (week-keyed through 2024)
+  depth_charts(year)   — role / starter depth (week-keyed through 2024; 2025+
+    is nflverse's ESPN dump: one timestamped snapshot per team per day, no
+    week column -- build_features as-of joins it to games.csv; see
+    depth_charts_iter for the streaming reader)
   ngs(stat, year)      — Next Gen Stats weekly (passing|receiving|rushing), 2016-2024
     only — nflverse's nextgen_stats release has no 2025 assets as of 2026-07-30
     (confirmed via the GitHub releases API, not just a stale local cache); "ngs"
-    family must be masked for 2025+ same as injuries/depth_charts, not a bug
+    family must be masked for 2025+ same as injuries, not a bug (depth_charts
+    2025+ is as-of joined instead -- see build_features.index_depth)
   pfr_adv(stat, year)  — PFR advanced weekly (pass|rec|rush), ~2018+
   ep_weekly(year)      — ffopportunity expected fantasy points (CC-BY-SA)
   draft_picks() / combine() — pedigree for rookies / aux head
@@ -150,6 +154,19 @@ def depth_charts(year: int, offline: bool = False) -> list[dict]:
     timestamped ESPN dumps — caller should as-of join when week is absent."""
     return _rows(fetch_text(DEPTH_URL.format(year=year),
                             f"depth_charts_{year}.csv", offline, max_age_days=2))
+
+
+def depth_charts_iter(year: int, offline: bool = False):
+    """Streaming depth_charts(): same file, same parse, one row at a time.
+    The 2025+ ESPN dumps are ~550k rows (52 MB); materialising them as a list
+    of dicts costs several hundred MB, which build_features does not need
+    because it reduces each dump on a single pass. Empty iterator when the
+    file is absent (offline) -- identical to depth_charts() returning []."""
+    text = fetch_text(DEPTH_URL.format(year=year),
+                      f"depth_charts_{year}.csv", offline, max_age_days=2)
+    if not text:
+        return iter(())
+    return csv.DictReader(io.StringIO(text))
 
 
 def ngs(stat: str, year: int, offline: bool = False) -> list[dict]:

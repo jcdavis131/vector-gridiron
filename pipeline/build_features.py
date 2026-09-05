@@ -13,10 +13,12 @@ Run:  python pipeline/build_features.py [--offline]
 
 from __future__ import annotations
 
+import itertools
 import json
+import re
 import sys
 import time
-from datetime import date
+from datetime import date, timedelta
 from math import log1p
 from pathlib import Path
 
@@ -263,9 +265,60 @@ def weekly_record(r: dict, snap_pct: float) -> dict:
     }
 
 
+# Depth-chart schemas. nflverse re-sourced depth_charts_2025.csv from ESPN:
+# the file is no longer week-keyed (season, club_code, week, depth_team,
+# formation, gsis_id, depth_position) but a timestamped dump (dt, team,
+# gsis_id, pos_grp, pos_abb, pos_slot, pos_rank) taken once per team per day.
+# Both carry gsis_id, so the join to the stats universe stays an exact key.
+DEPTH_WEEKLY_COLS = frozenset({"week", "gsis_id", "depth_team"})
+DEPTH_ASOF_COLS = frozenset({"dt", "team", "gsis_id", "pos_abb", "pos_slot", "pos_rank"})
+# pos_abb vocabulary of the ESPN offense group ("3WR 1TE"). Measured on
+# depth_charts_2025.csv 2026-09-05: these ten abbreviations occur in no other
+# pos_grp, so filtering on them is the exact offense filter without pinning a
+# formation label.
+DEPTH_ASOF_OFFENSE_ABB = frozenset({"QB", "RB", "FB", "WR", "TE", "LT", "LG", "C", "RG", "RT"})
+# A snapshot is usable for a game only if it was taken within this many days
+# before the game. ESPN dumps are daily, so this never binds in 2025; it stops
+# a stale preseason dump from standing in for a missing in-season one.
+DEPTH_ASOF_MAX_STALE_DAYS = 7
+_GSIS_RE = re.compile(r"^00-00\d{5}$")
+_DT_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}:\d{2}Z$")
+# season -> join/drop counters from the as-of path (surfaced in the manifest).
+DEPTH_ASOF_STATS: dict[int, dict] = {}
+
+
+def depth_schema(header) -> str:
+    h = set(header)
+    if DEPTH_WEEKLY_COLS <= h:
+        return "weekly"
+    if DEPTH_ASOF_COLS <= h and "week" not in h:
+        return "asof"
+    return "unknown"
+
+
 def index_depth(year: int, offline: bool) -> dict:
-    """(week, gsis) -> {depth_rank, is_starter, depth_ahead} for offense."""
-    rows = nfl.depth_charts(year, offline)
+    """(week, gsis) -> {depth_rank, is_starter, depth_ahead} for offense.
+    Dispatches on the file header: week-keyed seasons (<= 2024) take the
+    original path unchanged; timestamped ESPN dumps (2025+) are as-of joined
+    to games.csv. Unrecognised headers yield {} -- the role family masks."""
+    it = iter(nfl.depth_charts_iter(year, offline))
+    try:
+        first = next(it)
+    except StopIteration:
+        return {}
+    rows = itertools.chain([first], it)
+    schema = depth_schema(first.keys())
+    if schema == "weekly":
+        return _index_depth_weekly(rows)
+    if schema == "asof":
+        return _index_depth_asof(rows, year, offline)
+    print(f"  depth_charts_{year}.csv: unrecognised schema {sorted(first.keys())}"
+          " -- role family masked")
+    return {}
+
+
+def _index_depth_weekly(rows) -> dict:
+    """Original week-keyed parser (nflverse depth_charts through 2024)."""
     by_team_week_pos: dict[tuple, list] = {}
     out = {}
     for r in rows:
@@ -291,6 +344,167 @@ def index_depth(year: int, offline: bool) -> dict:
         for i, (rank, gsis) in enumerate(arr):
             if (week, gsis) in out:
                 out[(week, gsis)]["depth_ahead"] = float(i)
+    return out
+
+
+def _depth_schedule(year: int, offline: bool) -> dict:
+    """(team, week) -> gameday 'YYYY-MM-DD' for every game of `year` in games.csv."""
+    sched = {}
+    for r in nfl.games(offline):
+        if int(num(r, "season")) != year:
+            continue
+        week = int(num(r, "week"))
+        gday = (r.get("gameday") or "").strip()
+        if week <= 0 or not gday:
+            continue
+        for t in (r.get("home_team", ""), r.get("away_team", "")):
+            if t:
+                sched[(t, week)] = gday
+    return sched
+
+
+def _index_depth_asof(rows, year: int, offline: bool) -> dict:
+    """As-of join of timestamped ESPN depth dumps onto the season schedule.
+
+    Semantics mapped onto the weekly path exactly where they are exact:
+      * snapshot for (team, week) = the latest dump whose UTC date is strictly
+        before that team's gameday (so it is pre-kickoff regardless of time
+        zone) and at most DEPTH_ASOF_MAX_STALE_DAYS before it;
+      * depth level = 1-based order of pos_rank within (team, pos_abb,
+        pos_slot). ESPN's pos_rank is a global rank across a position's slots
+        (WR has three; every other offense position one), so the level within
+        a slot is what the weekly file called depth_team: three level-1 WRs,
+        one level-1 QB/RB/TE, verified on every 2025 dump;
+      * depth_rank / is_starter / depth_ahead computed as in the weekly path.
+    Nothing is defaulted. A (week, gsis) key with more than one candidate row
+    (listed at two slots for its team, or on two teams' snapshots in the same
+    week) is dropped and counted; empty or non-gsis ids never join.
+    """
+    sched = _depth_schedule(year, offline)
+    stats = {
+        "schema": "asof",
+        "rule": (f"latest dump with UTC date < gameday and >= gameday-"
+                 f"{DEPTH_ASOF_MAX_STALE_DAYS}d; level = order of pos_rank within "
+                 "(team, pos_abb, pos_slot); offense = pos_abb in "
+                 + ",".join(sorted(DEPTH_ASOF_OFFENSE_ABB))),
+        "rows_total": 0, "rows_offense": 0, "rows_bad_dt": 0, "rows_bad_rank": 0,
+        "rows_empty_gsis": 0,
+        "team_weeks_scheduled": len(sched), "team_weeks_joined": 0,
+        "team_weeks_no_snapshot": 0, "dumps_used": 0,
+        "keys_joined": 0, "keys_unjoinable_gsis": 0,
+        "keys_ambiguous_multi_slot": 0, "keys_ambiguous_multi_team": 0,
+        "keys_ambiguous_rank_tie": 0,
+        "dropped_keys": [],
+    }
+    if not sched:
+        print(f"  depth_charts_{year}.csv: as-of schema but games.csv has no "
+              f"{year} games -- role family masked")
+        DEPTH_ASOF_STATS[year] = stats
+        return {}
+    gdays = sorted(sched.values())
+    lo_all = (date.fromisoformat(gdays[0]) - timedelta(days=DEPTH_ASOF_MAX_STALE_DAYS)).isoformat()
+    hi_all = gdays[-1]
+
+    # One pass over the dump: keep offense rows inside the season window.
+    snaps: dict[tuple, list] = {}  # (team, dt) -> [(pos, slot, rank, gsis)]
+    for r in rows:
+        stats["rows_total"] += 1
+        pos = (r.get("pos_abb") or "").strip().upper()
+        if pos not in DEPTH_ASOF_OFFENSE_ABB:
+            continue
+        stats["rows_offense"] += 1
+        dt = (r.get("dt") or "").strip()
+        m = _DT_RE.match(dt)
+        if not m:
+            stats["rows_bad_dt"] += 1
+            continue
+        if not (lo_all <= m.group(1) < hi_all):
+            continue
+        gsis = (r.get("gsis_id") or "").strip()
+        if not gsis:
+            stats["rows_empty_gsis"] += 1
+            continue
+        try:
+            rank = int((r.get("pos_rank") or "").strip())
+        except ValueError:
+            stats["rows_bad_rank"] += 1
+            continue
+        slot = (r.get("pos_slot") or "").strip()
+        team = (r.get("team") or "").strip()
+        snaps.setdefault((team, dt), []).append((pos, slot, rank, gsis))
+
+    dts_by_team: dict[str, list] = {}
+    for team, dt in snaps:
+        dts_by_team.setdefault(team, []).append(dt)
+    for arr in dts_by_team.values():
+        arr.sort()
+
+    chosen: dict[tuple, str] = {}  # (team, week) -> dt
+    for (team, week), gday in sorted(sched.items()):
+        lo = (date.fromisoformat(gday) - timedelta(days=DEPTH_ASOF_MAX_STALE_DAYS)).isoformat()
+        cands = [dt for dt in dts_by_team.get(team, []) if lo <= dt[:10] < gday]
+        if not cands:
+            stats["team_weeks_no_snapshot"] += 1
+            continue
+        chosen[(team, week)] = max(cands)
+        stats["team_weeks_joined"] += 1
+    stats["dumps_used"] = len(set(chosen.values()))
+
+    cands_by_key: dict[tuple, list] = {}   # (week, gsis) -> [(team, pos, level)]
+    groups: dict[tuple, list] = {}         # (week, team, pos) -> [(level, gsis)]
+    tie_keys: set = set()
+    for (team, week), dt in chosen.items():
+        by_slot: dict[tuple, list] = {}
+        for pos, slot, rank, gsis in snaps[(team, dt)]:
+            by_slot.setdefault((pos, slot), []).append((rank, gsis))
+        for (pos, slot), arr in by_slot.items():
+            arr.sort()
+            ranks = [a[0] for a in arr]
+            if len(set(ranks)) != len(ranks):
+                seen: dict[int, list] = {}
+                for rank, gsis in arr:
+                    seen.setdefault(rank, []).append(gsis)
+                for rank, gs in seen.items():
+                    if len(gs) > 1:
+                        tie_keys.update((week, g) for g in gs)
+            for i, (rank, gsis) in enumerate(arr):
+                level = i + 1
+                groups.setdefault((week, team, pos), []).append((level, gsis))
+                cands_by_key.setdefault((week, gsis), []).append((team, pos, level))
+
+    out = {}
+    for (week, gsis), lst in cands_by_key.items():
+        if not _GSIS_RE.match(gsis):
+            stats["keys_unjoinable_gsis"] += 1
+            continue
+        if len(lst) > 1:
+            if len({t for t, _p, _l in lst}) > 1:
+                stats["keys_ambiguous_multi_team"] += 1
+            else:
+                stats["keys_ambiguous_multi_slot"] += 1
+            stats["dropped_keys"].append([week, gsis])
+            continue
+        if (week, gsis) in tie_keys:
+            stats["keys_ambiguous_rank_tie"] += 1
+            stats["dropped_keys"].append([week, gsis])
+            continue
+        _team, _pos, level = lst[0]
+        out[(week, gsis)] = {"depth_rank": float(level), "is_starter": 1.0 if level == 1 else 0.0}
+    for (week, team, pos), arr in groups.items():
+        arr.sort()
+        for i, (level, gsis) in enumerate(arr):
+            if (week, gsis) in out:
+                out[(week, gsis)]["depth_ahead"] = float(i)
+    stats["keys_joined"] = len(out)
+    stats["dropped_keys"].sort()
+    DEPTH_ASOF_STATS[year] = stats
+    print(f"  depth_charts_{year}.csv: as-of schema; joined {len(out)} (week,gsis) keys "
+          f"over {stats['team_weeks_joined']}/{stats['team_weeks_scheduled']} team-weeks "
+          f"from {stats['dumps_used']} dumps; dropped ambiguous multi_slot="
+          f"{stats['keys_ambiguous_multi_slot']} multi_team={stats['keys_ambiguous_multi_team']} "
+          f"rank_tie={stats['keys_ambiguous_rank_tie']}; unjoinable gsis="
+          f"{stats['keys_unjoinable_gsis']}; empty gsis rows={stats['rows_empty_gsis']}; "
+          f"team-weeks without snapshot={stats['team_weeks_no_snapshot']}")
     return out
 
 
@@ -907,6 +1121,8 @@ def build(last_season: int | None = None, offline: bool = False) -> dict:
             for fam, cols in FAMILIES.items()
         },
     }
+    if DEPTH_ASOF_STATS:
+        manifest["depth_asof"] = {str(y): v for y, v in sorted(DEPTH_ASOF_STATS.items())}
     np.savez_compressed(
         DATA / "train_matrix.npz",
         Z=Xa, mask=Ma, Y=Ya, Y_usage=Ua,

@@ -18,13 +18,13 @@ from __future__ import annotations
 import json
 import math
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 import numpy as np
 
 try:
-    from sklearn.linear_model import Ridge
     from sklearn.ensemble import HistGradientBoostingRegressor
+    from sklearn.linear_model import Ridge
+
     SKLEARN_AVAILABLE = True
 except Exception:
     SKLEARN_AVAILABLE = False
@@ -123,11 +123,12 @@ class GridironZeroDeps:
         Xf[nan_idx] = np.take(col_med, nan_idx[1])
         return Xf
 
-    def five_fold_cv(self, X_scaled: np.ndarray, y: np.ndarray, groups: List[str]):
+    def five_fold_cv(self, X_scaled: np.ndarray, y: np.ndarray, groups: list[str]):
         # uses sklearn GroupKFold if available else simple KFold
         if SKLEARN_AVAILABLE:
-            from sklearn.model_selection import GroupKFold
             from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+            from sklearn.model_selection import GroupKFold
+
             gkf = GroupKFold(n_splits=5)
             ridge_folds = []
             gb_folds = []
@@ -139,7 +140,7 @@ class GridironZeroDeps:
                 mae = mean_absolute_error(y[va], yp)
                 rmse = math.sqrt(mean_squared_error(y[va], yp))
                 r2 = r2_score(y[va], yp)
-                ridge_folds.append(dict(mae=float(mae), rmse=float(rmse), r2=float(r2)))
+                ridge_folds.append({"mae": float(mae), "rmse": float(rmse), "r2": float(r2)})
                 # GB
                 gb = HistGradientBoostingRegressor(max_iter=120, learning_rate=0.1, max_depth=6, random_state=13)
                 gb.fit(X_scaled[tr], y[tr])
@@ -147,7 +148,7 @@ class GridironZeroDeps:
                 mae2 = mean_absolute_error(y[va], yp2)
                 rmse2 = math.sqrt(mean_squared_error(y[va], yp2))
                 r22 = r2_score(y[va], yp2)
-                gb_folds.append(dict(mae=float(mae2), rmse=float(rmse2), r2=float(r22)))
+                gb_folds.append({"mae": float(mae2), "rmse": float(rmse2), "r2": float(r22)})
             return ridge_folds, gb_folds
         else:
             # pure numpy Ridge via normal equations
@@ -173,7 +174,7 @@ class GridironZeroDeps:
                 ss_tot = np.sum((yv - np.mean(yv)) ** 2)
                 ss_res = np.sum((yv - yp) ** 2)
                 r2 = 1 - ss_res / (ss_tot + 1e-9)
-                folds.append(dict(mae=float(mae), rmse=float(rmse), r2=float(r2)))
+                folds.append({"mae": float(mae), "rmse": float(rmse), "r2": float(r2)})
             return folds, folds  # second = same as first when sklearn unavailable
 
 

@@ -125,8 +125,9 @@ def train_mtnn_one_seed(prep: dict, seed: int, epochs: int, patience: int, loss_
     """Train one GridironMTNN seed. Returns (preds_test_raw, per_target_val_mse, diag)."""
     import torch
     import torch.nn as nn
-    from model import DEFAULT_FAM_DIMS, MTNN, count_params  # repo pipeline/model.py
     from train_mtnn import family_slices_from_dims  # repo pipeline/train_mtnn.py
+
+    from model import DEFAULT_FAM_DIMS, MTNN, count_params  # repo pipeline/model.py
 
     torch.set_num_threads(2)
     torch.manual_seed(seed)

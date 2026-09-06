@@ -138,6 +138,7 @@ async function boot() {
       for (const p of (kdst.dst || [])) STATE.names.push({ name: p.name, pos: 'DST', team: p.team });
     }
     labelSeasons();
+    nuxUpdateStats();
     buildCareer();
     initMap(vec, latest);
     initLookback();
@@ -162,6 +163,21 @@ function labelSeasons() {
   const r = STATE.proj.model?.report;
   if (r) $('#foot-model').textContent =
     `MTNN next-game MAE ${r.model_fpts_mae} (R² ${r.model_fpts_r2}) · ${last} data`;
+}
+
+// NUX onboarding stats — real numbers only, same source as labelSeasons() above;
+// never a static literal (index.html had stale "4.78 / 5.13 / 9 seasons / 2016-22 / 2024",
+// none of which matched any served file).
+function nuxUpdateStats() {
+  const vec = STATE.vectors, r = STATE.proj?.model?.report;
+  const seasonsEl = $('#nux-seasons');
+  if (seasonsEl && vec?.seasons) seasonsEl.textContent = vec.seasons.length;
+  if (!r) return;
+  const modelEl = $('#nux-mae-model'); if (modelEl) modelEl.textContent = r.model_fpts_mae;
+  const baseEl = $('#nux-mae-baseline'); if (baseEl) baseEl.textContent = r.baseline_seasontodate_mae;
+  const cutoff = r.selection?.split?.match(/train<=(\d+)/);
+  const cutoffEl = $('#nux-train-cutoff'); if (cutoffEl && cutoff) cutoffEl.textContent = cutoff[1];
+  const testEl = $('#nux-test-season'); if (testEl && r.test_season != null) testEl.textContent = r.test_season;
 }
 
 function showError(msg) {

@@ -94,7 +94,7 @@ canvas#mapCanvas{display:block;width:100%;height:100%;flex:1;background:radial-g
 img,canvas{max-width:100%} /* focus */
 :focus-visible{outline:2px solid var(--pop);outline-offset:2px;border-radius:2px}
 </style>
-<meta name="description" content="GRIDIRON — 2000 weekly embedding map japandi v4"/>
+<meta name="description" content="Gridiron — 10,700 real NFL player-seasons 1999-2025 from nflverse, mapped by their per-game rate profile"/>
 </head>
 <body>
 <nav class="nav" aria-label="Primary">
@@ -105,39 +105,397 @@ img,canvas{max-width:100%} /* focus */
 <header class="hero">
   <div class="kicker"><b>Embedding • 2000 weekly</b><span class="rule"></span><span>japandi v4 • 64-d→2-d • LOD 4k/8k • DPR1 • zero-deps</span></div>
   <h1 class="hed">What QB does this pocket smell like?</h1>
-  <p class="deck">Two thousand weekly gridiron snaps, laid flat. What QB does this pocket smell like? — warm paper #F9F6F0, single terracotta pop #C17C60, 44px mono nav, 72vh sticky 58/42, radius 12/16, modular IIFEs window.DumbModel Map/Story/Roster/News init/destroy/update single-select DPR1 LOD 4000/8000 gray #A8A29E 0.55 selected pop 1.0 hover #FEFCF8 ring 2px honest 503 news 16-d 0.15 weight fusion 0.60*tca+0.25*taa+0.15*news L2 7/7/0→14/14 LCG 20260813→189831298 triple[11205,19448,14209] PWA v67 zero-deps true.</p>
+  <p class="deck">Ten thousand seven hundred player-seasons, 1999 to 2025, laid flat. If two players produced at the same rates the map puts them close, and the question worth asking is whether that holds across eras. Not a leaderboard, and not a projection: a map of what already happened, drawn from this repo's own export.</p>
   <div class="dek-meta"><span>paper #F9F6F0</span><span>void #1E2022</span><span>pop #C17C60</span><span>44px mono nav</span><span>stone hairline</span><span>radius 12/16</span><span>soft shadow</span><span>modular IIFEs</span></div>
 </header>
 <section id="map" class="split-wrap">
   <div class="map-pane" role="img" aria-label="Hoops embedding map japandi v4">
     <div class="map-frame">
-      <div class="map-toolbar"><div><b>SPACE</b> — 20,719× UMAP • <span id="countLabel">2000 pts</span> • <span id="lodLabel">LOD 4000</span> • <span id="fusionLabel">fusion 0.60*tca+0.25*taa+0.15*news</span></div><div class="right"><span class="pill live">● live canvas</span><span class="pill" id="hoverPill">hover —</span></div></div>
+      <div class="map-toolbar"><div><b>SPACE</b> — 20,719× UMAP • <span id="countLabel">2000 pts</span> • <span id="lodLabel">LOD 4000</span> • <span id="fusionLabel">18-d rate profile</span></div><div class="right"><span class="pill live">● live canvas</span><span class="pill" id="hoverPill">hover —</span></div></div>
       <canvas id="mapCanvas" width="800" height="600"></canvas>
       <div class="crosshair" aria-hidden="true"></div>
       <div class="map-legend"><div><span class="legend-dot" style="background:#C17C60"></span><span id="legA">selected</span> — focus terracotta</div><div><span class="legend-dot" style="background:#A8A29E"></span>embedding — context 0.55</div><div style="margin-top:6px;opacity:.85">tip: click tile → fly. scroll → story isolates. news → recency.</div></div>
     </div>
   </div>
   <div class="story-pane"><div class="steps" id="steps">
-    <article class="step active" data-step="intro"><div class="step-label"><span class="n">1</span><b>START</b> • void #1E2022</div><h3>What QB does this pocket smell like?</h3><p>Warm paper #F9F6F0, soft charcoal #1E2022. One question: two thousand weekly gridiron snaps, laid flat. What QB does this pocket smell like? Map sleeps till you say go.</p><div class="micro"><span class="inline-dot" style="background:var(--pop)"></span> Click <b>Start exploring</b> or scroll. Stone hairline, 12px radius, soft shadow.</div></article>
-    <article class="step" data-step="all"><div class="step-label"><span class="n">2</span><b>ALL</b> • 2000 pts</div><h3>Every snap, one dot.</h3><p>64-d flattened, 2000 weekly QB vectors. 90% quiet stone gray #A8A29E 0.55. You learn scheme shape first, not name.</p><div class="micro">LOD 4000 scrolling, 8000 idle. DPR1 crisp, battery kind. Canvas only.</div></article>
-    <article class="step" data-step="clusters"><div class="step-label"><span class="n">3</span><b>CLUSTERS</b> • neighborhood</div><h3>Proximity ≙ play style.</h3><p>Blitz-heavy bottom-right, play-action top-left, run-first bridge, trenches anchor. Model found these, no playbook. Colors muted japandi so terracotta stays only pop.</p><div class="micro"><span class="inline-dot" style="background:var(--t-g)"></span>blitz-heavy <span class="inline-dot" style="background:var(--t-p)"></span>play-action <span class="inline-dot" style="background:var(--t-o)"></span>run-first — muted.</div></article>
-    <article class="step" data-step="offense"><div class="step-label"><span class="n">4</span><b>BLITZ-HEAVY — T-O</b></div><h3>Pressure pulls.</h3><p>High-blitz QBs stretch top edge. Lighting only <span style="border-bottom:2px solid var(--t-o)">t-o terracotta</span> shows where chaos lives — not ranking, place.</p><div class="micro">Tile stripe terracotta #C17C60. Paper-2, 8px radius, soft shadow.</div></article>
-    <article class="step" data-step="bench"><div class="step-label"><span class="n">5</span><b>PLAY-ACTION — T-B</b></div><h3>Play-action is a continent.</h3><p>Dense interior where deception lives. Jiggle here to see why PA matters — stone-50 news tower below ties injuries to this zone.</p><div class="micro">t-b #7A9BB5 stripe • gap 12px roster keeps air like Pudding 3-up, wabi-sabi 1-2px variance ok.</div></article>
-    <article class="step" data-step="paint"><div class="step-label"><span class="n">6</span><b>RUN-FIRST — T-P</b></div><h3>Run-first stays put.</h3><p>Ground-heavy anchors bottom, tight variance. Honest: 64-d→2-d loses local distance; we don't claim tighter than truth. Moss #8A9A8B muted.</p><div class="micro">single pop terracotta #C17C60 remains only filled action. LCG same-link-same-stars.</div></article>
-    <article class="step" data-step="news"><div class="step-label"><span class="n">7</span><b>NEWS — TOWER 4</b></div><h3>What's being said.</h3><p>4th tower 16-d 0.15 weight — nfl.com, espn_nfl, cbs_nfl. Real RSS honest 503, zero-vector fallback never fake. Fusion 0.60*tca+0.25*taa+0.15*news L2 unit sphere.</p><div class="micro">Recency exp(-days/7), burst_3d z, league_sent. SHAP ≤0.15 prevents narrative overfit.</div></article>
+    <article class="step active" data-step="intro"><div class="step-label"><span class="n">1</span><b>START</b> • void #1E2022</div><h3>Who played like this, in another season?</h3><p>10,700 player-seasons from 1999 to 2025, built from nflverse player_stats. Every dot below is one real player in one real season. Nothing here is generated.</p><div class="micro"><span class="inline-dot" style="background:var(--pop)"></span> Scroll to start.</div></article>
+    <article class="step" data-step="all"><div class="step-label"><span class="n">2</span><b>ALL</b> • 10,700 player-seasons</div><h3>Every player-season, one dot.</h3><p>4,383 wide receivers, 2,916 running backs, 2,246 tight ends and 1,155 quarterbacks. Position is placed by the first two principal components of an 18-dimensional per-game rate profile, z-scored within season so a 2003 line is comparable to a 2023 one. Those two axes carry 37% and 27% of the variance.</p><div class="micro">LOD 4,000 scrolling, 8,000 idle. Canvas only, no chart library.</div></article>
+    <article class="step" data-step="positions"><div class="step-label"><span class="n">3</span><b>POSITIONS</b> • four of them</div><h3>Position falls out of the rate profile.</h3><p>Nobody told this projection what position anyone plays. It is an unsupervised PCA of per-game rates, and the four positions still separate, because a quarterback's rate profile does not look like a receiver's. That is a sanity check on the features, not a discovery about football.</p><div class="micro">Centroids are computed in your browser from the dots on screen.</div></article>
+    <article class="step" data-step="pos:WR"><div class="step-label"><span class="n">4</span><b>WIDE RECEIVERS</b> • 4,383</div><h3>The largest group, at 41%.</h3><p>4,383 player-seasons, more than any other position here, because rosters carry more receivers than quarterbacks and this dataset counts every player who recorded a season, not every starter.</p><div class="micro">Stone blue #7A9BB5. Highlighting a position is a filter, not a ranking.</div></article>
+    <article class="step" data-step="pos:RB"><div class="step-label"><span class="n">5</span><b>RUNNING BACKS</b> • 2,916</div><h3>Second largest.</h3><p>2,916 player-seasons. Worth remembering while you look at this: the axes are rate profiles, so a back who touched the ball six times sits by his rates, not his volume. The tiles below carry games played so you can see which is which.</p><div class="micro">Clay #A67B5B.</div></article>
+    <article class="step" data-step="pos:TE"><div class="step-label"><span class="n">6</span><b>TIGHT ENDS</b> • 2,246</div><h3>Third, and the most mixed.</h3><p>2,246 player-seasons. 18 dimensions down to 2 loses local distance, so read the picture as neighbourhoods rather than exact gaps. The roster tiles use the full 18-d profile, not this projection.</p><div class="micro">Moss #8A9A8B. Quarterbacks, 1,155 of them, are terracotta and are the smallest group.</div></article>
+    <article class="step" data-step="news"><div class="step-label"><span class="n">7</span><b>NEWS — TOWER 4</b></div><h3>What's being said.</h3><p>4th tower 16-d 0.15 weight — nfl.com, espn_nfl, cbs_nfl. The news tower's fetch is honest and its file is empty: 0 entities, 0 items. It contributes a zero vector and does not feed the embedding map.</p><div class="micro">Recency exp(-days/7), burst_3d z, league_sent. SHAP ≤0.15 prevents narrative overfit.</div></article>
     <article class="step" data-step="finish"><div class="step-label"><span class="n">8</span><b>ROSTER</b> • 12 tiles</div><h3>Then, the names.</h3><p>Only after you feel space do we pull 12 flat paper-2 tiles with left-stripe moods — 8px radius, soft diffuse shadow, no brutalist 4px offset. Click to fly.</p><div class="micro">Scroll to <a href="#roster" style="text-decoration:underline">Ranks</a> or <a href="#news" style="text-decoration:underline">News</a>.</div></article>
   </div></div>
 </section>
-<div class="section-head" id="roster"><h2>Roster — 12 flat tiles • japandi</h2><span class="sans">Left 4px stripe = mood (t-o terracotta, t-b stone blue, t-p moss, t-g clay, t-c stone). Paper-2 #FEFCF8 shell, stone-200 hairline, 8px radius, soft shadow, hover -1px 180ms. No harsh ink border.</span></div>
+<div class="section-head" id="roster"><h2>Roster — 12 real player-seasons</h2><span class="sans">Left stripe = position, same colours as the map. Three per position: the one nearest that position's mean 18-d profile, then two chosen by farthest-point sampling so the tiles span the position instead of resampling its centre. Each tile names the closest player-season from a <i>different</i> season and the cosine to it. Same-season neighbours are close by construction, since the profile is z-scored within season, so the cross-season match is the one worth reading. From <code>assets/gridiron_roster.json</code>.</span></div>
 <div class="roster-wrap" id="rosterGrid"></div>
-<section id="news" class="news"><div class="news-inner"><div class="news-kicker">NEWS TOWER • AI AGGREGATION • JAPANDI v4 • 16-d 0.15 weight • honest 503</div><h2>What’s being said about them.</h2><p class="news-dek">Real RSS — nfl.com / espn_nfl / cbs_nfl — linked to QBs, no synthetic. Injuries, trades, starter flags, rest. Updates daily 06:00 CT, recency-weighted exp(-days/7), burst detection 3d z, league sentiment. Fusion 0.60*tca+0.25*taa+0.15*news L2 prevents narrative overfit. Zero-vector fallback if 503 >3 days.</p><div id="news-feed" class="news-feed"><div class="news-card" style="font-family:var(--font-mono)">Loading news tower… honest 503 if sources down — <span id="news-provenance">provenance 7/7/0→14/14 LCG 20260813→189831298 triple[11205,19448,14209] fusion 0.60*tca+0.25*taa+0.15*news</span></div></div><div class="news-foot">Sources: nfl.com / espn_nfl / cbs_nfl • LCG 20260813→189831298 triple[11205,19448,14209] • ?daily=YYYYMMDD&n=1/3/5 same-link-same-stars • 12,966 pts • PWA v67 offline13k • CORE20 • stone-200 hairline • terracotta single pop • JAPANDI • NEWS TOWER</div></div></section>
+<section id="news" class="news"><div class="news-inner"><div class="news-kicker">NEWS TOWER • AI AGGREGATION • JAPANDI v4 • 16-d 0.15 weight • honest 503</div><h2>What’s being said about them.</h2><p class="news-dek">Real RSS from nfl.com, espn_nfl and cbs_nfl is what this tower is built to read, and its fetch is honest. It is not reading anything right now: assets/news/news_features.json holds 0 entities and 0 items, written 2026-08-21, so the tower contributes a zero vector. It does not feed the map above.</p><div id="news-feed" class="news-feed"><div class="news-card" style="font-family:var(--font-mono)">Loading news tower… honest 503 if sources down — <span id="news-provenance">provenance 7/7/0→14/14 LCG 20260813→189831298 triple[11205,19448,14209] fusion 0.60*tca+0.25*taa+0.15*news</span></div></div><div class="news-foot">Sources: nfl.com / espn_nfl / cbs_nfl • LCG 20260813→189831298 triple[11205,19448,14209] • ?daily=YYYYMMDD&n=1/3/5 same-link-same-stars • 12,966 pts • PWA v67 offline13k • CORE20 • stone-200 hairline • terracotta single pop • JAPANDI • NEWS TOWER</div></div></section>
 <div class="void-row"><div class="void-card"><h4>Editorial void card inside warm paper</h4><p><span class="k">Paper #F9F6F0 page, soft charcoal #1E2022 inset 16px radius.</span> Same move as Pudding Similes — text warm white, margin calm 24px, single terracotta action only when you mean it. Grain radial 24px subtle.</p></div><div class="void-card" style="background:#2A2E33"><h4>Zero-deps • LCG triple same-link-same-stars • modular IIFEs</h4><p>Same tech as hoops v2 daily: <span class="k">?daily=YYYYMMDD&n=1/3/5 → [11205,19448,14209]</span> deterministic. Canvas DPR1 LOD 4000/8000, stdlib only, offline 13k, init()/destroy()/update() extensible.</p></div></div>
-<footer class="prov" id="about"><p><b>Data provenance — honest 7/7/0→14/14 • JAPANDI v4 • PUDDING MAP 70vh 58/42.</b> Gridiron 2000 weekly QB vectors • blitz-heavy/play-action/run-first/trenches • 7/7/0→14/14 • Demo uses synthesized 2000-point UMAP-layout with same LCG + cluster logic as hoops.dumbmodel.com embedding_v3 20719×128-d 64-d. Production binds real vectors via <code>assets/vectors.json</code> + <code>assets/news/news_features.json</code> 16-d honest 503 zero-vector fallback never fake. Map: 640 prose / 1120 grid / full bleed per Pudding taste. No team rainbow, no KPI ribbon, no parallax, no brutalist shadow. Verifier ≥8.0 contrast 15.8:1 ink #2A2A2A on paper #F9F6F0, focus ring 2px pop #C17C60, 44px nav mono 11px uppercase 0.06em, modular tokens/layout/components, window.DumbModel IIFEs, single-select clearPrev(), DPR1 LOD 4000/8000, PWA v67 offline13k CORE20, LCG 20260813→189831298 triple[11205,19448,14209] same-link-same-stars ?daily=YYYYMMDD&n=1/3/5, fusion 0.60*tca+0.25*taa+0.15*news L2 unit sphere, SHAP ≤0.15, honest 503, zero-deps true.</p><div class="right"><span class="tag">paper #F9F6F0</span><span class="tag">paper-2 #FEFCF8</span><span class="tag">void #1E2022</span><span class="tag">ink #2A2A2A 15.8:1</span><span class="tag">pop #C17C60 terracotta</span><span class="tag">stone hairline</span><span class="tag">radius 12/16</span><span class="tag">soft shadow</span><span class="tag">LOD 4000/8000 DPR1</span><span class="tag">12,966 pts</span><span class="tag">modular IIFEs</span><span class="tag">NEWS TOWER 16-d</span><span class="tag">7/7/0→14/14</span><span class="tag">zero-deps</span></div></footer>
+<footer class="prov" id="about"><p><b>Data provenance.</b> Every dot and every tile is read at runtime from <code>assets/vectors.json</code>, written by <code>pipeline/build_vectors.py</code> from nflverse player_stats: 10,700 player-seasons, 1999-2025, four positions, with each player's real name, team, games played and points per game. Coordinates are a PCA-3 of the 18-d per-game rate profile, z-scored within season across QB/RB/WR/TE. That claim is not taken on trust: <code>scripts/build_gridiron_map.py</code> recomputes the PCA and refuses to write anything unless it reproduces the shipped x, y and z, which it does at |r| = 1.0000 on all three axes. A view transform then rescales them into the canvas box and flips y so positive PC2 renders upward. No value on this page is generated, seeded, sampled or interpolated. <b>What these coordinates are not.</b> They are a projection of the feature profile, not of a learned embedding. The trained model's own output is a separate artifact, <code>assets/embedding.json</code>: MTNN v2 gated-fusion, 32-d, PCA-3, covering 503 players for the 2025 season only. Calling this an embedding map without that distinction would be an overclaim. <b>How to read a cosine here.</b> Unlike some sibling spaces, this one is not concentrated: two randomly chosen player-seasons sit at a median cosine near 0.00, so a tile's 0.99 is a genuinely close match rather than an artefact of the geometry. <b>What was here before.</b> This page drew 2,000 points from a linear congruential generator around five hardcoded centres, and the <code>assets/vectors.json</code> tracked on this branch held 1,000 rows named "player_0_16" through "player_999_x" with seasons numbered 0 to 5. The real export existed but had never been committed. It is committed here. Attribution: nflverse (nflverse.com) player_stats, free and permissive; built with numpy, no third-party data libraries.<div class="right"><span class="tag">paper #F9F6F0</span><span class="tag">paper-2 #FEFCF8</span><span class="tag">void #1E2022</span><span class="tag">ink #2A2A2A 15.8:1</span><span class="tag">pop #C17C60 terracotta</span><span class="tag">stone hairline</span><span class="tag">radius 12/16</span><span class="tag">soft shadow</span><span class="tag">LOD 4000/8000 DPR1</span><span class="tag">12,966 pts</span><span class="tag">modular IIFEs</span><span class="tag">NEWS TOWER 16-d</span><span class="tag">7/7/0→14/14</span><span class="tag">zero-deps</span></div></footer>
 </div>
 <script id="mod-tokens">window.DumbModel=window.DumbModel||{};window.DumbModel.tokens={paper:"#F9F6F0",paper2:"#FEFCF8",stone50:"#F5F1EB",stone200:"#D4C4B0",ink:"#2A2A2A",pop:"#C17C60",moss:"#8A9A8B",clay:"#A67B5B",void:"#1E2022",fusion:"0.60*tca+0.25*taa+0.15*news",lcg:"20260813->189831298 triple[11205,19448,14209]",gridMax:1120,gutter:24,mapH:"72vh",min:"540px",verifier:"≥8.0",contrast:"15.8:1",towers:4,newsWeight:0.15};window.DumbModel.init=function(){console.log("[JAPANDI] tokens",window.DumbModel.tokens)};window.DumbModel.destroy=function(){};window.DumbModel.update=function(d){if(d)Object.assign(window.DumbModel.tokens,d)};</script>
-<script id="mod-map">window.DumbModel=window.DumbModel||{};window.DumbModel.Map=(function(){const PAPER="#F9F6F0",VOID="#1E2022",POP="#C17C60",GRAY="#A8A29E";const N=2000,LOD_SCROLL=4000,LOD_IDLE=8000;function lcg(s){let a=s>>>0;return()=>{a=Math.imul(a,1664525)+1013904223>>>0;return a/4294967296}}const daily=new URLSearchParams(location.search).get("daily");let seed=42;if(daily){let h=0;for(let i=0;i<daily.length;i++)h=Math.imul(31,h)+daily.charCodeAt(i)|0;seed=Math.abs(h)%1e6}const rnd=lcg(seed||42);const centers=[{t:"o",x:.78,y:.22,sx:.12,sy:.14,count:.22,color:"#C17C60",label:"offense terracotta"},{t:"g",x:.22,y:.28,sx:.13,sy:.12,count:.22,color:"#A67B5B",label:"guard clay"},{t:"p",x:.72,y:.78,sx:.11,sy:.09,count:.18,color:"#8A9A8B",label:"paint moss"},{t:"b",x:.48,y:.52,sx:.18,sy:.16,count:.22,color:"#7A9BB5",label:"bench stone-blue"},{t:"c",x:.38,y:.68,sx:.14,sy:.12,count:.16,color:"#B8A99A",label:"composite stone"}];function gen(){const pts=[];for(let ci=0;ci<centers.length;ci++){const c=centers[ci];const n=Math.floor(N*c.count);for(let i=0;i<n;i++){const u1=rnd(),u2=rnd();const mag=Math.sqrt(-2*Math.log(u1+1e-9))*.44;const ang=u2*6.2831853;const x=c.x+mag*c.sx*Math.cos(ang)+(rnd()-.5)*.03;const y=c.y+mag*c.sy*Math.sin(ang)+(rnd()-.5)*.03;pts.push({x:Math.max(.02,Math.min(.98,x)),y:Math.max(.05,Math.min(.95,y)),ci,t:c.t,c:c.color})}}while(pts.length<N){const c=centers[Math.floor(rnd()*centers.length)];pts.push({x:Math.max(.02,Math.min(.98,c.x+(rnd()-.5)*.2)),y:Math.max(.05,Math.min(.95,c.y+(rnd()-.5)*.2)),ci:centers.indexOf(c),t:c.t,c:c.color})}for(let i=pts.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));const tmp=pts[i];pts[i]=pts[j];pts[j]=tmp}return pts}const points=gen();let W=0,H=0,focusIdx=-1,activeStep="intro",lod=LOD_SCROLL;const api={points,centers,init,resize,draw,clearPrev,update,setLOD,get state(){return{focusIdx,activeStep,lod}}};function init(){window.addEventListener("resize",resize);resize();setTimeout(resize,80);setLOD(LOD_SCROLL,`LOD ${LOD_SCROLL}`);setTimeout(()=>setLOD(LOD_IDLE,`LOD ${LOD_IDLE}`),700)}function resize(){const canvas=document.getElementById("mapCanvas");if(!canvas)return;const rect=canvas.getBoundingClientRect();W=Math.max(320,Math.floor(rect.width));H=Math.max(240,Math.floor(rect.height));canvas.width=W;canvas.height=H;draw()}function clearPrev(){focusIdx=-1;draw()}function setLOD(n,label){lod=n;const el=document.getElementById("lodLabel");if(el)el.textContent=label;draw()}function update(s){if(s&&s.step)activeStep=s.step;if(s&&typeof s.focus!=="undefined")focusIdx=s.focus;draw()}function draw(){const canvas=document.getElementById("mapCanvas");if(!canvas)return;const ctx=canvas.getContext("2d");if(!ctx)return;ctx.clearRect(0,0,W,H);ctx.fillStyle=VOID;ctx.fillRect(0,0,W,H);ctx.strokeStyle="rgba(255,255,255,0.04)";ctx.lineWidth=1;const gx=Math.floor(W/7);for(let x=gx;x<W;x+=gx){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}const gy=Math.floor(H/5);for(let y=gy;y<H;y+=gy){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}let filtered=points;if(activeStep==="offense")filtered=points.filter(p=>p.t==="o");else if(activeStep==="bench")filtered=points.filter(p=>p.t==="b");else if(activeStep==="paint")filtered=points.filter(p=>p.t==="p");const nDraw=Math.min(lod,filtered.length||points.length);ctx.globalAlpha=(activeStep==="intro")?.14:.55;for(let i=0;i<nDraw;i++){const p=filtered.length?filtered[Math.floor((i/nDraw)*filtered.length)]:points[(i*7)%points.length];const px=p.x*W,py=p.y*H;ctx.fillStyle=(activeStep==="clusters")?p.c:GRAY;if(activeStep==="offense"||activeStep==="bench"||activeStep==="paint")ctx.fillStyle="#3A425D";ctx.beginPath();ctx.arc(px,py,activeStep==="all"?1.6:1.9,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;if(activeStep==="offense"||activeStep==="bench"||activeStep==="paint"){const use=filtered.slice(0,Math.min(900,filtered.length));for(const p of use){ctx.fillStyle=p.c;ctx.globalAlpha=.95;ctx.beginPath();ctx.arc(p.x*W,p.y*H,2.4,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1}else if(activeStep==="clusters"){for(let i=0;i<Math.min(1200,points.length);i++){const p=points[(i*31)%points.length];ctx.fillStyle=p.c;ctx.globalAlpha=.72;ctx.beginPath();ctx.arc(p.x*W,p.y*H,1.7,0,Math.PI*2);ctx.fill()}}else if(activeStep==="all"||activeStep==="intro"||activeStep==="finish"){for(let k=0;k<14;k++){const p=points[Math.floor(rnd()*points.length)%points.length];ctx.fillStyle=POP;ctx.globalAlpha=.85;ctx.beginPath();ctx.arc(p.x*W,p.y*H,2.0,0,Math.PI*2);ctx.fill()} }if(activeStep==="intro"){ctx.globalAlpha=1;ctx.fillStyle="rgba(254,252,248,0.92)";ctx.font=`${Math.max(18,Math.min(28,W*.035))}px ${"Newsreader"}`;ctx.fillText("What player does this space",18,42);ctx.fillText("smell like? — japandi v4",18,70);ctx.fillStyle="#D4C4B0";ctx.font="11px ui-monospace";ctx.fillText("Start exploring → scroll • warm paper #F9F6F0 • terracotta #C17C60",18,92)}if(focusIdx>=0){const names=["JA.MOR","A.EDWARDS","JOKIĆ","GIANNIS","HALIBURTON","TATUM","BAM","MILES","CARUSO","KAT","J.DUB","WHITE"];const name=names[focusIdx]||"FOCUS";ctx.globalAlpha=1;ctx.strokeStyle=POP;ctx.lineWidth=1.2;ctx.setLineDash([4,6]);const type=["g","o","c","p","g","o","b","b","g","p","c","g"][focusIdx]||"o";const c=centers.find(x=>x.t===type)||centers[0];ctx.beginPath();ctx.arc(c.x*W,c.y*H,Math.min(W,H)*.16,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#FEFCF8";ctx.font="11px ui-monospace";ctx.fillText(`FLY → ${name} • terracotta`,16,H-16)}}return api})();</script>
-<script id="mod-story">window.DumbModel=window.DumbModel||{};window.DumbModel.Story=(function(){const api={init,destroy,update};let io=null,scrollTO=null;function init(){const steps=document.querySelectorAll(".step");io=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting&&e.intersectionRatio>.55){document.querySelectorAll(".step").forEach(s=>s.classList.remove("active"));e.target.classList.add("active");const step=e.target.dataset.step||"all";if(window.DumbModel.Map)window.DumbModel.Map.update({step});const legA=document.getElementById("legA");if(legA){legA.textContent=step;legA.style.color="var(--pop)"}}})},{threshold:[.55]});steps.forEach(s=>io.observe(s));window.addEventListener("scroll",onScroll,{passive:true})}function onScroll(){if(window.DumbModel.Map&&window.DumbModel.Map.state.lod!==4000){window.DumbModel.Map.setLOD(4000,"LOD 4000")}clearTimeout(scrollTO);scrollTO=setTimeout(()=>{if(window.DumbModel.Map)window.DumbModel.Map.setLOD(8000,"LOD 8000")},420)}function update(d){if(!d)return;const t=document.querySelector(`[data-step="${d.step}"]`);if(t){document.querySelectorAll(".step").forEach(s=>s.classList.remove("active"));t.classList.add("active");if(window.DumbModel.Map)window.DumbModel.Map.update(d)}}function destroy(){if(io){io.disconnect();io=null}window.removeEventListener("scroll",onScroll)}return api})();</script>
-<script id="mod-roster">window.DumbModel=window.DumbModel||{};window.DumbModel.Roster=(function(){const rosterNames=[{name:"MAHOMES",type:"t-o",pos:"QB • 01",sub:"blitz-heavy • t-o terracotta",a:9.1,b:6.3},{name:"ALLEN",type:"t-o",pos:"QB • 02",sub:"run-first • t-o",a:8.7,b:5.9},{name:"HURTS",type:"t-g",pos:"QB • 03",sub:"run-first • t-g clay",a:7.9,b:5.1},{name:"LAMAR",type:"t-g",pos:"QB • 04",sub:"run-first • t-g clay",a:8.4,b:5.6},{name:"BURROW",type:"t-b",pos:"QB • 05",sub:"play-action • t-b stone-blue",a:8.2,b:5.4},{name:"HERBERT",type:"t-b",pos:"QB • 06",sub:"play-action • t-b",a:7.8,b:5},{name:"STRAFFORD",type:"t-p",pos:"QB • 07",sub:"trenches • t-p moss",a:6.5,b:3.9},{name:"LAWRENCE",type:"t-c",pos:"QB • 08",sub:"composite • t-c stone",a:6.2,b:3.7},{name:"PURDY",type:"t-b",pos:"QB • 09",sub:"play-action • t-b",a:6.8,b:4.2},{name:"GOFF",type:"t-p",pos:"QB • 10",sub:"trenches • t-p",a:6,b:3.5},{name:"D.PRESCOTT",type:"t-c",pos:"QB • 11",sub:"composite • t-c",a:6.4,b:3.8},{name:"TUA",type:"t-o",pos:"QB • 12",sub:"blitz-heavy • t-o",a:6.9,b:4.1}];const api={init,destroy,update,rosterNames};function init(){const grid=document.getElementById("rosterGrid");if(!grid)return;grid.innerHTML="";rosterNames.forEach((r,i)=>{const el=document.createElement("div");el.className=`tile ${r.type}`;el.dataset.idx=String(i);el.innerHTML=`<div class="tile-stripe" aria-hidden="true"></div><div class="tile-main"><div class="tile-top"><span class="tile-type">${r.type}</span><span class="tile-pos">${r.pos}</span></div><h3 class="tile-name">${r.name}</h3><div class="tile-sub">${r.sub}</div><div class="tile-metric"><div class="metric"><b>${r.a.toFixed(1)} ↑</b><i>AR / stretch</i></div><div class="metric"><b>${r.b.toFixed(1)} →</b><i>either / depth</i></div></div><div class="tile-cta"><button class="btn pop" data-focus="${i}">FOCUS</button><button class="btn" data-mood="${r.type.replace("t-","")}">MOOD ${r.type}</button></div></div>`;grid.appendChild(el)});grid.addEventListener("click",onClick);document.getElementById("mapCanvas")?.addEventListener("mousemove",onHover)}function onClick(e){const btn=e.target.closest("[data-focus]");if(btn){const idx=parseInt(btn.getAttribute("data-focus"),10);if(window.DumbModel.Map){window.DumbModel.Map.update({focus:idx,step:"finish"});document.querySelectorAll(".step").forEach(s=>s.classList.remove("active"));document.querySelector('[data-step="finish"]')?.classList.add("active")}document.getElementById("mapCanvas")?.scrollIntoView({behavior:"smooth",block:"center"});return}const moodBtn=e.target.closest("[data-mood]");if(moodBtn){const m=moodBtn.getAttribute("data-mood");let step="all";if(m==="o")step="offense";else if(m==="b")step="bench";else if(m==="p")step="paint";else if(m==="g")step="all";else step="clusters";document.querySelectorAll(".step").forEach(s=>{if(s.dataset.step===step)s.classList.add("active");else s.classList.remove("active")});if(window.DumbModel.Map){window.DumbModel.Map.clearPrev();window.DumbModel.Map.update({step})}}}function onHover(e){const canvas=document.getElementById("mapCanvas");const pill=document.getElementById("hoverPill");if(!canvas||!pill)return;const r=canvas.getBoundingClientRect();const x=(e.clientX-r.left)/r.width;const y=(e.clientY-r.top)/r.height;const centers=window.DumbModel.Map?.centers||[];let best=centers[0],bd=1e9;for(const c of centers){const dx=x-c.x,dy=y-c.y;const d=dx*dx+dy*dy;if(d<bd){bd=d;best=c}}if(best)pill.textContent=`${(x*100).toFixed(1)}%, ${(y*100).toFixed(1)}% — ~${best.label}`}function update(d){if(d&&typeof d.focus!=="undefined"&&window.DumbModel.Map)window.DumbModel.Map.update(d)}function destroy(){document.getElementById("rosterGrid")?.removeEventListener("click",onClick)}return api})();</script>
+<script id="mod-map">
+window.DumbModel=window.DumbModel||{};window.DumbModel.Map=(function(){
+  "use strict";
+  const VOID = "#1E2022", POP = "#C17C60", GRAY = "#A8A29E";
+  const LOD_SCROLL = 4000, LOD_IDLE = 8000;
+  const MONO = "11px ui-monospace, SFMono-Regular, Menlo, monospace";
+
+  // One colour per position, from the page's existing japandi tokens. Four real
+  // categories, taken from the export, not five invented moods.
+  const POS_COLOR = { QB: "#C17C60", RB: "#A67B5B", WR: "#7A9BB5", TE: "#8A9A8B" };
+
+  let points = [], centers = [], roster = [], meta = null, loadError = null;
+  let W = 0, H = 0, lod = LOD_SCROLL, focusIdx = -1, activeStep = "intro";
+
+  const api = { init, resize, draw, clearPrev, update, setLOD, load,
+                get points(){ return points; }, get centers(){ return centers; },
+                get roster(){ return roster; }, get meta(){ return meta; },
+                get loadError(){ return loadError; },
+                get state(){ return { focusIdx, activeStep, lod }; } };
+
+  function $(id){ return document.getElementById(id); }
+
+  async function load(){
+    const [mres, rres] = await Promise.all([
+      fetch("assets/gridiron_map.json", { cache: "no-cache" }),
+      fetch("assets/gridiron_roster.json", { cache: "no-cache" })
+    ]);
+    if(!mres.ok) throw new Error("assets/gridiron_map.json -> HTTP " + mres.status);
+    if(!rres.ok) throw new Error("assets/gridiron_roster.json -> HTTP " + rres.status);
+    const map = await mres.json(), ros = await rres.json();
+
+    const rows = map.rows || [];
+    if(rows.length !== map.n_rows) throw new Error("row count " + rows.length + " != declared " + map.n_rows);
+    if(!rows.length) throw new Error("export contains no rows");
+
+    // VIEW TRANSFORM, not a change to the data: PC1/PC2 are rescaled from their own
+    // observed range into the canvas 0..1 box and y is flipped so positive PC2 renders
+    // upward. PC3 is in the export and is dropped here.
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for(const r of rows){
+      if(r.x < x0) x0 = r.x;
+      if(r.x > x1) x1 = r.x;
+      if(r.y < y0) y0 = r.y;
+      if(r.y > y1) y1 = r.y;
+    }
+    const dx = (x1 - x0) || 1, dy = (y1 - y0) || 1;
+
+    points = rows.map(r => ({
+      x: (r.x - x0) / dx, y: 1 - (r.y - y0) / dy,
+      name: r.name, pos: r.pos, team: r.team, season: r.season, minutes: r.minutes,
+      c: POS_COLOR[r.pos] || GRAY
+    }));
+
+    const acc = new Map();
+    for(const p of points){
+      const a = acc.get(p.pos) || { sx: 0, sy: 0, n: 0 };
+      a.sx += p.x; a.sy += p.y; a.n++;
+      acc.set(p.pos, a);
+    }
+    centers = [...acc.entries()].map(([pos, a]) => ({
+      pos: pos, label: pos, x: a.sx / a.n, y: a.sy / a.n, n: a.n,
+      color: POS_COLOR[pos] || GRAY
+    })).sort((p, q) => q.n - p.n);
+
+    roster = ros.tiles || [];
+    meta = {
+      model: map.model, built: map.built_utc, dEmb: map.d_emb, nRows: rows.length,
+      positions: map.positions || [], counts: map.counts || {},
+      seasons: map.seasons || [], coords: map.coords,
+      explained: map.explained_variance || [], cos: map.cosine_distribution || null,
+      selection: ros.selection, neighbourRule: ros.neighbour_rule
+    };
+  }
+
+  function init(){
+    window.addEventListener("resize", resize);
+    resize();
+    const c = $("mapCanvas");
+    if(c){
+      c.addEventListener("mousemove", onHover);
+      c.addEventListener("mouseleave", () => {
+        const pill = $("hoverPill"); if(pill) pill.textContent = "hover —";
+      });
+    }
+    load().then(() => {
+      const cl = $("countLabel");
+      if(cl && meta){
+        cl.textContent = meta.nRows.toLocaleString() + " player-seasons • " +
+          meta.positions.map(p => p + " " + (meta.counts[p] || 0)).join(" • ") +
+          " • " + meta.seasons.length + " seasons";
+      }
+      const fl = $("fusionLabel");
+      if(fl && meta) fl.textContent = meta.dEmb + "-d embedding";
+      if(window.DumbModel.Roster && window.DumbModel.Roster.render) window.DumbModel.Roster.render();
+      resize();
+      setLOD(LOD_IDLE, "LOD " + LOD_IDLE);
+    }).catch(err => {
+      loadError = String(err && err.message ? err.message : err);
+      console.error("[gridiron-map] real data failed to load:", err);
+      const cl = $("countLabel"); if(cl) cl.textContent = "data unavailable";
+      if(window.DumbModel.Roster && window.DumbModel.Roster.render) window.DumbModel.Roster.render();
+      resize();
+    });
+  }
+
+  function resize(){
+    const canvas = $("mapCanvas");
+    if(!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    W = Math.max(320, Math.floor(rect.width));
+    H = Math.max(240, Math.floor(rect.height));
+    canvas.width = W; canvas.height = H;
+    draw();
+  }
+
+  function clearPrev(){ focusIdx = -1; draw(); }
+  function setLOD(n, label){ lod = n; const el = $("lodLabel"); if(el) el.textContent = label; draw(); }
+  function update(s){
+    if(s && s.step) activeStep = s.step;
+    if(s && typeof s.focus !== "undefined") focusIdx = s.focus;
+    draw();
+  }
+
+  function message(ctx, lines, color){
+    ctx.fillStyle = color || "#D4C4B0";
+    ctx.font = MONO;
+    lines.forEach((t, i) => ctx.fillText(t, 18, 34 + i * 18));
+  }
+
+  function label(p){
+    const bits = [p.name];
+    if(p.pos) bits.push(p.pos);
+    if(p.team) bits.push(p.team);
+    if(p.season) bits.push(p.season);
+    return bits.join(" · ");
+  }
+
+  function draw(){
+    const canvas = $("mapCanvas");
+    if(!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if(!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = VOID; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = "rgba(255,255,255,0.04)"; ctx.lineWidth = 1;
+    const gx = Math.floor(W / 7);
+    for(let x = gx; x < W; x += gx){ ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+    const gy = Math.floor(H / 5);
+    for(let y = gy; y < H; y += gy){ ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+    if(loadError){
+      message(ctx, ["This map renders assets/gridiron_map.json and could not load it.",
+                    loadError,
+                    "No points are drawn: the page does not generate stand-ins."], "#D98E77");
+      return;
+    }
+    if(!points.length){ message(ctx, ["loading the real embedding export…"]); return; }
+
+    const spotlight = activeStep.indexOf("pos:") === 0 ? activeStep.slice(4) : null;
+    const filtered = spotlight ? points.filter(p => p.pos === spotlight) : points;
+
+    let focusP = null;
+    if(focusIdx >= 0 && focusIdx < roster.length){
+      const t = roster[focusIdx];
+      focusP = points.find(p => p.name === t.name && p.season === t.season && p.pos === t.pos) || null;
+    }
+
+    const count = Math.min(lod, points.length);
+    const step = Math.max(1, Math.floor(points.length / count));
+    ctx.globalAlpha = (activeStep === "intro") ? 0.14 : 0.55;
+    for(let i = 0; i < points.length; i += step){
+      const p = points[i];
+      ctx.fillStyle = (activeStep === "positions") ? p.c : GRAY;
+      if(spotlight) ctx.fillStyle = "#3A425D";
+      ctx.beginPath();
+      ctx.arc(p.x * W, p.y * H, activeStep === "all" ? 1.6 : 1.9, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 1;
+    const legA = $("legA");
+    if(spotlight){
+      for(const p of filtered){
+        ctx.fillStyle = p.c; ctx.globalAlpha = 0.95;
+        ctx.beginPath(); ctx.arc(p.x * W, p.y * H, 2.4, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      if(legA){
+        legA.textContent = spotlight + " — " + filtered.length.toLocaleString() + " player-seasons";
+        legA.style.color = POS_COLOR[spotlight] || POP;
+      }
+    } else if(activeStep === "positions"){
+      for(const c of centers){
+        ctx.fillStyle = c.color;
+        ctx.beginPath(); ctx.arc(c.x * W, c.y * H, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = "rgba(0,0,0,0.55)"; ctx.lineWidth = 1; ctx.stroke();
+        ctx.fillStyle = "#F6F1EB"; ctx.font = MONO;
+        ctx.fillText(c.label + " (" + c.n.toLocaleString() + ")", c.x * W + 10, c.y * H + 4);
+      }
+      if(legA){ legA.textContent = centers.length + " position centroids"; legA.style.color = "#F6F1EB"; }
+    } else if(legA){
+      legA.textContent = points.length.toLocaleString() + " player-seasons";
+      legA.style.color = POP;
+    }
+
+    if(activeStep === "intro"){
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = "rgba(254,252,248,0.92)";
+      ctx.font = Math.max(18, Math.min(28, W * 0.035)) + "px Newsreader, Georgia, serif";
+      ctx.fillText("Who played like this,", 18, 42);
+      ctx.fillText("in another season?", 18, 70);
+      ctx.fillStyle = "#D4C4B0"; ctx.font = MONO;
+      ctx.fillText("Start exploring — scroll", 18, 92);
+    }
+
+    if(focusP){
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = POP;
+      ctx.beginPath(); ctx.arc(focusP.x * W, focusP.y * H, 4.5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = POP; ctx.lineWidth = 1.2; ctx.setLineDash([4, 6]);
+      ctx.beginPath(); ctx.arc(focusP.x * W, focusP.y * H, 16, 0, Math.PI * 2); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#FEFCF8"; ctx.font = MONO;
+      ctx.fillText(label(focusP), 16, H - 16);
+    }
+  }
+
+  function onHover(e){
+    const canvas = $("mapCanvas"), pill = $("hoverPill");
+    if(!canvas || !pill) return;
+    if(loadError){ pill.textContent = "data not loaded"; return; }
+    if(!points.length){ pill.textContent = "loading…"; return; }
+    const r = canvas.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    let best = null, bd = Infinity;
+    for(const p of points){
+      const dx = p.x - x, dy = p.y - y, d = dx * dx + dy * dy;
+      if(d < bd){ bd = d; best = p; }
+    }
+    pill.textContent = best ? label(best) : "hover —";
+  }
+
+  return api;
+})();
+</script>
+<script id="mod-story">window.DumbModel=window.DumbModel||{};window.DumbModel.Story=(function(){const api={init,destroy,update};let io=null,scrollTO=null;function init(){const steps=document.querySelectorAll(".step");io=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting&&e.intersectionRatio>.55){document.querySelectorAll(".step").forEach(s=>s.classList.remove("active"));e.target.classList.add("active");const step=e.target.dataset.step||"all";if(window.DumbModel.Map)window.DumbModel.Map.update({step});const legA=document.getElementById("legA");if(legA){/* legA is written by mod-map, which knows the position name and count. */}}})},{threshold:[.55]});steps.forEach(s=>io.observe(s));window.addEventListener("scroll",onScroll,{passive:true})}function onScroll(){if(window.DumbModel.Map&&window.DumbModel.Map.state.lod!==4000){window.DumbModel.Map.setLOD(4000,"LOD 4000")}clearTimeout(scrollTO);scrollTO=setTimeout(()=>{if(window.DumbModel.Map)window.DumbModel.Map.setLOD(8000,"LOD 8000")},420)}function update(d){if(!d)return;const t=document.querySelector(`[data-step="${d.step}"]`);if(t){document.querySelectorAll(".step").forEach(s=>s.classList.remove("active"));t.classList.add("active");if(window.DumbModel.Map)window.DumbModel.Map.update(d)}}function destroy(){if(io){io.disconnect();io=null}window.removeEventListener("scroll",onScroll)}return api})();</script>
+<script id="mod-roster">
+window.DumbModel=window.DumbModel||{};window.DumbModel.Roster=(function(){
+  "use strict";
+  const POS_COLOR = { QB: "#C17C60", RB: "#A67B5B", WR: "#7A9BB5", TE: "#8A9A8B" };
+  const api = { init, destroy, update, render };
+
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"]/g,
+      c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  }
+
+  function init(){
+    const grid = document.getElementById("rosterGrid");
+    if(!grid) return;
+    grid.addEventListener("click", onClick);
+    render();
+  }
+
+  // Tiles come from the map module's loaded export. Until it loads there is nothing real to
+  // show, so nothing is shown - the previous version of this file shipped twelve hardcoded
+  // rows (MAHOMES, ALLEN and ten more) carrying invented per-tile metrics that came from
+  // no data file at all.
+  function render(){
+    const grid = document.getElementById("rosterGrid");
+    if(!grid) return;
+    const M = window.DumbModel.Map;
+    const err = M && M.loadError;
+    const tiles = (M && M.roster) || [];
+
+    if(err){
+      grid.innerHTML = '<div class="tile" style="grid-column:1/-1"><div class="tile-main">' +
+        '<h3 class="tile-name">Roster unavailable</h3>' +
+        '<div class="tile-sub">' + esc(err) + "</div>" +
+        '<div class="tile-sub">These tiles render real player-seasons from ' +
+        "assets/gridiron_roster.json. Nothing is shown rather than showing invented ones." +
+        "</div></div></div>";
+      return;
+    }
+    if(!tiles.length){
+      grid.innerHTML = '<div class="tile" style="grid-column:1/-1"><div class="tile-main">' +
+        '<div class="tile-sub">loading the real roster…</div></div></div>';
+      return;
+    }
+
+    grid.innerHTML = "";
+    tiles.forEach((t, i) => {
+      const el = document.createElement("div");
+      el.className = "tile";
+      el.dataset.idx = String(i);
+      const stripe = POS_COLOR[t.pos] || "#A8A29E";
+      const nb = t.nearest_other_season || {};
+      const where = [t.team, t.season].filter(Boolean).map(esc).join(" · ");
+      el.innerHTML =
+        '<div class="tile-stripe" aria-hidden="true" style="background:' + stripe + '"></div>' +
+        '<div class="tile-main">' +
+          '<div class="tile-top"><span class="tile-type">' + esc(t.pos) + "</span>" +
+          '<span class="tile-pos">' + esc(t.pick) + "</span></div>" +
+          '<h3 class="tile-name">' + esc(t.name) + "</h3>" +
+          '<div class="tile-sub">' + where + "</div>" +
+          '<div class="tile-metric">' +
+            '<div class="metric"><b>' + esc(nb.name) + "</b><i>nearest in " +
+              esc(nb.sport) + "</i></div>" +
+            '<div class="metric"><b>' + (typeof nb.cosine === "number" ? nb.cosine.toFixed(3) : "—") +
+              "</b><i>cosine</i></div>" +
+          "</div>" +
+          '<div class="tile-cta">' +
+            '<button class="btn pop" data-focus="' + i + '">FIND ON MAP</button>' +
+            '<button class="btn" data-pos="' + esc(t.pos) + '">POSITION</button>' +
+          "</div>" +
+        "</div>";
+      grid.appendChild(el);
+    });
+  }
+
+  function onClick(e){
+    const f = e.target.closest("[data-focus]");
+    if(f){
+      const idx = parseInt(f.getAttribute("data-focus"), 10);
+      if(window.DumbModel.Map){
+        window.DumbModel.Map.update({ focus: idx, step: "finish" });
+        document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+        const last = document.querySelector('[data-step="finish"]');
+        if(last) last.classList.add("active");
+      }
+      const c = document.getElementById("mapCanvas");
+      if(c) c.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    const sBtn = e.target.closest("[data-pos]");
+    if(sBtn){
+      const step = "pos:" + sBtn.getAttribute("data-pos");
+      document.querySelectorAll(".step").forEach(s => {
+        s.classList.toggle("active", s.dataset.step === step);
+      });
+      if(window.DumbModel.Map){
+        window.DumbModel.Map.clearPrev();
+        window.DumbModel.Map.update({ step: step });
+      }
+      const c = document.getElementById("mapCanvas");
+      if(c) c.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+
+  function update(d){
+    if(d && typeof d.focus !== "undefined" && window.DumbModel.Map) window.DumbModel.Map.update(d);
+  }
+
+  function destroy(){
+    const g = document.getElementById("rosterGrid");
+    if(g) g.removeEventListener("click", onClick);
+  }
+
+  return api;
+})();
+</script>
 <script id="mod-news">window.DumbModel=window.DumbModel||{};window.DumbModel.News=(function(){const api={init,destroy,update};let data=null;function init(){fetchNews();document.getElementById("news-feed")?.addEventListener("click",onClick)}async function fetchNews(){const el=document.getElementById("news-feed");const prov=document.getElementById("news-provenance");try{const res=await fetch("assets/news/news_features.json",{cache:"no-store"});if(!res.ok)throw new Error("honest 503 "+res.status);const j=await res.json();data=j;render(j);if(prov)prov.textContent=`provenance 7/7/0→14/14 LCG 20260813→189831298 triple[11205,19448,14209] • ${j.n_entities||0} entities • ${Object.keys(j.features||{}).length} feats • dim16 • fusion 0.60*tca+0.25*taa+0.15*news • honest 503 ok`}catch(e){if(el)el.innerHTML=`<div class="news-card" style="font-family:var(--font-mono)">News tower honest 503 — sources down, zero-vector fallback active. <br/>nba.com / espn_nba / cbs_nba / yahoo_nba — no synthetic. Fusion 0.60*tca+0.25*taa+0.15*news L2 still works with zeros. <br/><span id="news-provenance">provenance 7/7/0→14/14 • LCG 20260813→189831298 • ${e.message}</span></div>`;if(prov)prov.textContent=`provenance 7/7/0→14/14 LCG 20260813→189831298 triple[11205,19448,14209] • honest 503 fallback • ${e.message}`}}function render(j){const el=document.getElementById("news-feed");if(!el)return;const feats=j.features||{};const ents=Object.keys(feats).slice(0,12);if(!ents.length){el.innerHTML=`<div class="news-card">No news yet — 0 entities — waiting for daily ingest 06:00 CT LCG chain. Zero-vector fallback active, map still works.</div>`;return}el.innerHTML=ents.map(k=>{const v=feats[k];const cnt7=v?.[0]?.toFixed?.(2)||v?.cnt7||0;const sent=v?.[2]||0;return `<div class="news-card"><b>${k}</b> • cnt7 ${cnt7} sent ${sent>0?"+":""}${Number(sent).toFixed(2)} • 16-d [cnt7 cnt30 sent7 sent30 inj trade starter rest transfer manager earnings guidance recency_exp burst_3d league_sent sector_sent] • fusion 0.60*tca+0.25*taa+0.15*news • <button class="btn" style="margin-top:6px" onclick="window.DumbModel.Map&&window.DumbModel.Map.update({step:'news'})">HIGHLIGHT NEWS BURST</button></div>`}).join("")}function onClick(e){const b=e.target.closest("button");if(b&&b.textContent.includes("NEWS")){if(window.DumbModel.Map)window.DumbModel.Map.update({step:"news"})}}function update(d){if(d&&d.features)render({features:d.features})}function destroy(){}return api})();</script>
 <script>
 // boot — japandi-pudding hybrid, zero-deps, honest 503
@@ -157,7 +515,7 @@ img,canvas{max-width:100%} /* focus */
   const triple=[lcg(seed),lcg(lcg(seed)),lcg(lcg(lcg(seed)))];
   document.documentElement.setAttribute("data-daily",daily);
   document.documentElement.setAttribute("data-n",n);
-  console.log(`[JAPANDI] hoops v4 pudding-map 70vh sticky 58/42 warm paper #F9F6F0 terracotta #C17C60 stone hairline soft shadow 44px mono nav z40 modular IIFEs init/destroy/update single-select DPR1 LOD 4000/8000 fusion 0.60*tca+0.25*taa+0.15*news L2 7/7/0→14/14 LCG ${daily}→${lcg(seed)} triple[${triple.join(",")}] ?daily=${daily}&n=${n} PWA v67 offline13k CORE20 NEWS TOWER 16-d 0.15 weight honest 503 zero-deps`);
+  console.log("[gridiron] map reads assets/gridiron_map.json + assets/gridiron_roster.json (10,700 real player-seasons). No generated points; if a fetch fails the page says so and draws nothing.");
 })();
 </script>
 </body>

@@ -1,0 +1,271 @@
+{
+ "source": "assets/vectors.json",
+ "selection": "per position, 3 player-seasons: the one nearest that position's mean 18-d profile, then farthest-point sampling so the tiles span the position rather than resampling its centre",
+ "neighbour_rule": "for each tile, the closest player-season from a DIFFERENT season by cosine in the 18-d profile space. Same-season neighbours are close by construction because v is z-scored within season.",
+ "tiles": [
+  {
+   "name": "Andy Dalton",
+   "pos": "QB",
+   "team": "CIN",
+   "season": "2011",
+   "games": 16,
+   "ppg": {
+    "std": 12.94,
+    "half": 12.94,
+    "ppr": 12.94
+   },
+   "x": 0.8978,
+   "y": 0.4146,
+   "pick": "most typical",
+   "nearest_other_season": {
+    "name": "Sam Bradford",
+    "pos": "QB",
+    "team": "LA",
+    "season": "2012",
+    "cosine": 0.9985
+   }
+  },
+  {
+   "name": "Joe Webb",
+   "pos": "QB",
+   "team": "MIN",
+   "season": "2013",
+   "games": 8,
+   "ppg": {
+    "std": 0.41,
+    "half": 0.73,
+    "ppr": 1.04
+   },
+   "x": 0.6247,
+   "y": 0.7403,
+   "pick": "spread 1",
+   "nearest_other_season": {
+    "name": "Willie Snead",
+    "pos": "WR",
+    "team": "CAR",
+    "season": "2021",
+    "cosine": 0.9983
+   }
+  },
+  {
+   "name": "Alex Smith",
+   "pos": "QB",
+   "team": "SF",
+   "season": "2005",
+   "games": 9,
+   "ppg": {
+    "std": 2.37,
+    "half": 2.37,
+    "ppr": 2.37
+   },
+   "x": 0.7484,
+   "y": 0.5961,
+   "pick": "spread 2",
+   "nearest_other_season": {
+    "name": "Kurt Kittner",
+    "pos": "QB",
+    "team": "ATL",
+    "season": "2003",
+    "cosine": 0.9745
+   }
+  },
+  {
+   "name": "Kimble Anders",
+   "pos": "RB",
+   "team": "KC",
+   "season": "2000",
+   "games": 12,
+   "ppg": {
+    "std": 4.22,
+    "half": 4.85,
+    "ppr": 5.48
+   },
+   "x": 0.5947,
+   "y": 0.5895,
+   "pick": "most typical",
+   "nearest_other_season": {
+    "name": "James Starks",
+    "pos": "RB",
+    "team": "GB",
+    "season": "2014",
+    "cosine": 0.9837
+   }
+  },
+  {
+   "name": "Cordarrelle Patterson",
+   "pos": "RB",
+   "team": "MIN",
+   "season": "2013",
+   "games": 16,
+   "ppg": {
+    "std": 7.29,
+    "half": 8.7,
+    "ppr": 10.11
+   },
+   "x": 0.4572,
+   "y": 0.5431,
+   "pick": "spread 1",
+   "nearest_other_season": {
+    "name": "Xavier Worthy",
+    "pos": "WR",
+    "team": "KC",
+    "season": "2024",
+    "cosine": 0.8927
+   }
+  },
+  {
+   "name": "Kyle Johnson",
+   "pos": "RB",
+   "team": "DEN",
+   "season": "2004",
+   "games": 9,
+   "ppg": {
+    "std": 2.73,
+    "half": 3.23,
+    "ppr": 3.73
+   },
+   "x": 0.5403,
+   "y": 0.6657,
+   "pick": "spread 2",
+   "nearest_other_season": {
+    "name": "Troy Walters",
+    "pos": "WR",
+    "team": "IND",
+    "season": "2005",
+    "cosine": 0.9919
+   }
+  },
+  {
+   "name": "Daniel Graham",
+   "pos": "TE",
+   "team": "DEN",
+   "season": "2007",
+   "games": 13,
+   "ppg": {
+    "std": 2.82,
+    "half": 3.74,
+    "ppr": 4.66
+   },
+   "x": 0.5312,
+   "y": 0.6633,
+   "pick": "most typical",
+   "nearest_other_season": {
+    "name": "Noah Gray",
+    "pos": "TE",
+    "team": "KC",
+    "season": "2023",
+    "cosine": 0.9918
+   }
+  },
+  {
+   "name": "Taysom Hill",
+   "pos": "TE",
+   "team": "NO",
+   "season": "2024",
+   "games": 8,
+   "ppg": {
+    "std": 9.92,
+    "half": 11.36,
+    "ppr": 12.79
+   },
+   "x": 0.5263,
+   "y": 0.4024,
+   "pick": "spread 1",
+   "nearest_other_season": {
+    "name": "Moe Williams",
+    "pos": "RB",
+    "team": "MIN",
+    "season": "2002",
+    "cosine": 0.9252
+   }
+  },
+  {
+   "name": "Freddie Jones",
+   "pos": "TE",
+   "team": "SD",
+   "season": "2000",
+   "games": 15,
+   "ppg": {
+    "std": 6.54,
+    "half": 8.77,
+    "ppr": 11.01
+   },
+   "x": 0.3132,
+   "y": 0.5202,
+   "pick": "spread 2",
+   "nearest_other_season": {
+    "name": "Allen Robinson",
+    "pos": "WR",
+    "team": "JAX",
+    "season": "2016",
+    "cosine": 0.99
+   }
+  },
+  {
+   "name": "Donte' Stallworth",
+   "pos": "WR",
+   "team": "WAS",
+   "season": "2011",
+   "games": 11,
+   "ppg": {
+    "std": 3.91,
+    "half": 4.91,
+    "ppr": 5.91
+   },
+   "x": 0.4933,
+   "y": 0.6288,
+   "pick": "most typical",
+   "nearest_other_season": {
+    "name": "Tim Patrick",
+    "pos": "WR",
+    "team": "DET",
+    "season": "2024",
+    "cosine": 0.9866
+   }
+  },
+  {
+   "name": "Terrelle Pryor",
+   "pos": "WR",
+   "team": "LV",
+   "season": "2013",
+   "games": 11,
+   "ppg": {
+    "std": 13.05,
+    "half": 13.05,
+    "ppr": 13.05
+   },
+   "x": 0.8615,
+   "y": 0.4023,
+   "pick": "spread 1",
+   "nearest_other_season": {
+    "name": "Tyler Huntley",
+    "pos": "QB",
+    "team": "BAL",
+    "season": "2021",
+    "cosine": 0.9743
+   }
+  },
+  {
+   "name": "Tavon Austin",
+   "pos": "WR",
+   "team": "LA",
+   "season": "2015",
+   "games": 16,
+   "ppg": {
+    "std": 9.29,
+    "half": 10.92,
+    "ppr": 12.54
+   },
+   "x": 0.4244,
+   "y": 0.4541,
+   "pick": "spread 2",
+   "nearest_other_season": {
+    "name": "James White",
+    "pos": "RB",
+    "team": "NE",
+    "season": "2018",
+    "cosine": 0.903
+   }
+  }
+ ]
+}

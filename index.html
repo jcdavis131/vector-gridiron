@@ -306,7 +306,7 @@
           </div>
         </div>
         <h2>Every skill player, mapped</h2>
-        <p>We turn 9 seasons of NFL box scores into a per-game statistical
+        <p>We turn <span id="nux-seasons">—</span> seasons of NFL box scores into a per-game statistical
           <b>profile</b> for each player, then place them in a learned space where
           neighbors <b>play alike</b>. That powers comps, trade ideas, and the
           3D Vector Map.</p>
@@ -322,14 +322,15 @@
       <section class="vg-nux__slide" data-step="2">
         <div class="vg-nux__art">
           <div class="vg-nux__meters">
-            <div><b>4.78</b><span>model MAE</span></div>
-            <div class="is-worse"><b>5.13</b><span>guess-the-average</span></div>
+            <div><b id="nux-mae-model">—</b><span>model MAE</span></div>
+            <div class="is-worse"><b id="nux-mae-baseline">—</b><span>guess-the-average</span></div>
           </div>
         </div>
         <h2>Projections you can actually trust</h2>
         <p>A neural net projects weekly points from each player's recent form.
-          It's scored the honest way — trained on 2016–22, tested on a season it
-          never saw (2024) — and it <b>beats</b> what you'd get eyeballing the
+          It's scored the honest way — trained through <span id="nux-train-cutoff">—</span>,
+          tested on a season it never saw (<span id="nux-test-season">—</span>) — and it
+          <b>beats</b> what you'd get eyeballing the
           averages. Every projection ships with a <b>floor and ceiling</b>,
           because weekly fantasy is noisy and pretending otherwise is a lie.</p>
       </section>
@@ -453,6 +454,6 @@
   data <span id="foot-built">—</span> · nflverse · no tracking
 </footer>
 
-<script src="assets/app.js?v=backtest-1" defer></script>
+<script src="assets/app.js?v=nux-honesty-1" defer></script>
 </body>
 </html>

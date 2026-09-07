@@ -1,6 +1,7 @@
 """Derive the page's coordinate file from this repo's real vectors export.
 
-`assets/vectors.json` is written by pipeline/build_vectors.py from nflverse player_stats:
+`assets/player_seasons.json` is written by pipeline/build_player_seasons.py from nflverse
+player_stats:
 10,700 player-seasons, 2015-2025, four positions, with the player's real name, team, games
 and points per game. Its x/y/z are a PCA-3 of the 18-d per-game rate profile `v`, z-scored
 within season across QB/RB/WR/TE. That claim was checked, not taken on trust: recomputing
@@ -11,6 +12,13 @@ a learned embedding. The trained model's own output lives in assets/embedding.js
 gated-fusion, 32-d, PCA-3 - and covers 503 players for the 2025 season only. Calling this
 map an "embedding map" without that distinction is the kind of overclaim this rebuild
 exists to remove, so the page says which one it is drawing.
+
+WHY NOT assets/vectors.json. That filename is taken on this branch by a different artifact
+entirely: pipeline/train_mtnn.py writes the model export there and pipeline/eval_next_game.py
+reads its fpts_next_pred/fpts_next_true fields back to compute MAE and R2. Its 1,000 rows are
+named "player_0_16" through "player_999_x" with seasons numbered 0 to 5 - fine as a training
+scratch file, useless as a map. An earlier version of this work overwrote it, which would have
+silently broken the eval path. The real player-seasons live under their own name instead.
 
 WHAT IS DELIBERATELY NOT USED. vector-hub/assets/data/gridiron.json holds 646 rows, all
 season 2026, and every single name in it is a placeholder of the form "Player 70 QB" - a
@@ -31,7 +39,7 @@ except Exception:
     pass
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-SRC = ROOT / "assets" / "vectors.json"
+SRC = ROOT / "assets" / "player_seasons.json"
 OUT = ROOT / "public" / "assets" / "gridiron_map.json"
 ROSTER_OUT = ROOT / "public" / "assets" / "gridiron_roster.json"
 PER_POS = 3
@@ -148,7 +156,7 @@ cosine_dist = {"sample_rows": len(_samp), "n_pairs": len(_pairs), "median": _pct
 
 OUT.parent.mkdir(parents=True, exist_ok=True)
 OUT.write_text(json.dumps({
-    "source": "assets/vectors.json",
+    "source": "assets/player_seasons.json",
     "built_utc": datetime.datetime.fromtimestamp(
         SRC.stat().st_mtime, datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
     "exporter_built_field": blob.get("built") if isinstance(blob, dict) else None,
@@ -216,7 +224,7 @@ for p in positions:
         })
 
 ROSTER_OUT.write_text(json.dumps({
-    "source": "assets/vectors.json",
+    "source": "assets/player_seasons.json",
     "selection": (f"per position, {PER_POS} player-seasons: the one nearest that position's mean "
                   "18-d profile, then farthest-point sampling so the tiles span the position "
                   "rather than resampling its centre"),

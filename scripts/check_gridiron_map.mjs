@@ -9,6 +9,7 @@ import path from 'node:path';
 
 const ROOT = path.join(import.meta.dirname, '..');
 const readPub = f => JSON.parse(fs.readFileSync(path.join(ROOT, 'public', f), 'utf-8'));
+const NL = String.fromCharCode(10);
 let fails = 0;
 const ok = (c, m) => { console.log((c ? '  PASS  ' : '  FAIL  ') + m); if (!c) fails++; };
 
@@ -95,6 +96,29 @@ for (const p of ['QB', 'RB', 'WR', 'TE']) {
 }
 ok(new Set(ros.tiles.map(t => t.nearest_other_season.name)).size >= 10,
    `neighbours are not degenerate: ${new Set(ros.tiles.map(t => t.nearest_other_season.name)).size} distinct of 12`);
+
+
+// ---- the two exports must not share a filename ------------------------------------------
+// assets/vectors.json is the MODEL export: pipeline/train_mtnn.py writes it, and
+// pipeline/eval_next_game.py reads its per-player fpts_next_pred / fpts_next_true back to
+// compute MAE and R2. An earlier pass of this work overwrote it with the map data. That
+// broke nothing you could see on a page and silently broke the eval path. Two unrelated
+// exports had been sharing one filename across two branches; they now have two names, and
+// these checks fail loudly if anyone merges them back into one.
+console.log(NL + '-- the training export is not the map export --');
+ok(map.source === 'assets/player_seasons.json',
+   `map is built from assets/player_seasons.json (declared: ${map.source})`);
+let vec = null;
+try { vec = JSON.parse(fs.readFileSync(path.join(ROOT, 'assets', 'vectors.json'), 'utf-8')); }
+catch (e) { /* absent is itself a failure, reported on the next line */ }
+ok(vec !== null, 'assets/vectors.json still exists');
+ok(vec !== null && Array.isArray(vec.players) && vec.players.length > 0
+   && vec.players[0].fpts_next_pred !== undefined,
+   'assets/vectors.json still carries fpts_next_pred, so eval_next_game.py still works');
+ok(vec !== null && vec.best_val_mae !== undefined,
+   'assets/vectors.json still carries the model metrics train_mtnn.py wrote');
+ok(!html.includes('assets/vectors.json</code>, written by'),
+   'the page no longer claims to be rendered from assets/vectors.json');
 
 console.log(fails === 0 ? '\nALL CHECKS PASSED\n' : `\n${fails} CHECK(S) FAILED\n`);
 process.exit(fails === 0 ? 0 : 1);

@@ -1,5 +1,5 @@
 {
- "source": "assets/vectors.json",
+ "source": "assets/player_seasons.json",
  "selection": "per position, 3 player-seasons: the one nearest that position's mean 18-d profile, then farthest-point sampling so the tiles span the position rather than resampling its centre",
  "neighbour_rule": "for each tile, the closest player-season from a DIFFERENT season by cosine in the 18-d profile space. Same-season neighbours are close by construction because v is z-scored within season.",
  "tiles": [

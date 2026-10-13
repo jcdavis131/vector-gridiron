@@ -32,6 +32,8 @@
   <button class="vg-tab" role="tab" data-view="explorer" aria-selected="false">Vector Map</button>
 </nav>
 
+<div class="vg-vintage" id="data-vintage" role="note">Projections vintage: <b>2026 season · Week 1 · built Jul 21, 2026</b> — weekly in-season refresh in progress.</div>
+
 <main id="app">
 
   <!-- MY TEAM -->
@@ -306,10 +308,10 @@
           </div>
         </div>
         <h2>Every skill player, mapped</h2>
-        <p>We turn 9 seasons of NFL box scores into a per-game statistical
-          <b>profile</b> for each player, then place them in a learned space where
-          neighbors <b>play alike</b>. That powers comps, trade ideas, and the
-          3D Vector Map.</p>
+        <p>We turn 28 seasons of NFL box scores (1999–2026) into a per-game
+          statistical <b>profile</b> for each player-season — 10,701 of them —
+          then place them in a learned space where neighbors <b>play alike</b>.
+          That powers comps, trade ideas, and the 3D Vector Map.</p>
         <div class="vg-nux__legend">
           <span><i style="background:var(--qb)"></i>QB</span>
           <span><i style="background:var(--rb)"></i>RB</span>
@@ -322,25 +324,28 @@
       <section class="vg-nux__slide" data-step="2">
         <div class="vg-nux__art">
           <div class="vg-nux__meters">
-            <div><b>4.78</b><span>model MAE</span></div>
-            <div class="is-worse"><b>5.13</b><span>guess-the-average</span></div>
+            <div><b>0.68</b><span>model rank correlation</span></div>
+            <div class="is-worse"><b>0.65</b><span>recent-form ranking</span></div>
           </div>
         </div>
-        <h2>Projections you can actually trust</h2>
-        <p>A neural net projects weekly points from each player's recent form.
-          It's scored the honest way — trained on 2016–22, tested on a season it
-          never saw (2024) — and it <b>beats</b> what you'd get eyeballing the
-          averages. Every projection ships with a <b>floor and ceiling</b>,
-          because weekly fantasy is noisy and pretending otherwise is a lie.</p>
+        <h2>Projections, scored honestly</h2>
+        <p>A neural net projects weekly PPR points from each player's recent
+          form, matchup, and game conditions. It's scored the honest way — a
+          walk-forward backtest on 2025 (weeks 2–18), a season the frozen model
+          never trained on, ranking players using only prior weeks. Its ordering
+          tracked actual points better than ranking by recent form alone (rank
+          correlation <b>0.68 vs 0.65</b>). Every projection ships with a
+          <b>floor and ceiling</b>, because weekly fantasy is noisy and
+          pretending otherwise is a lie.</p>
       </section>
 
       <!-- 4 · connect -->
       <section class="vg-nux__slide" data-step="3">
         <div class="vg-nux__art vg-nux__art--logo">🔗</div>
         <h2>Bring your league</h2>
-        <p>Connect read-only in seconds. Credentials live only in your browser —
-          nothing is stored on a server. Not ready? Explore a demo league built
-          from the real projection board.</p>
+        <p>Connect read-only in seconds — Sleeper by league ID, ESPN by league
+          ID (public-view leagues). Nothing is stored on a server. Not ready?
+          Explore a demo league built from the real projection board.</p>
         <div class="vg-nux__cta">
           <button class="vg-btn vg-btn--primary" id="nux-connect" type="button">Connect my league</button>
           <button class="vg-btn vg-btn--ghost" id="nux-demo" type="button">Explore a demo league</button>
@@ -362,8 +367,10 @@
 <div class="vg-backdrop" id="connect-backdrop" hidden>
   <div class="vg-modal" role="dialog" aria-modal="true" aria-labelledby="connect-title">
     <h2 id="connect-title">Connect your league</h2>
-    <p class="vg-modal__sub">Read-only. Credentials live only in this browser
-      (localStorage) and are sent straight to the platform's API. Nothing is stored on a server.</p>
+    <p class="vg-modal__sub">Read-only. Sleeper loads straight from Sleeper's
+      public API. ESPN loads by League ID — public-view leagues only — through
+      a thin proxy. Nothing is stored on a server, and this site never asks for
+      your ESPN password or session cookies.</p>
 
     <div class="vg-platform" id="platform-pick">
       <button class="vg-btn" data-platform="espn" aria-pressed="true">ESPN</button>
@@ -383,10 +390,6 @@
           (the <b>Lookback</b> tab lets you grade any past year).</p>
       </div>
 
-      <!-- hidden canonical cookie store; filled by the paste box / bookmarklet -->
-      <input type="hidden" id="espn-s2">
-      <input type="hidden" id="espn-swid">
-
       <div class="vg-tip">
         <b>Private league?</b> Easiest fix, works on your phone, no cookies:
         if you're the league manager, in the ESPN app open
@@ -394,36 +397,6 @@
         Then just the League ID above connects.
       </div>
 
-      <details class="vg-adv" id="espn-cookie-adv">
-        <summary>Not the manager? Paste cookies instead</summary>
-        <div style="margin-top:10px">
-          <div class="vg-field">
-            <label for="espn-cookies">Paste your ESPN cookies</label>
-            <textarea class="vg-input" id="espn-cookies" rows="3"
-              placeholder="Paste the two values (espn_s2 and SWID) here — any order, or as espn_s2=…; SWID={…}. We pull out both."></textarea>
-            <div class="vg-cookie-status" id="espn-cookie-status"></div>
-          </div>
-          <details class="vg-adv" open>
-            <summary>How do I get these?</summary>
-            <div style="margin-top:8px">
-              <p class="vg-note"><b>Reliable way (use a computer once):</b></p>
-              <ol class="vg-steps">
-                <li>On a computer, open <b>fantasy.espn.com</b> in Chrome/Edge and sign in so you can see your league.</li>
-                <li>Press <b>F12</b> (or right-click → Inspect) → <b>Application</b> tab → left side <b>Cookies</b> → <b>https://fantasy.espn.com</b>.</li>
-                <li>Find <b>espn_s2</b>, copy its (long) Value. Find <b>SWID</b>, copy its Value (looks like <code>{XXXX-…}</code>).</li>
-                <li>Paste both into the box above — order doesn't matter.</li>
-              </ol>
-              <p class="vg-note"><b>On your phone only?</b> Do the steps on a computer, then text/email
-                the two values to yourself and paste them here. They're login tokens — send only to yourself.</p>
-              <p class="vg-note" style="margin-top:8px"><b>Shortcut (desktop bookmarklet):</b> drag this to your
-                bookmarks bar, open fantasy.espn.com logged in, click it — it copies both for you.
-                If it says "not found", use the reliable way above.</p>
-              <a class="vg-bookmarklet" id="espn-bookmarklet"
-                 href="javascript:(function(){try{var c=document.cookie;var s2=(c.match(/espn_s2=([^;]+)/)||[])[1];var sw=(c.match(/SWID=([^;]+)/)||[])[1];if(s2&&sw){navigator.clipboard.writeText('espn_s2='+s2+'; SWID='+sw);alert('Copied your ESPN cookies. Paste them into Vector Gridiron.');}else{alert('Not found here (espn_s2 may be protected). Use DevTools > Application > Cookies > fantasy.espn.com.');}}catch(e){alert('Bookmarklet error: '+e);}})();">🍪 Grab ESPN cookies</a>
-            </div>
-          </details>
-        </div>
-      </details>
     </div>
 
     <div id="fields-sleeper" hidden>
@@ -449,7 +422,7 @@
 </div>
 
 <footer class="vg-footer" id="footer">
-  <span id="foot-model">multi-task MTNN</span> · holistic features (usage · snaps · age · weather · Vegas · rest · def-vs-pos) ·
+  <span id="foot-model">multi-task MTNN</span> · next-game rows carry matchup, roof/weather and Vegas implied totals ·
   data <span id="foot-built">—</span> · nflverse · no tracking
 </footer>
 

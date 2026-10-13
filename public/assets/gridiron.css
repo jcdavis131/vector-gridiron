@@ -100,6 +100,11 @@ main{width:100%;max-width:1040px;margin:0 auto;padding:18px 16px 60px}
 .vg-hero h1{font-size:26px;margin:0 0 8px;letter-spacing:-.01em}
 .vg-hero p{color:var(--ink-soft);max-width:640px;margin:0 auto 16px;line-height:1.55}
 @media(min-width:600px){.vg-hero h1{font-size:34px}}
+/* data-vintage strip — freshness on the door, under the tabs on every view */
+.vg-vintage{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--ink-soft);background:var(--surface-2);
+  border-bottom:2px solid var(--hairline);padding:7px 16px;text-align:center}
+.vg-vintage b{color:var(--warm)}
 
 .vg-field{display:block;margin-bottom:12px}
 .vg-field label{display:block;font-family:var(--mono);font-size:11px;

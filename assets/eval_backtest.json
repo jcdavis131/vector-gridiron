@@ -1,1 +1,196 @@
-{"computed_at":"2026-10-06 10:02:27","metric":{"name":"walk-forward weekly Spearman rank correlation","definition":"For each scored week, Spearman rank correlation (average-rank ties) between the model's projected PPR ordering and actual PPR fantasy points, computed per position and overall, then averaged across weeks. Baselines (last-4 PPR average, season-to-date PPR) are ranked identically."},"season":2025,"weeks":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"min_group":8,"positions":{"QB":{"spearman":0.4104,"spearman_sd":0.1504,"baseline_last4":0.3681,"baseline_std":0.3852,"weeks":17,"n_rows":583,"avg_week_n":34.3},"RB":{"spearman":0.7153,"spearman_sd":0.0477,"baseline_last4":0.7038,"baseline_std":0.7122,"weeks":17,"n_rows":1424,"avg_week_n":83.8},"WR":{"spearman":0.646,"spearman_sd":0.0586,"baseline_last4":0.6113,"baseline_std":0.6163,"weeks":17,"n_rows":2270,"avg_week_n":133.5},"TE":{"spearman":0.6336,"spearman_sd":0.0645,"baseline_last4":0.5817,"baseline_std":0.6023,"weeks":17,"n_rows":1150,"avg_week_n":67.6}},"overall":{"spearman":0.6795,"spearman_sd":0.0402,"baseline_last4":0.6544,"baseline_std":0.6618,"weeks":17,"n_rows":5427,"avg_week_n":319.2,"per_week":[0.669,0.721,0.731,0.731,0.679,0.69,0.675,0.733,0.673,0.659,0.694,0.688,0.657,0.688,0.66,0.646,0.559]},"model":{"weights":"selection split (train \u22642023, early stop on 2024)","calibration":"bias shrink + per-pos affine, fit on 2024 val","architecture":"MTNN v2 gated fusion + family_drop=0.0 d_emb=32","checkpoint_mode":"selection_only"},"caveats":["No timestamped archive of published projections exists \u2014 the site only ships the upcoming week \u2014 so this is a backtest of the projection METHOD: the frozen pre-2025 checkpoint scored on as-of features built strictly from prior weeks.","Week 1 of the season is not scored: the feature builder requires at least one prior game in-season.","K/DST are excluded \u2014 they use separate season-rate models (see kdst.json holdout MAE), not the MTNN.","Spearman measures ordering quality only, not point accuracy (see mtnn_report.json MAE/RMSE for that)."]}
+{
+ "computed_at": "2026-10-13 05:26:54 UTC",
+ "metric": {
+  "name": "walk_forward_weekly_mae",
+  "definition": "For each completed 2026 week N (2..5): project every player-week using only data through week N-1 (stats) plus the ECR snapshot strictly before week N's first game, then compare to actual week-N PPR points. MAE = mean |projected - actual|. Spearman = pooled rank correlation of projections vs actuals, averaged across weeks."
+ },
+ "season": 2026,
+ "weeks": [
+  2,
+  3,
+  4,
+  5
+ ],
+ "min_group": 8,
+ "positions": {
+  "QB": {
+   "n": 288,
+   "spearman": 0.3747607676980409,
+   "spearman_sd": 0.09907477183281309,
+   "mae": 7.035251711726989,
+   "baseline_last4": 0.3714677588037777,
+   "mae_baseline": 7.365712962962963
+  },
+  "RB": {
+   "n": 732,
+   "spearman": 0.7451542038121017,
+   "spearman_sd": 0.037742330740839,
+   "mae": 4.164151620441261,
+   "baseline_last4": 0.7045019512255967,
+   "mae_baseline": 4.536279599271403
+  },
+  "WR": {
+   "n": 1136,
+   "spearman": 0.653879338857398,
+   "spearman_sd": 0.032254207407905154,
+   "mae": 4.37444258448191,
+   "baseline_last4": 0.5889310489307127,
+   "mae_baseline": 4.901933685446009
+  },
+  "TE": {
+   "n": 632,
+   "spearman": 0.6435076547425512,
+   "spearman_sd": 0.04903495282240419,
+   "mae": 3.7469537902861934,
+   "baseline_last4": 0.5586425207770019,
+   "mae_baseline": 4.228760548523207
+  }
+ },
+ "overall": {
+  "spearman": 0.6994410566019145,
+  "spearman_sd": 0.029038575062644085,
+  "mae": 4.451848296475144,
+  "baseline_last4": 0.6422532238283022,
+  "mae_baseline": 4.9078390722142515,
+  "n": 2788
+ },
+ "per_week": [
+  {
+   "week": 2,
+   "player_weeks": 358,
+   "qb": {
+    "n": 39,
+    "spearman": 0.4524291497975709,
+    "mae": 7.42181920797277
+   },
+   "rb": {
+    "n": 97,
+    "spearman": 0.7352907266398342,
+    "mae": 3.668031812468833
+   },
+   "wr": {
+    "n": 149,
+    "spearman": 0.6040788275089576,
+    "mae": 4.178396818740602
+   },
+   "te": {
+    "n": 73,
+    "spearman": 0.5875419956124436,
+    "mae": 3.7665907504603133
+   },
+   "pooled": {
+    "n": 358,
+    "spearman": 0.6771375298446427,
+    "mae": 4.309475658369741
+   }
+  },
+  {
+   "week": 3,
+   "player_weeks": 353,
+   "qb": {
+    "n": 36,
+    "spearman": 0.20597323030782871,
+    "mae": 7.334611370729612
+   },
+   "rb": {
+    "n": 92,
+    "spearman": 0.7510464903451123,
+    "mae": 3.9197034942165634
+   },
+   "wr": {
+    "n": 145,
+    "spearman": 0.6743822634277759,
+    "mae": 4.093630630909428
+   },
+   "te": {
+    "n": 80,
+    "spearman": 0.6142884441302137,
+    "mae": 4.169477814395018
+   },
+   "pooled": {
+    "n": 353,
+    "spearman": 0.7007681265309549,
+    "mae": 4.396015290219996
+   }
+  },
+  {
+   "week": 4,
+   "player_weeks": 351,
+   "qb": {
+    "n": 33,
+    "spearman": 0.4375,
+    "mae": 5.493383189752674
+   },
+   "rb": {
+    "n": 93,
+    "spearman": 0.7998562183905433,
+    "mae": 4.476346484538286
+   },
+   "wr": {
+    "n": 144,
+    "spearman": 0.6889205381863234,
+    "mae": 4.719350683113147
+   },
+   "te": {
+    "n": 81,
+    "spearman": 0.7177509830133874,
+    "mae": 3.4793365613189975
+   },
+   "pooled": {
+    "n": 351,
+    "spearman": 0.7463555192142906,
+    "mae": 4.441580137205216
+   }
+  },
+  {
+   "week": 5,
+   "player_weeks": 332,
+   "qb": {
+    "n": 36,
+    "spearman": 0.4031406906867639,
+    "mae": 7.7304900769345615
+   },
+   "rb": {
+    "n": 84,
+    "spearman": 0.6944233798729171,
+    "mae": 4.659136461214767
+   },
+   "wr": {
+    "n": 130,
+    "spearman": 0.6481357263065353,
+    "mae": 4.530302478024732
+   },
+   "te": {
+    "n": 82,
+    "spearman": 0.6544491962141604,
+    "mae": 3.581607150346268
+   },
+   "pooled": {
+    "n": 332,
+    "spearman": 0.6735030508177697,
+    "mae": 4.675591005973776
+   }
+  }
+ ],
+ "model": {
+  "version": "gridiron-proj-v1.0",
+  "form": "0.65*trailing-4-weighted ppg + 0.35*season ppg (small-sample: 0.5*season + 0.5*prior-season ppg; no 2026 games: prior-season ppg x 0.92; ECR-only: consensus-implied points)",
+  "opponent": "defense-vs-position points-allowed/game vs league average, shrunk n/(n+3), applied only to the upcoming-week board",
+  "ecr_blend": "0.7 * form x opponent + 0.3 * ECR-implied points (rank->ppg curve fit on season-to-date ppg)",
+  "floor_ceiling": "projection -/+ per-position q80 |residual| from this backtest"
+ },
+ "caveats": [
+  "Backtest covers weeks 2-5 of 2026 only (the completed weeks at build time).",
+  "Kickers and DST are projected by a separate season-rate method (kdst.json) and are not in this backtest.",
+  "ECR snapshots are pre-week Fridays; no within-week leakage."
+ ],
+ "provenance": {
+  "builder": "pipeline/build_site_data.py",
+  "model_version": "gridiron-proj-v1.0",
+  "source": "nflverse via nflreadpy",
+  "built_at": "2026-10-13 05:26:54 UTC",
+  "season": 2026,
+  "week": 5,
+  "rows": 1394
+ }
+}

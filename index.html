@@ -32,7 +32,7 @@
   <button class="vg-tab" role="tab" data-view="explorer" aria-selected="false">Vector Map</button>
 </nav>
 
-<div class="vg-vintage" id="data-vintage" role="note">Projections vintage: <b>2026 season · Week 1 · built Jul 21, 2026</b> — weekly in-season refresh in progress.</div>
+<div class="vg-vintage" id="data-vintage" role="note">Projections vintage: <b>2026 season · Week 6 · built Oct 13, 2026</b> — weekly in-season refresh in progress.</div>
 
 <main id="app">
 
@@ -126,7 +126,7 @@
     </div>
   </section>
 
-  <!-- NEXT GAME (weekly MTNN) -->
+  <!-- NEXT GAME (weekly blend) -->
   <section class="vg-view" id="view-nextgame" role="tabpanel">
     <div class="vg-card">
       <div class="vg-card__title">Next-game projections — <span id="nextgame-week-label"></span>
@@ -324,17 +324,17 @@
       <section class="vg-nux__slide" data-step="2">
         <div class="vg-nux__art">
           <div class="vg-nux__meters">
-            <div><b>0.68</b><span>model rank correlation</span></div>
-            <div class="is-worse"><b>0.65</b><span>recent-form ranking</span></div>
+            <div><b>4.45</b><span>weekly error, PPR pts</span></div>
+            <div class="is-worse"><b>4.91</b><span>recent-form error</span></div>
           </div>
         </div>
         <h2>Projections, scored honestly</h2>
-        <p>A neural net projects weekly PPR points from each player's recent
-          form, matchup, and game conditions. It's scored the honest way — a
-          walk-forward backtest on 2025 (weeks 2–18), a season the frozen model
-          never trained on, ranking players using only prior weeks. Its ordering
-          tracked actual points better than ranking by recent form alone (rank
-          correlation <b>0.68 vs 0.65</b>). Every projection ships with a
+        <p>A blend of recent form, matchup adjustment, and expert consensus
+          projects weekly PPR points. It's scored the honest way — a
+          walk-forward backtest over 2026 weeks 2–5 (2,788 player-weeks),
+          projecting each week from prior data only. Weekly error:
+          <b>MAE 4.45</b> PPR points vs 4.91 for ranking by recent form alone
+          (rank correlation <b>0.70 vs 0.64</b>). Every projection ships with a
           <b>floor and ceiling</b>, because weekly fantasy is noisy and
           pretending otherwise is a lie.</p>
       </section>
@@ -422,10 +422,10 @@
 </div>
 
 <footer class="vg-footer" id="footer">
-  <span id="foot-model">multi-task MTNN</span> · next-game rows carry matchup, roof/weather and Vegas implied totals ·
+  <span id="foot-model">trailing form × matchup × consensus blend v1</span> · next-game rows carry matchup, roof/weather and Vegas implied totals ·
   data <span id="foot-built">—</span> · nflverse · no tracking
 </footer>
 
-<script src="assets/app.js?v=backtest-1" defer></script>
+<script src="assets/app.js?v=wave-b" defer></script>
 </body>
 </html>

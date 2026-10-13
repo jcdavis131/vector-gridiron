@@ -160,7 +160,7 @@ function labelSeasons() {
     ? ($('#nextgame-week-label').textContent = `${STATE.next.season} · Week ${STATE.next.week}`)
     : ($('#nextgame-week-label').textContent = ''));
   $('#foot-model').textContent =
-    `${STATE.next?.model?.type || 'MTNN v2 multi-tower'} · ${last} data`;
+    `${STATE.next?.model?.type || 'projection blend v1'} · ${last} data`;
   // Vintage on the door, rendered from the served file's own metadata so it
   // can never drift from the data: season/week/built all live in nextgame.json.
   const nx = STATE.next, vb = $('#data-vintage');
@@ -1085,7 +1085,7 @@ function renderStartSit() {
      <div class="vg-card__title">Start</div>${table(['Slot', 'Player', 'Proj', ''], startRows)}
      <div class="vg-card__title" style="margin-top:14px">Bench</div>${table(['Slot', 'Player', 'Proj', ''], benchRows)}
      ${unavailable.length ? `<div class="vg-card__title" style="margin-top:14px">Can't start — bye / injured / IR</div>${table(['Why', 'Player', '', ''], unavailRows)}` : ''}
-     <p class="vg-note" style="margin-top:10px">${STATE.next ? `Uses the ${wk} next-game MTNN (real matchup + weather + Vegas)` : 'Uses season projection'};
+     <p class="vg-note" style="margin-top:10px">${STATE.next ? `Uses the ${wk} next-game blend (real matchup + weather + Vegas)` : 'Uses season projection'};
      players on bye or ruled out are excluded automatically. START/SIT flags compare the optimal lineup to your platform's current starters.</p>`;
   bindNameLinks();
 }
@@ -2269,14 +2269,14 @@ function renderDraft() {
     + `<td class="vg-num" style="text-align:left;font-size:11px">${p.line ? statLine(p.line) : (p.pos === 'K' || p.pos === 'DST' ? 'recency-weighted ppg' : '')}</td></tr>`).join('');
   const src = STATE.adp && STATE.adp.sources ? STATE.adp.sources.join(', ') : 'none';
   $('#draft-body').innerHTML = table(['#', 'Player', 'Pos', 'Tier', 'Proj/g', 'ADP', 'Value', 'Bye', 'Projected line'], body)
-    + `<p class="vg-note" style="margin-top:8px">${STATE.proj.proj_season} projected PPR points/game (MTNN) + K/DST from kdst.json vs
+    + `<p class="vg-note" style="margin-top:8px">${STATE.proj.proj_season} projected PPR points/game (trailing-form + expert-consensus blend) + K/DST from kdst.json vs
        consensus <b>ADP</b> (${src}). <b>Value</b> = model's positional rank minus the market's — <b>VALUE</b> means
        the model likes him more than the room at his position; <b>REACH</b> the opposite. ${rows.length} players.</p>`;
   bindNameLinks();
 }
 
 /* ================================================================
-   NEXT GAME — weekly MTNN with real matchup / weather / Vegas
+   NEXT GAME — weekly blend with real matchup / weather / Vegas
    ================================================================ */
 const NEXTG = { pos: 'ALL' };
 function initNextGame() {
@@ -2312,7 +2312,8 @@ function renderNextGame() {
     const matchup = p._kdst ? '<span class="vg-unmatched">season rate</span>'
       : ((c.is_home ? 'vs ' : '@ ') + escapeHtml(p.opp));
     const cond = p._kdst ? 'no matchup model'
-      : ((c.roof === 'dome' || c.roof === 'closed') ? 'indoor' : `${Math.round(c.temp)}°/${Math.round(c.wind)}mph`);
+      : ((c.roof === 'dome' || c.roof === 'closed') ? 'indoor'
+         : (c.temp == null ? 'outdoor · weather pending' : `${Math.round(c.temp)}°/${Math.round(c.wind)}mph`));
     return `<tr><td>${nameCell(p)}</td><td><span class="vg-pos ${p.pos}">${p.pos}</span></td>`
       + `<td class="vg-num">${matchup}</td>`
       + `<td class="vg-num" style="font-size:11px">${cond}${p._kdst ? '' : ` · impl ${c.team_implied}${c.primetime ? ' · PT' : ''}`}</td>`
@@ -2321,10 +2322,10 @@ function renderNextGame() {
       + `<td class="vg-num" style="text-align:left;font-size:11px">${p.line ? statLine(p.line) : (p._kdst ? 'recency-weighted ppg' : '')}</td></tr>`;
   }).join('');
   $('#nextgame-body').innerHTML = table(['Player', 'Pos', 'Matchup', 'Conditions', 'Proj', 'Fl–Ce', 'Projected line'], body)
-    + `<p class="vg-note" style="margin-top:8px">Multi-task MTNN for ${STATE.next.season} Week ${STATE.next.week}:
-       ${STATE.latestSeason} form × each team's real opponent, roof/weather, and Vegas implied total.
-       Floor–ceiling = per-pos conformal |residual| q80 (~80% held-out coverage). K/DST use season-rate projections.
-       Re-run the pipeline weekly to roll forward.</p>`
+    + `<p class="vg-note" style="margin-top:8px">${STATE.next.season} Week ${STATE.next.week} projections: trailing form × opponent matchup adjustment × expert-consensus blend,
+       with each team's real opponent, roof, and Vegas implied total.
+       Floor–ceiling = per-position |residual| q80 from the 2026 walk-forward backtest (${(STATE.backtest && Array.isArray(STATE.backtest.weeks)) ? `weeks ${STATE.backtest.weeks[0]}–${STATE.backtest.weeks[STATE.backtest.weeks.length-1]}` : 'recent weeks'}, ${STATE.backtest?.overall?.n ?? '—'} player-weeks).
+       K/DST use season-rate projections. Re-run the pipeline weekly to roll forward.</p>`
     + backtestNote();
   bindNameLinks();
 }
@@ -2334,14 +2335,18 @@ function renderNextGame() {
 function backtestNote() {
   const bt = STATE.backtest;
   if (!bt || !bt.overall) return '';
-  const f = r => (r && r.spearman != null) ? r.spearman.toFixed(2) : '—';
-  const p = bt.positions || {};
-  return `<p class="vg-note" style="margin-top:4px">Rank check — held-out ${bt.season}, weeks ${bt.weeks[0]}–${bt.weeks.at(-1)},
-     walk-forward (frozen pre-${bt.season} weights, features from prior weeks only): Spearman proj→actual
-     <span class="vg-pos QB">QB</span> ${f(p.QB)} · <span class="vg-pos RB">RB</span> ${f(p.RB)} ·
-     <span class="vg-pos WR">WR</span> ${f(p.WR)} · <span class="vg-pos TE">TE</span> ${f(p.TE)} ·
-     overall ${f(bt.overall)} (last-4 baseline ${bt.overall.baseline_last4 != null ? bt.overall.baseline_last4.toFixed(2) : '—'}).
-     Scores the projection method, not archived publishes — the site keeps no projection history. Week 1 unscored (no prior form).</p>`;
+  const f = v => (v != null && isFinite(v)) ? v.toFixed(2) : '\u2014';
+  const pos = bt.positions || {};
+  const wks = Array.isArray(bt.weeks) ? bt.weeks : [];
+  const n = (bt.overall.n != null) ? bt.overall.n.toLocaleString() : '\u2014';
+  return `<p class="vg-note" style="margin-top:4px">Backtest \u2014 the same projection method, walk-forward on ${bt.season}
+     (weeks ${wks[0]}\u2013${wks[wks.length - 1]}, ${n} player-weeks, features from prior weeks only): weekly
+     <b>MAE ${f(bt.overall.mae)}</b> PPR points${bt.overall.mae_baseline != null ? ` vs ${f(bt.overall.mae_baseline)} for a recent-form baseline` : ''}.
+     Rank quality \u2014 Spearman proj\u2192actual
+     <span class="vg-pos QB">QB</span> ${f(pos.QB && pos.QB.spearman)} \u00b7 <span class="vg-pos RB">RB</span> ${f(pos.RB && pos.RB.spearman)} \u00b7
+     <span class="vg-pos WR">WR</span> ${f(pos.WR && pos.WR.spearman)} \u00b7 <span class="vg-pos TE">TE</span> ${f(pos.TE && pos.TE.spearman)} \u00b7
+     overall ${f(bt.overall.spearman)} (recent-form baseline ${f(bt.overall.baseline_last4)}).
+     Scores the projection method, not archived publishes \u2014 the site keeps no projection history.</p>`;
 }
 
 /* ================================================================
@@ -2444,11 +2449,11 @@ function nextGameBlock(name, pos) {
   const cond = [];
   cond.push(c.is_home ? `vs ${escapeHtml(n.opp)}` : `@ ${escapeHtml(n.opp)}`);
   cond.push(c.roof === 'dome' || c.roof === 'closed' ? 'indoor'
-    : `${Math.round(c.temp)}°/${Math.round(c.wind)}mph`);
+    : (c.temp == null ? 'outdoor · weather pending' : `${Math.round(c.temp)}°/${Math.round(c.wind)}mph`));
   cond.push(`impl ${c.team_implied}`);
   if (c.primetime) cond.push('primetime');
   return `<div class="vg-card__title" style="margin-top:16px">Next game — ${STATE.next.season} Week ${STATE.next.week}
-      <span class="vg-slot">(MTNN · this matchup)</span></div>
+      <span class="vg-slot">(blend v1 · this matchup)</span></div>
     <div class="vg-lineup-total">
       <div class="vg-metric"><div class="vg-metric__n">${n.proj.toFixed(1)}</div><div class="vg-metric__l">proj pts</div></div>
       <div class="vg-metric"><div class="vg-metric__n">${n.floor.toFixed(0)}–${n.ceil.toFixed(0)}</div><div class="vg-metric__l">floor–ceiling</div></div>

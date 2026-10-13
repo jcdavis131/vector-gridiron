@@ -1,4 +1,8 @@
-/* Vector Gridiron — NFL fantasy cockpit */
+/* Vector Gridiron — NFL fantasy cockpit (fleet-aligned neobrutalism).
+   Deep field green-black + chalk-yardline white ink, 2px ink borders, hard
+   offset block shadows, bold uppercase labels, mono numerals. Sibling of
+   Vector Hoops / Vector Pitch. Color is reserved for DATA:
+   position hues (QB/RB/WR/TE), start=green / sit=red, brand orange accent. */
 
 :root{
   --paper:#0a130d;
@@ -8,14 +12,20 @@
   --ink-soft:#c4d0c6;
   --ink-muted:#93a596;
   --hairline:#213024;
-  --accent:#f0873c;         /* brand orange */
+  --accent:#da4e34;         /* korall — brand accent, Fargekart dark tint */
   --accent-2:#3ddc71;       /* field green highlight */
 
-  /* position palette — the categorical data colors */
-  --qb:#e8b23a;             /* gold */
-  --rb:#4bd0a0;             /* teal-green */
-  --wr:#5aa0f0;             /* blue */
-  --te:#c77dff;             /* violet */
+  /* Position palette — the categorical data colors, and the ones that carry
+     the most weight in this app: you scan the board by position.
+
+     The previous set put RB (#4bd0a0 teal-green) and WR (#5aa0f0 blue) only
+     10.8 dE apart under tritanopia, which is close enough to be the same
+     colour. Retinting RB, WR and TE off the Fargekart moves the worst pair
+     to 26.1. QB keeps its gold — tested, and holding it costs nothing. */
+  --qb:#e8b23a;             /* gold — unchanged */
+  --rb:#3c8d21;             /* furu     4.52:1 on paper */
+  --wr:#4b78e2;             /* fjord    4.57:1 */
+  --te:#9a69c3;             /* lavendel 4.66:1 */
 
   --start:#3ddc71;
   --sit:#ff5c5c;
@@ -219,6 +229,16 @@ canvas#map{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
 
 /* ---------- lookback / grades ---------- */
 .vg-lookback-ctl{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px}
+.vg-card--you{border-color:var(--accent);box-shadow:4px 4px 0 rgba(240,135,60,.35)}
+.vg-you__hd{font-size:18px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.vg-you__champ{font-family:var(--mono);font-size:12px;color:var(--warm)}
+.vg-you__picks{font-size:12.5px;margin-top:4px}
+.vg-tcontribs{display:flex;flex-direction:column;gap:5px;margin:6px 0 4px;max-width:360px}
+.vg-tcontrib{display:grid;grid-template-columns:90px 1fr 36px;gap:8px;align-items:center;font-size:12px}
+.vg-tcontrib__l{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-muted)}
+.vg-tcontrib__track{height:8px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:4px;overflow:hidden}
+.vg-tcontrib__fill{display:block;height:100%;background:var(--accent-2)}
+.vg-tcontrib__v{font-family:var(--mono);font-size:11px;text-align:right}
 .vg-posfilter{display:flex;gap:6px;flex-wrap:wrap}
 .vg-posfilter button{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;
   letter-spacing:.04em;padding:7px 12px;border:2px solid var(--hairline);border-radius:7px;

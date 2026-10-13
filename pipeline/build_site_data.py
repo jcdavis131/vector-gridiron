@@ -728,7 +728,7 @@ def load_vector_comps() -> dict[tuple[str, str], list[dict]]:
     comps were likewise from the then-latest season). Not a projection;
     a style-similarity list for the Explorer."""
     path = ASSETS / "vectors.json"
-    rows = json.load(open(path))["players"]
+    rows = json.load(path.open())["players"]
     latest = max(r.get("season") for r in rows if r.get("season"))
     # vectors.json's data runs through `latest`; no same-season rows exist.
     rows26 = [r for r in rows if r.get("season") == latest and r.get("pos") in SKILL]
@@ -959,7 +959,7 @@ def build_kdst(data, ident, last_done) -> dict:
 
 def validate_lookback():
     p = ASSETS / "lookback_seasons.json"
-    d = json.load(open(p))
+    d = json.load(p.open())
     if not {"built", "n_teams", "format", "note", "seasons"} <= set(d):
         fail("lookback_seasons.json schema changed — manual review required")
     if len(d["seasons"]) < 20 or any("teams" not in s for s in d["seasons"]):

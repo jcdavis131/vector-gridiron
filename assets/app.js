@@ -22,6 +22,7 @@ const ESPN_TEAM = {
 
 const STATE = {
   vectors: null, proj: null, next: null, adp: null, lookback: null, kdst: null,
+  backtest: null,                  // walk-forward rank-quality check (eval_backtest.json)
   projByKey: new Map(), vecByKey: new Map(), nextByKey: new Map(), adpByKey: new Map(),
   lookbackBySeason: new Map(),
   lookbackSeed: null,              // pristine seeded mock DB (restored when league disconnects)
@@ -91,13 +92,14 @@ const projFor = (name, pos) => STATE.projByKey.get(normKey(name, pos)) || null;
 /* ---------- boot ---------- */
 async function boot() {
   try {
-    const [vec, proj, next, adp, look, kdst] = await Promise.all([
+    const [vec, proj, next, adp, look, kdst, backtest] = await Promise.all([
       fetch('assets/vectors.json').then(r => r.json()),
       fetch('assets/projections.json').then(r => r.json()),
       fetch('assets/nextgame.json').then(r => r.json()).catch(() => null),
       fetch('assets/adp.json').then(r => r.json()).catch(() => null),
       fetch('assets/lookback_seasons.json').then(r => r.json()).catch(() => null),
       fetch('assets/kdst.json').then(r => r.json()).catch(() => null),
+      fetch('assets/eval_backtest.json').then(r => r.json()).catch(() => null),
     ]);
     STATE.vectors = vec;
     STATE.proj = proj;
@@ -106,15 +108,18 @@ async function boot() {
     STATE.lookback = look;
     STATE.lookbackSeed = look;
     STATE.kdst = kdst;
+    STATE.backtest = backtest;
     if (look) for (const s of look.seasons) STATE.lookbackBySeason.set(s.season, s);
     // K/DST get real projections everywhere (roster, start/sit, waivers) — they
-    // live in kdst.json (nflverse zeroes kicker points), merged as proj records.
+    // live in kdst.json (nflverse zeroes kicker points), merged as proj + nextgame.
     if (kdst) for (const [arr, pos] of [[kdst.kickers, 'K'], [kdst.dst, 'DST']]) {
       for (const p of (arr || [])) {
         const key = normKey(p.name, pos);
-        STATE.projByKey.set(key, { key, name: p.name, pos, team: p.team,
+        const row = { key, name: p.name, pos, team: p.team,
           proj: p.proj, floor: Math.max(0, +(p.proj - 4).toFixed(1)), ceil: +(p.proj + 4).toFixed(1),
-          bye: p.bye ?? null, comps: [] });
+          bye: p.bye ?? null, comps: [], source: 'kdst' };
+        STATE.projByKey.set(key, row);
+        STATE.nextByKey.set(key, row);
       }
     }
     $('#foot-built').textContent = proj.built || vec.built || '';
@@ -420,7 +425,20 @@ async function loadSleeperSeasonHistory(leagueId) {
         if (teams.length) {
           const ranked = [...teams].sort((a, b) => a.seed - b.seed || b.wins - a.wins || b.points_for - a.points_for);
           if (ranked[0]) ranked[0].champion = true;
-          seasons.push({ season: +(lg.season || draft.season), leagueName: lg.name, teams });
+          if (seasons.length < 2) {
+            try {
+              const weekNarratives = await attachSleeperStartSit(id, teams, lg.roster_positions);
+              seasons.push({
+                season: +(lg.season || draft.season), leagueName: lg.name, teams,
+                weekNarratives: weekNarratives || [],
+              });
+            } catch (e) {
+              console.warn('sleeper start/sit', e);
+              seasons.push({ season: +(lg.season || draft.season), leagueName: lg.name, teams });
+            }
+          } else {
+            seasons.push({ season: +(lg.season || draft.season), leagueName: lg.name, teams });
+          }
         }
       }
       id = lg.previous_league_id || null;
@@ -439,6 +457,190 @@ function countSlots(arr) {
     else if (s[p] !== undefined) s[p]++;
   }
   return s;
+}
+
+/** Optimal weekly points from a {pos, p} pool given lineup slots. */
+function optimalPtsFromPool(pool, slots) {
+  const withVal = (pool || [])
+    .filter(x => x && ALL_POS.includes(x.pos) && x.p > 0)
+    .map(x => ({ player: { pos: x.pos }, p: +x.p }));
+  if (!withVal.length) return 0;
+  return greedyFill(withVal, slots || { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 1, K: 1, DST: 1 }).total;
+}
+
+/** Fantasy playoff window for start/sit clutch (typical weeks 15–18). */
+const SS_PLAYOFF_WEEK = 15;
+
+function initStartSitAcc(teams) {
+  for (const t of teams) {
+    t._ss_weeks = 0; t._ss_actual = 0; t._ss_opt = 0;
+    t._cl_weeks = 0; t._cl_actual = 0; t._cl_opt = 0;
+  }
+}
+
+function accrueStartSit(tm, week, actual, opt) {
+  if (!tm || opt <= 0.5) return;
+  tm._ss_weeks += 1;
+  tm._ss_actual += actual;
+  tm._ss_opt += opt;
+  if (week >= SS_PLAYOFF_WEEK) {
+    tm._cl_weeks += 1;
+    tm._cl_actual += actual;
+    tm._cl_opt += opt;
+  }
+}
+
+function finalizeStartSit(teams) {
+  for (const t of teams) {
+    if (t._ss_weeks >= 4 && t._ss_opt > 0) {
+      t.start_sit_eff = Math.min(1, +(t._ss_actual / t._ss_opt).toFixed(3));
+      t.start_sit_left = +Math.max(0, t._ss_opt - t._ss_actual).toFixed(1);
+      t.start_sit_weeks = t._ss_weeks;
+    }
+    if (t._cl_weeks >= 2 && t._cl_opt > 0) {
+      t.clutch_eff = Math.min(1, +(t._cl_actual / t._cl_opt).toFixed(3));
+      t.clutch_left = +Math.max(0, t._cl_opt - t._cl_actual).toFixed(1);
+      t.clutch_weeks = t._cl_weeks;
+    }
+    delete t._ss_weeks; delete t._ss_actual; delete t._ss_opt;
+    delete t._cl_weeks; delete t._cl_actual; delete t._cl_opt;
+  }
+}
+
+/**
+ * Sleeper weekly start/sit: actual starter pts vs optimal from that week's roster points.
+ * Attaches start_sit_eff / clutch_eff; returns week narrative objects for Lookback.
+ */
+async function attachSleeperStartSit(leagueId, teams, rosterPositions) {
+  if (!teams?.length) return [];
+  const players = await sleeperPlayers();
+  const slots = countSlots(rosterPositions || []);
+  const byRoster = Object.fromEntries(teams.map(t => [String(t.id), t]));
+  initStartSitAcc(teams);
+  const weekNarratives = [];
+  let emptyStreak = 0;
+  for (let w = 1; w <= 18; w++) {
+    let rows = [];
+    try {
+      const r = await fetch(`https://api.sleeper.app/v1/league/${leagueId}/matchups/${w}`);
+      rows = r.ok ? await r.json() : [];
+    } catch (_) { rows = []; }
+    if (!rows?.length) {
+      if (++emptyStreak >= 2 && w > 1) break;
+      continue;
+    }
+    emptyStreak = 0;
+    const weekSnap = [];
+    for (const row of rows) {
+      const tm = byRoster[String(row.roster_id)];
+      if (!tm) continue;
+      const ptsMap = row.players_points || {};
+      const starters = row.starters || [];
+      const actual = starters.reduce((s, id) => s + (+ptsMap[id] || 0), 0);
+      const pool = Object.entries(ptsMap).map(([id, p]) => {
+        const pl = players[id];
+        const pos = pl?.pos === 'DEF' ? 'DST' : (pl?.pos || '');
+        return { pos, p: +p || 0 };
+      });
+      const opt = optimalPtsFromPool(pool, slots);
+      accrueStartSit(tm, w, actual, opt);
+      if (opt > 0.5) {
+        weekSnap.push({
+          name: tm.ownerName || tm.name,
+          actual, opt, left: Math.max(0, opt - actual),
+        });
+      }
+    }
+    const note = weekNarrativeFromSnap(w, weekSnap);
+    if (note) weekNarratives.push(note);
+  }
+  finalizeStartSit(teams);
+  return weekNarratives;
+}
+
+/**
+ * ESPN weekly start/sit via mMatchup + scoringPeriodId.
+ * Returns week narrative objects for Lookback.
+ */
+async function attachEspnStartSit(leagueId, year, teams, slots, s2, swid) {
+  if (!teams?.length) return [];
+  const byId = Object.fromEntries(teams.map(t => [String(t.id), t]));
+  initStartSitAcc(teams);
+  const weekNarratives = [];
+  let emptyStreak = 0;
+  for (let w = 1; w <= 18; w++) {
+    let data = null;
+    try {
+      data = await espnProxy({
+        leagueId, year: String(year),
+        views: 'mMatchup',
+        scoringPeriodId: String(w),
+        ...espnCredParams(s2, swid),
+      });
+    } catch (_) { data = null; }
+    const schedule = data?.schedule || [];
+    if (!schedule.length) {
+      if (++emptyStreak >= 2 && w > 1) break;
+      continue;
+    }
+    emptyStreak = 0;
+    const sides = [];
+    for (const g of schedule) {
+      if (g.away) sides.push(g.away);
+      if (g.home) sides.push(g.home);
+    }
+    const weekSnap = [];
+    for (const side of sides) {
+      const tm = byId[String(side.teamId)];
+      if (!tm) continue;
+      const entries = side.rosterForCurrentScoringPeriod?.entries
+        || side.rosterForMatchupPeriod?.entries
+        || [];
+      if (!entries.length) continue;
+      const pool = [];
+      let actual = 0;
+      for (const e of entries) {
+        const pos = ESPN_POS[e.playerPoolEntry?.player?.defaultPositionId]
+          || (e.playerId < 0 ? 'DST' : null);
+        const pts = +(e.playerPoolEntry?.appliedStatTotal ?? e.points ?? 0);
+        if (!pos || !ALL_POS.includes(pos)) continue;
+        pool.push({ pos, p: pts });
+        const slot = e.lineupSlotId;
+        if (slot !== 20 && slot !== 21 && slot != null) actual += pts;
+      }
+      const opt = optimalPtsFromPool(pool, slots);
+      accrueStartSit(tm, w, actual, opt);
+      if (opt > 0.5) {
+        weekSnap.push({
+          name: tm.ownerName || tm.name,
+          actual, opt, left: Math.max(0, opt - actual),
+        });
+      }
+    }
+    const note = weekNarrativeFromSnap(w, weekSnap);
+    if (note) weekNarratives.push(note);
+  }
+  finalizeStartSit(teams);
+  return weekNarratives;
+}
+
+/** One-line weekly recap from that week's start/sit snapshot. */
+function weekNarrativeFromSnap(week, snap) {
+  if (!snap?.length) return null;
+  const high = [...snap].sort((a, b) => b.actual - a.actual)[0];
+  const worst = [...snap].sort((a, b) => b.left - a.left)[0];
+  const sharp = [...snap].sort((a, b) => (b.actual / b.opt) - (a.actual / a.opt))[0];
+  const parts = [`**Week ${week}.** **${high.name}** led the slate at ${high.actual.toFixed(0)} pts.`];
+  if (worst && worst.left >= 8) {
+    parts.push(`**${worst.name}** left ${worst.left.toFixed(0)} on the bench.`);
+  } else {
+    parts.push('Lineups were mostly tight.');
+  }
+  if (sharp && sharp.name !== high.name && sharp.opt > 0) {
+    parts.push(`Sharpest set: **${sharp.name}** (${(100 * sharp.actual / sharp.opt).toFixed(0)}% of optimal).`);
+  }
+  if (week >= SS_PLAYOFF_WEEK) parts.push('_Playoff window._');
+  return { week, text: parts.join(' ') };
 }
 
 /* ---------- ESPN (via thin serverless proxy at /api/espn) ---------- */
@@ -566,7 +768,7 @@ async function espnResolvePlayers(year, playerIds, s2, swid) {
 }
 
 /** One completed ESPN season: draft picks + standings, names resolved. */
-async function loadEspnSeasonHistory(leagueId, year, s2, swid) {
+async function loadEspnSeasonHistory(leagueId, year, s2, swid, withStartSit = false) {
   const data = await espnProxy({
     leagueId, year,
     views: 'mDraftDetail,mTeam,mSettings',
@@ -615,6 +817,16 @@ async function loadEspnSeasonHistory(leagueId, year, s2, swid) {
   if (!teams.some(t => t.champion)) {
     const ranked = [...teams].sort((a, b) => a.seed - b.seed || b.wins - a.wins || b.points_for - a.points_for);
     if (ranked[0]) ranked[0].champion = true;
+  }
+  if (withStartSit) {
+    try {
+      const slots = espnSlots(data.settings) || { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 1, K: 1, DST: 1 };
+      const weekNarratives = await attachEspnStartSit(leagueId, year, teams, slots, s2, swid);
+      return {
+        season: +year, leagueName: data.settings?.name || '', teams,
+        weekNarratives: weekNarratives || [],
+      };
+    } catch (e) { console.warn('espn start/sit', e); }
   }
   return { season: +year, leagueName: data.settings?.name || '', teams };
 }
@@ -1100,6 +1312,40 @@ function isMyLookbackTeam(t) {
   return !!(myLabel && theirLabel && myLabel === theirLabel);
 }
 
+/** Resolve focus key: 'me' → connected manager, else an ownerCareerKey. */
+function resolveFocusKey() {
+  if (LB.focusKey && LB.focusKey !== 'me') return LB.focusKey;
+  const lg = STATE.league;
+  if (!lg?.myId) return null;
+  const me = lg.teams.find(x => x.id === lg.myId);
+  return ownerCareerKey(me);
+}
+
+function isFocusedLookbackTeam(t) {
+  const fk = resolveFocusKey();
+  if (!fk) return isMyLookbackTeam(t);
+  return ownerCareerKey(t) === fk || (t.key && t.key === fk);
+}
+
+function myLookbackTeamLabel() {
+  const lg = STATE.league;
+  if (!lg?.myId) return null;
+  const me = lg.teams.find(x => x.id === lg.myId);
+  if (!me) return null;
+  return me.ownerName || me.name || 'You';
+}
+
+/** Pin focused owner to top; stable secondary sort via cmp(a,b). */
+function sortFocusFirst(list, cmp) {
+  const fk = resolveFocusKey();
+  return [...list].sort((a, b) => {
+    const am = isFocusedLookbackTeam(a) ? 1 : 0;
+    const bm = isFocusedLookbackTeam(b) ? 1 : 0;
+    if (am !== bm) return bm - am;
+    return cmp(a, b);
+  });
+}
+
 /** Multi-season owner rollup from live lookback (falls back to seed if no live). */
 function ownerCareerMap() {
   const live = STATE.lookbackLive;
@@ -1127,6 +1373,7 @@ function ownerCareerMap() {
           id: t.id || null,
           teamNames: [],
           seasons: 0, titles: 0, pf: 0, gradeOrds: [],
+          ssEffs: [], clutchEffs: [],
           bestGrade: null, worstGrade: null, years: [],
         };
         by.set(k, row);
@@ -1135,6 +1382,8 @@ function ownerCareerMap() {
       row.years.push(rec.season);
       if (t.champion) row.titles += 1;
       row.pf += t.points_for || 0;
+      if (t.start_sit_eff != null) row.ssEffs.push(t.start_sit_eff);
+      if (t.clutch_eff != null) row.clutchEffs.push(t.clutch_eff);
       const ord = GRADE_ORD[t.grade];
       if (ord != null) {
         row.gradeOrds.push(ord);
@@ -1156,6 +1405,12 @@ function ownerCareerMap() {
       : NaN;
     row.avgGrade = gradeFromOrd(mean);
     row.avgPf = row.seasons ? row.pf / row.seasons : 0;
+    row.avgStartSit = row.ssEffs?.length
+      ? row.ssEffs.reduce((a, b) => a + b, 0) / row.ssEffs.length
+      : null;
+    row.avgClutch = row.clutchEffs?.length
+      ? row.clutchEffs.reduce((a, b) => a + b, 0) / row.clutchEffs.length
+      : null;
     row.currentTeam = row.teamNames[row.teamNames.length - 1] || null;
   }
   // Prefer current connected-league labels when owner ids match.
@@ -1184,9 +1439,7 @@ function renderOwnerCareers() {
     el.innerHTML = `<div class="vg-empty">Loading draft history for ${escapeHtml(live.leagueName || 'your league')}…</div>`;
     return;
   }
-  const careers = [...ownerCareerMap().values()].sort((a, b) =>
-    (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0)
-    || b.titles - a.titles || b.avgPf - a.avgPf);
+  let careers = [...ownerCareerMap().values()];
   if (!careers.length) {
     const msg = live?.status === 'empty' || live?.status === 'err' || live?.status === 'auth'
       ? (live.message || 'No historic drafts graded yet.')
@@ -1198,16 +1451,32 @@ function renderOwnerCareers() {
     $('#ll-owners-reconnect')?.addEventListener('click', openConnect);
     return;
   }
-  const rows = careers.map(c => {
-    const mine = isMyLookbackTeam(c);
+  const mode = LB.rankMode === 'career' ? 'draft' : LB.rankMode;
+  const cmp = {
+    draft: (a, b) => (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0)
+      || b.titles - a.titles || b.avgPf - a.avgPf,
+    startsit: (a, b) => (b.avgStartSit ?? -1) - (a.avgStartSit ?? -1)
+      || (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0),
+    clutch: (a, b) => (b.avgClutch ?? -1) - (a.avgClutch ?? -1)
+      || (b.avgStartSit ?? -1) - (a.avgStartSit ?? -1),
+    titles: (a, b) => b.titles - a.titles || (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0),
+    pf: (a, b) => b.avgPf - a.avgPf || b.titles - a.titles,
+    playoffs: (a, b) => b.titles - a.titles || b.avgPf - a.avgPf,
+  }[mode] || ((a, b) => (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0));
+  careers = sortFocusFirst(careers, cmp);
+  const rows = careers.map((c, i) => {
+    const mine = isFocusedLookbackTeam(c);
     const aka = (c.teamNames || []).filter(n => n && n !== c.currentTeam);
     const teamLine = c.currentTeam
       ? `<div style="font-size:11px;opacity:.7;margin-top:2px">${escapeHtml(c.currentTeam)}`
         + (aka.length ? ` · aka ${escapeHtml(aka.slice(0, 3).join(', '))}${aka.length > 3 ? '…' : ''}` : '')
         + `</div>`
       : '';
-    return `<tr class="${mine ? 'vg-row--mine' : ''}"><td>${mine ? '★ ' : ''}<b>${escapeHtml(c.name)}</b>${teamLine}</td>`
+    const ss = c.avgStartSit != null ? `${(c.avgStartSit * 100).toFixed(0)}%` : '—';
+    return `<tr class="${mine ? 'vg-row--mine' : ''}"><td class="vg-num">${i + 1}</td>`
+      + `<td>${mine ? '★ ' : ''}<b>${escapeHtml(c.name)}</b>${teamLine}</td>`
       + `<td><span class="vg-grade ${gradeClass(c.avgGrade)}">${c.avgGrade}</span></td>`
+      + `<td class="vg-num">${ss}</td>`
       + `<td class="vg-num">${c.seasons}</td>`
       + `<td class="vg-num">${c.titles}</td>`
       + `<td class="vg-num">${c.avgPf.toFixed(0)}</td>`
@@ -1216,12 +1485,217 @@ function renderOwnerCareers() {
       + `<td class="vg-num" style="font-size:11px;text-align:left">${c.years.slice().sort((a, b) => b - a).join(', ')}</td></tr>`;
   }).join('');
   el.innerHTML = table(
-    ['Owner', 'Avg draft', 'Seasons', 'Titles', 'Avg PF', 'Best / worst', 'Years'],
+    ['#', 'Owner', 'Avg draft', 'Start/sit', 'Seasons', 'Titles', 'Avg PF', 'Best / worst', 'Years'],
     rows,
-  ) + `<p class="vg-note" style="margin-top:8px">Aligned by <b>manager identity</b> (not team name), so renames don't split careers.
-    Grades from ${careers[0] && STATE.lookbackLive?.leagueName
-      ? escapeHtml(STATE.lookbackLive.leagueName) + "'s"
-      : 'graded'} real drafts (VOR). ★ = you.</p>`;
+  ) + `<p class="vg-note" style="margin-top:8px">Aligned by <b>manager identity</b> (not team name).
+    ★ = focused owner (default: you). Start/sit from weekly matchups (latest 1–2 seasons).</p>`;
+}
+
+function refreshLookbackOwnerPicker() {
+  const sel = $('#lookback-owner');
+  if (!sel) return;
+  const lg = STATE.league;
+  const careers = [...ownerCareerMap().values()]
+    .sort((a, b) => String(a.name).localeCompare(String(b.name)));
+  const meLabel = myLookbackTeamLabel();
+  const opts = [];
+  if (lg?.myId && meLabel) {
+    opts.push(`<option value="me">★ You — ${escapeHtml(meLabel)}</option>`);
+  } else {
+    opts.push(`<option value="me">★ You (connect a league)</option>`);
+  }
+  for (const c of careers) {
+    if (isMyLookbackTeam(c)) continue;
+    const label = c.currentTeam ? `${c.name} · ${c.currentTeam}` : c.name;
+    opts.push(`<option value="${escapeAttr(c.key)}">${escapeHtml(label)}</option>`);
+  }
+  // Also offer current-league teams not yet in career map
+  if (lg) {
+    const seen = new Set(careers.map(c => c.key));
+    for (const t of lg.teams) {
+      const k = ownerCareerKey(t);
+      if (!k || seen.has(k) || isMyLookbackTeam(t)) continue;
+      opts.push(`<option value="${escapeAttr(k)}">${escapeHtml(t.ownerName || t.name)}</option>`);
+      seen.add(k);
+    }
+  }
+  const prev = LB.focusKey || 'me';
+  sel.innerHTML = opts.join('');
+  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+  else { sel.value = 'me'; LB.focusKey = 'me'; }
+}
+
+function renderYouCard(season) {
+  const wrap = $('#ll-you-card');
+  const title = $('#ll-you-title');
+  const sub = $('#ll-you-sub');
+  if (!wrap) return;
+  const rec = STATE.lookbackBySeason.get(season);
+  const fk = resolveFocusKey();
+  const careers = ownerCareerMap();
+  const career = fk ? careers.get(fk) : null;
+  const team = rec?.teams?.find(t => isFocusedLookbackTeam(t));
+  const label = team
+    ? (team.ownerName || team.name)
+    : (career?.name || myLookbackTeamLabel() || 'Focused owner');
+  const isYou = LB.focusKey === 'me' || isMyLookbackTeam(team || career || {});
+  if (title) title.textContent = isYou ? 'Your report card' : `Report card — ${label}`;
+  if (sub) {
+    sub.textContent = team
+      ? `${season} draft grade · record · PF · best steal / bust`
+      : (STATE.league
+        ? `No ${season} draft on file for this owner — career rollup below when available.`
+        : 'Connect a league to pin your card first, then toggle any owner.');
+  }
+  if (!team && !career) {
+    wrap.innerHTML = '<div class="vg-empty">Connect your league — Lookback leads with your card.</div>';
+    return;
+  }
+  const g = team?.grade || career?.avgGrade || '—';
+  const metrics = [];
+  if (team) {
+    metrics.push(`<div class="vg-metric"><div class="vg-metric__n"><span class="vg-grade ${gradeClass(g)}">${g}</span></div><div class="vg-metric__l">draft grade</div></div>`);
+    metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${escapeHtml(team.record || '—')}</div><div class="vg-metric__l">record</div></div>`);
+    metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(team.points_for || 0).toFixed(0)}</div><div class="vg-metric__l">points for</div></div>`);
+    metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(team.draft_value || 0).toFixed(1)}</div><div class="vg-metric__l">draft VOR</div></div>`);
+    if (team.start_sit_eff != null) {
+      metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(team.start_sit_eff * 100).toFixed(0)}%</div><div class="vg-metric__l">start/sit</div></div>`);
+      metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(team.start_sit_left || 0).toFixed(0)}</div><div class="vg-metric__l">pts left on bench</div></div>`);
+    }
+    if (team.clutch_eff != null) {
+      metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(team.clutch_eff * 100).toFixed(0)}%</div><div class="vg-metric__l">clutch (wk15+)</div></div>`);
+    }
+  }
+  if (career) {
+    metrics.push(`<div class="vg-metric"><div class="vg-metric__n"><span class="vg-grade ${gradeClass(career.avgGrade)}">${career.avgGrade}</span></div><div class="vg-metric__l">career draft</div></div>`);
+    metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${career.titles}</div><div class="vg-metric__l">titles</div></div>`);
+    metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${career.seasons}</div><div class="vg-metric__l">seasons graded</div></div>`);
+    if (career.avgStartSit != null) {
+      metrics.push(`<div class="vg-metric"><div class="vg-metric__n">${(career.avgStartSit * 100).toFixed(0)}%</div><div class="vg-metric__l">career start/sit</div></div>`);
+    }
+  }
+  const bp = team?.best_pick, wp = team?.worst_pick;
+  const picks = (bp || wp)
+    ? `<div class="vg-you__picks"><span class="vg-val vg-val--up">STEAL</span> ${bp ? escapeHtml(bp.name) + ` <span class="vg-slot">pk${bp.pick}</span>` : '—'}
+         &nbsp; <span class="vg-val vg-val--dn">BUST</span> ${wp ? escapeHtml(wp.name) + ` <span class="vg-slot">pk${wp.pick}</span>` : '—'}</div>`
+    : '';
+  const champ = team?.champion ? '<span class="vg-you__champ">👑 Champion</span>' : '';
+  wrap.innerHTML =
+    `<div class="vg-you">
+      <div class="vg-you__hd"><b>${escapeHtml(label)}</b> ${champ}
+        ${team?.name && team.name !== label ? `<span class="vg-owner-chip">${escapeHtml(team.name)}</span>` : ''}</div>
+      <div class="vg-lineup-total">${metrics.join('')}</div>
+      ${picks}
+      ${team?.roast?.line ? `<p class="vg-roast__line" style="margin-top:8px">${escapeHtml(team.roast.line)}</p>` : ''}
+    </div>`;
+}
+
+function renderLeagueRankings(season) {
+  const el = $('#ll-rankings');
+  const note = $('#ll-rank-note');
+  if (!el) return;
+  const mode = LB.rankMode || 'draft';
+  const notes = {
+    draft: 'Ranked by draft VOR captured that season · ★ = focused owner.',
+    startsit: 'Start/sit efficiency = actual starter pts ÷ optimal from that week\'s roster (platform points). Needs ≥4 weeks of matchups.',
+    clutch: 'Playoff-window start/sit (weeks 15–18) — who set the right lineup when it counted.',
+    titles: 'Career titles (multi-season) · season view still shows that year\'s record.',
+    pf: 'Season points for · higher scoring managers rise.',
+    playoffs: 'Champions first, then playoff seed / wins · ★ = focused owner.',
+    career: 'Career average draft grade across graded seasons.',
+  };
+  if (note) note.textContent = notes[mode] || notes.draft;
+
+  if (mode === 'career' || mode === 'titles') {
+    const careers = [...ownerCareerMap().values()];
+    if (!careers.length) {
+      el.innerHTML = '<div class="vg-empty">Connect + load Lookback history for career standings.</div>';
+      return;
+    }
+    const cmp = mode === 'titles'
+      ? (a, b) => b.titles - a.titles || (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0)
+      : (a, b) => (GRADE_ORD[b.avgGrade] || 0) - (GRADE_ORD[a.avgGrade] || 0) || b.titles - a.titles;
+    const ranked = [...careers].sort(cmp);
+    const rows = ranked.map((c, i) => {
+      const mine = isFocusedLookbackTeam(c);
+      const ss = c.avgStartSit != null ? `${(c.avgStartSit * 100).toFixed(0)}%` : '—';
+      return `<tr class="${mine ? 'vg-row--mine' : ''}"><td class="vg-num">${i + 1}</td>`
+        + `<td>${mine ? '★ ' : ''}<b>${escapeHtml(c.name)}</b></td>`
+        + `<td><span class="vg-grade ${gradeClass(c.avgGrade)}">${c.avgGrade}</span></td>`
+        + `<td class="vg-num">${ss}</td>`
+        + `<td class="vg-num">${c.titles}</td>`
+        + `<td class="vg-num">${c.seasons}</td>`
+        + `<td class="vg-num">${c.avgPf.toFixed(0)}</td></tr>`;
+    }).join('');
+    el.innerHTML = table(['#', 'Owner', 'Avg draft', 'Start/sit', 'Titles', 'Seasons', 'Avg PF'], rows);
+    return;
+  }
+
+  const rec = STATE.lookbackBySeason.get(season);
+  if (!rec?.teams?.length) {
+    el.innerHTML = '<div class="vg-empty">No league season loaded for rankings.</div>';
+    return;
+  }
+  if (mode === 'startsit') {
+    const withSs = rec.teams.filter(t => t.start_sit_eff != null);
+    if (!withSs.length) {
+      el.innerHTML = '<div class="vg-empty">No weekly matchup history for this season yet — reconnect after a completed season, or try a newer year.</div>';
+      return;
+    }
+    const ranked = [...withSs].sort((a, b) => b.start_sit_eff - a.start_sit_eff);
+    const rows = ranked.map((t, i) => {
+      const mine = isFocusedLookbackTeam(t);
+      return `<tr class="${mine ? 'vg-row--mine' : ''}"><td class="vg-num">${i + 1}</td>`
+        + `<td>${mine ? '★ ' : ''}${escapeHtml(t.ownerName || t.name)}</td>`
+        + `<td><span class="vg-grade ${gradeClass(t.start_sit_grade || 'C')}">${t.start_sit_grade || '—'}</span></td>`
+        + `<td class="vg-num">${(t.start_sit_eff * 100).toFixed(0)}%</td>`
+        + `<td class="vg-num">${t.clutch_eff != null ? (t.clutch_eff * 100).toFixed(0) + '%' : '—'}</td>`
+        + `<td class="vg-num">${(t.start_sit_left || 0).toFixed(0)}</td>`
+        + `<td class="vg-num">${t.start_sit_weeks || '—'}</td></tr>`;
+    }).join('');
+    el.innerHTML = table(['#', 'Owner', 'Grade', 'Efficiency', 'Clutch', 'Pts left on bench', 'Weeks'], rows);
+    return;
+  }
+  if (mode === 'clutch') {
+    const withCl = rec.teams.filter(t => t.clutch_eff != null);
+    if (!withCl.length) {
+      el.innerHTML = '<div class="vg-empty">No playoff-window matchups (weeks 15–18) graded yet for this season.</div>';
+      return;
+    }
+    const ranked = [...withCl].sort((a, b) => b.clutch_eff - a.clutch_eff);
+    const rows = ranked.map((t, i) => {
+      const mine = isFocusedLookbackTeam(t);
+      return `<tr class="${mine ? 'vg-row--mine' : ''}"><td class="vg-num">${i + 1}</td>`
+        + `<td>${mine ? '★ ' : ''}${escapeHtml(t.ownerName || t.name)}</td>`
+        + `<td><span class="vg-grade ${gradeClass(t.clutch_grade || 'C')}">${t.clutch_grade || '—'}</span></td>`
+        + `<td class="vg-num">${(t.clutch_eff * 100).toFixed(0)}%</td>`
+        + `<td class="vg-num">${(t.clutch_left || 0).toFixed(0)}</td>`
+        + `<td class="vg-num">${t.clutch_weeks || '—'}</td>`
+        + `<td class="vg-num">${t.start_sit_eff != null ? (t.start_sit_eff * 100).toFixed(0) + '%' : '—'}</td></tr>`;
+    }).join('');
+    el.innerHTML = table(['#', 'Owner', 'Grade', 'Clutch eff', 'Pts left', 'Playoff wks', 'Season start/sit'], rows);
+    return;
+  }
+  const cmp = {
+    draft: (a, b) => b.draft_value - a.draft_value,
+    pf: (a, b) => b.points_for - a.points_for,
+    playoffs: (a, b) => (b.champion ? 1 : 0) - (a.champion ? 1 : 0)
+      || (a.seed || 99) - (b.seed || 99) || b.wins - a.wins || b.points_for - a.points_for,
+  }[mode] || ((a, b) => b.draft_value - a.draft_value);
+  const ranked = [...rec.teams].sort(cmp);
+  const rows = ranked.map((t, i) => {
+    const mine = isFocusedLookbackTeam(t);
+    const ss = t.start_sit_eff != null ? `${(t.start_sit_eff * 100).toFixed(0)}%` : '—';
+    return `<tr class="${t.champion ? 'vg-row--champ' : ''}${mine ? ' vg-row--mine' : ''}">`
+      + `<td class="vg-num">${i + 1}</td>`
+      + `<td>${t.champion ? '👑 ' : ''}${mine ? '★ ' : ''}${escapeHtml(t.ownerName || t.name)}</td>`
+      + `<td><span class="vg-grade ${gradeClass(t.grade)}">${t.grade}</span></td>`
+      + `<td class="vg-num">${(t.draft_value || 0).toFixed(1)}</td>`
+      + `<td class="vg-num">${ss}</td>`
+      + `<td class="vg-num">${escapeHtml(t.record || '—')}</td>`
+      + `<td class="vg-num">${(t.points_for || 0).toFixed(0)}</td></tr>`;
+  }).join('');
+  el.innerHTML = table(['#', 'Owner', 'Grade', 'Draft VOR', 'Start/sit', 'Rec', 'PF'], rows);
 }
 
 function refreshLookbackSeasonPicker() {
@@ -1258,7 +1732,7 @@ function seasonGrades(season) {
   return { pool, grade };
 }
 
-const LB = { season: null, pos: 'ALL' };
+const LB = { season: null, pos: 'ALL', focusKey: 'me', rankMode: 'draft' };
 function initLookback() {
   refreshLookbackSeasonPicker();
   const sel = $('#lookback-season');
@@ -1268,11 +1742,22 @@ function initLookback() {
     $$('#lookback-posfilter button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
     renderLookback();
   }));
+  $('#lookback-owner')?.addEventListener('change', e => {
+    LB.focusKey = e.target.value || 'me';
+    renderLookback();
+  });
+  $$('#ll-rank-mode button').forEach(b => b.addEventListener('click', () => {
+    LB.rankMode = b.dataset.mode;
+    $$('#ll-rank-mode button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    renderLeagueRankings(LB.season);
+    renderOwnerCareers();
+  }));
   renderLookback();
 }
 
 function renderLookback() {
   if (!STATE.vectors || LB.season == null) return;
+  refreshLookbackOwnerPicker();
   const { pool, grade } = seasonGrades(LB.season);
   const sorted = [...pool].sort((a, b) => ppgOf(b) - ppgOf(a));
   const leader = pos => sorted.find(p => p.pos === pos);
@@ -1285,11 +1770,14 @@ function renderLookback() {
        <div class="vg-super__n">${escapeHtml(p.name)}</div>
        <div class="vg-super__v">${ppgOf(p).toFixed(1)} ${sc}/g</div></div>` : '').join('') + '</div>';
 
+  renderYouCard(LB.season);
+  renderLeagueRankings(LB.season);
+
   // what-if: the best startable lineup of that season by ACTUAL ppg (incl K/DST)
   const slots = (STATE.league && STATE.league.slots) || { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 1, K: 1, DST: 1 };
   const withVal = sorted.filter(p => ALL_POS.includes(p.pos)).map(p => ({ player: p, p: ppgOf(p) }));
   const { starters, total } = greedyFill(withVal, slots);
-  $('#lookback-perfect-title').textContent = `The perfect roster you could've started — ${LB.season}`;
+  $('#lookback-perfect-title').textContent = `The perfect roster anyone could've started — ${LB.season}`;
   $('#lookback-perfect').innerHTML =
     `<div class="vg-lineup-total"><div class="vg-metric"><div class="vg-metric__n">${total.toFixed(1)}</div>
       <div class="vg-metric__l">${sc} pts / week</div></div></div>`
@@ -1348,23 +1836,27 @@ function renderLeagueSeason(season) {
     return;
   }
   const isLive = !!(rec.source === 'league' || (live?.seasons?.has(season)));
-  const teams = [...rec.teams].sort((a, b) => b.draft_value - a.draft_value);
+  const teams = sortFocusFirst(rec.teams, (a, b) => b.draft_value - a.draft_value);
   const rows = teams.map(t => {
     const bp = t.best_pick, wp = t.worst_pick;
-    const mine = isMyLookbackTeam(t);
+    const mine = isFocusedLookbackTeam(t);
+    const ss = t.start_sit_eff != null ? `${(t.start_sit_eff * 100).toFixed(0)}%` : '—';
+    const cl = t.clutch_eff != null ? `${(t.clutch_eff * 100).toFixed(0)}%` : '—';
     return `<tr class="${t.champion ? 'vg-row--champ' : ''}${mine ? ' vg-row--mine' : ''}"><td><span class="vg-grade ${gradeClass(t.grade)}">${t.grade}</span></td>`
-      + `<td>${t.champion ? '👑 ' : ''}${mine ? '★ ' : ''}${escapeHtml(t.name)}</td>`
+      + `<td>${t.champion ? '👑 ' : ''}${mine ? '★ ' : ''}${escapeHtml(t.ownerName || t.name)}</td>`
       + `<td class="vg-num">${t.draft_value.toFixed(1)}</td>`
+      + `<td class="vg-num">${ss}</td>`
+      + `<td class="vg-num">${cl}</td>`
       + `<td class="vg-num">${escapeHtml(t.record)}</td>`
       + `<td class="vg-num">${t.points_for.toFixed(0)}</td>`
       + `<td style="text-align:left;font-size:11px">${bp ? escapeHtml(bp.name) + ` <span class="vg-slot">pk${bp.pick}</span>` : '—'}</td>`
       + `<td style="text-align:left;font-size:11px" class="vg-unmatched">${wp ? escapeHtml(wp.name) + ` <span class="vg-slot">pk${wp.pick}</span>` : '—'}</td></tr>`;
   }).join('');
   $('#ll-cards').innerHTML =
-    table(['Grade', 'Team', 'Draft VOR', 'Rec', 'PF', 'Best steal', 'Biggest bust'], rows)
+    table(['Grade', 'Owner', 'Draft VOR', 'Start/sit', 'Clutch', 'Rec', 'PF', 'Best steal', 'Biggest bust'], rows)
     + `<p class="vg-note" style="margin-top:8px">${isLive
-      ? `Your league's real ${season} draft, graded on value-over-replacement from actual NFL ${STATE.scoring.toUpperCase()} production (👑 = champion).`
-      : `Best-ball PPR · drafts graded on value-over-replacement captured (👑 = champion). Seeded from real ${season} results; your league's actual draft history plugs into this same engine once connected.`}</p>`;
+      ? `Your league's real ${season} draft + weekly start/sit (👑 = champion · ★ = focused owner, pinned top). Clutch = weeks 15–18.`
+      : `Best-ball PPR · drafts graded on value-over-replacement (👑 = champion · ★ = focused). Connect your league for real drafts + start/sit.`}</p>`;
   $('#ll-story').innerHTML =
     `<p class="vg-story">${mdBold(rec.narratives.draft)}</p><p class="vg-story">${mdBold(rec.narratives.season)}</p>`;
   const weeks = rec.narratives.weeks || [];
@@ -1372,7 +1864,7 @@ function renderLeagueSeason(season) {
     ? `<details class="vg-weeks"><summary>${weeks.length} weekly recaps ▾</summary>`
       + weeks.map(w => `<p class="vg-weekline">${mdBold(w.text)}</p>`).join('') + `</details>`
     : (isLive
-      ? `<p class="vg-note">Weekly recaps stay on the seeded mock — your league's week-by-week story needs matchup history (coming next).</p>`
+      ? `<p class="vg-note">No weekly matchup recaps for this season yet — reconnect after completed weeks, or pick a year with start/sit history.</p>`
       : '');
   renderRoast(season, rec);
 }
@@ -1381,22 +1873,27 @@ function renderLeagueSeason(season) {
 // copy buttons so you can paste the roast straight into the league group chat.
 function renderRoast(season, rec) {
   $('#ll-season-c').textContent = season;
-  const teams = [...rec.teams].filter(t => t.roast)
-    .sort((a, b) => (a.roast.miss ? a.roast.miss.vor : 0) - (b.roast.miss ? b.roast.miss.vor : 0));
+  const teams = sortFocusFirst(
+    [...rec.teams].filter(t => t.roast),
+    (a, b) => (a.roast.miss ? a.roast.miss.vor : 0) - (b.roast.miss ? b.roast.miss.vor : 0),
+  );
   const chip = pl => pl ? `${escapeHtml(pl.name)} <span class="vg-slot">pk${pl.pick}</span>` : '—';
   $('#ll-roast').innerHTML =
     `<div style="margin-bottom:12px"><button class="vg-btn vg-btn--primary" id="ll-roast-copyall">📋 Copy the whole roast</button>
        <span class="vg-note" id="ll-roast-msg" style="margin-left:8px"></span></div>`
-    + teams.map(t => `<div class="vg-roast">
-        <div class="vg-roast__hd"><b>${escapeHtml(t.name)}</b> <span class="vg-grade ${gradeClass(t.grade)}">${t.grade}</span>
+    + teams.map(t => {
+      const mine = isFocusedLookbackTeam(t);
+      return `<div class="vg-roast${mine ? ' vg-roast--mine' : ''}">
+        <div class="vg-roast__hd"><b>${mine ? '★ ' : ''}${escapeHtml(t.ownerName || t.name)}</b> <span class="vg-grade ${gradeClass(t.grade)}">${t.grade}</span>
           <button class="vg-btn vg-btn--ghost vg-roast__copy" data-name="${escapeAttr(t.name)}">copy</button></div>
         <p class="vg-roast__line">${escapeHtml(t.roast.line)}</p>
         <div class="vg-roast__pk"><span class="vg-val vg-val--dn">MISS</span> ${chip(t.roast.miss)}
           &nbsp; <span class="vg-val vg-val--up">HIT</span> ${chip(t.roast.hit)}
           &nbsp; <span class="vg-slot">redraft →</span> ${chip(t.roast.redraft)}</div>
-      </div>`).join('')
+      </div>`;
+    }).join('')
     + `<p class="vg-note" style="margin-top:8px">Best-ball hindsight: MISS = worst pick vs its draft cost · redraft = the best player still on the board when they took it.${rec.source === 'league' ? ` Graded from your league's real ${season} draft.` : ` Seeded from real ${season}; your league's real draft roasts through the same engine once connected.`}</p>`;
-  const lineFor = t => `${t.name} (${t.grade}): ${t.roast.line}`;
+  const lineFor = t => `${t.ownerName || t.name} (${t.grade}): ${t.roast.line}`;
   $('#ll-roast-copyall').addEventListener('click', () => {
     copyText(`🔥 ${season} Draft Roast 🔥\n\n` + teams.map(lineFor).join('\n\n'), '#ll-roast-msg', 'Roast copied — go start something.');
   });
@@ -1530,11 +2027,30 @@ function gradeLeagueSeason(hist) {
       worst_pick: playerBrief(vorMap, worstBust),
       record: `${tm.wins}-${tm.losses}${tm.ties ? `-${tm.ties}` : ''}`,
       roster: tm.picks.slice(0, 8).map(pk => playerBrief(vorMap, pk)),
+      start_sit_eff: tm.start_sit_eff ?? null,
+      start_sit_left: tm.start_sit_left ?? null,
+      start_sit_weeks: tm.start_sit_weeks ?? null,
+      clutch_eff: tm.clutch_eff ?? null,
+      clutch_left: tm.clutch_left ?? null,
+      clutch_weeks: tm.clutch_weeks ?? null,
       _picks: tm.picks,
     };
   });
   const ranked = [...scored].sort((a, b) => b.draft_value - a.draft_value);
   ranked.forEach((t, i) => { t.grade = letterGrade(n > 1 ? 1 - i / (n - 1) : 1); });
+  // Start/sit letter from efficiency percentile among teams with data.
+  const ssRanked = scored.filter(t => t.start_sit_eff != null)
+    .sort((a, b) => b.start_sit_eff - a.start_sit_eff);
+  ssRanked.forEach((t, i) => {
+    const nn = ssRanked.length;
+    t.start_sit_grade = letterGrade(nn > 1 ? 1 - i / (nn - 1) : 1);
+  });
+  const clRanked = scored.filter(t => t.clutch_eff != null)
+    .sort((a, b) => b.clutch_eff - a.clutch_eff);
+  clRanked.forEach((t, i) => {
+    const nn = clRanked.length;
+    t.clutch_grade = letterGrade(nn > 1 ? 1 - i / (nn - 1) : 1);
+  });
 
   const pickOf = new Map();
   const teamOfKey = new Map();
@@ -1580,13 +2096,18 @@ function gradeLeagueSeason(hist) {
   ].filter(Boolean).join(' ');
 
   scored.sort((a, b) => b.wins - a.wins || b.points_for - a.points_for);
+  const weekNarratives = (hist.weekNarratives || []).slice();
   return {
     season: hist.season,
     source: 'league',
     leagueName: hist.leagueName || '',
     champion: champ.name,
     teams: scored,
-    narratives: { draft: draftNarr, season: seasonNarr, weeks: [] },
+    narratives: {
+      draft: draftNarr,
+      season: seasonNarr,
+      weeks: weekNarratives,
+    },
   };
 }
 
@@ -1708,7 +2229,7 @@ async function refreshLookbackFromLeague(lg) {
       for (const y of years) {
         if (token !== _lbRefreshToken) return;
         try {
-          const rec = await loadEspnSeasonHistory(lg.leagueId, String(y), creds.s2, creds.swid);
+          const rec = await loadEspnSeasonHistory(lg.leagueId, String(y), creds.s2, creds.swid, raw.length < 2);
           if (rec) { raw.push(rec); misses = 0; }
           else if (++misses >= 3 && raw.length) break;
         } catch (e) {
@@ -1849,30 +2370,94 @@ function renderNextGame() {
   $('#nextgame-body').innerHTML = table(['Player', 'Pos', 'Matchup', 'Conditions', 'Proj', 'Fl–Ce', 'Projected line'], body)
     + `<p class="vg-note" style="margin-top:8px">Multi-task MTNN for ${STATE.next.season} Week ${STATE.next.week}:
        ${STATE.latestSeason} form × each team's real opponent, roof/weather, and Vegas implied total.
-       K/DST use season-rate projections (no weekly matchup model). Re-run the pipeline weekly to roll forward.</p>`;
+       Floor–ceiling = per-pos conformal |residual| q80 (~80% held-out coverage). K/DST use season-rate projections.
+       Re-run the pipeline weekly to roll forward.</p>`
+    + backtestNote();
   bindNameLinks();
+}
+
+// Walk-forward rank-quality readout (eval_backtest.json) — honest caption:
+// no publish archive exists, so this scores the METHOD as-of each week.
+function backtestNote() {
+  const bt = STATE.backtest;
+  if (!bt || !bt.overall) return '';
+  const f = r => (r && r.spearman != null) ? r.spearman.toFixed(2) : '—';
+  const p = bt.positions || {};
+  return `<p class="vg-note" style="margin-top:4px">Rank check — held-out ${bt.season}, weeks ${bt.weeks[0]}–${bt.weeks.at(-1)},
+     walk-forward (frozen pre-${bt.season} weights, features from prior weeks only): Spearman proj→actual
+     <span class="vg-pos QB">QB</span> ${f(p.QB)} · <span class="vg-pos RB">RB</span> ${f(p.RB)} ·
+     <span class="vg-pos WR">WR</span> ${f(p.WR)} · <span class="vg-pos TE">TE</span> ${f(p.TE)} ·
+     overall ${f(bt.overall)} (last-4 baseline ${bt.overall.baseline_last4 != null ? bt.overall.baseline_last4.toFixed(2) : '—'}).
+     Scores the projection method, not archived publishes — the site keeps no projection history. Week 1 unscored (no prior form).</p>`;
 }
 
 /* ================================================================
    EXPLORER — search + profile + comps
    ================================================================ */
 const eInput = $('#explore-input'), eSuggest = $('#explore-suggest');
+// The suggestion list is a role="listbox" with CSS already keyed off
+// li[aria-selected="true"] (see .vg-suggest li[aria-selected] in
+// gridiron.css) but nothing ever set that attribute or handled a key
+// press — the only way to pick a suggestion was a mouse click, so a
+// keyboard-only user could open the list but never act on it. eActiveIdx
+// tracks the highlighted option; arrow keys move it, Enter selects it,
+// Escape closes the list.
+let eActiveIdx = -1;
+function eRenderActive() {
+  $$('li', eSuggest).forEach((li, i) => {
+    const on = i === eActiveIdx;
+    li.setAttribute('aria-selected', on ? 'true' : 'false');
+    if (on) li.scrollIntoView({ block: 'nearest' });
+  });
+  if (eActiveIdx >= 0) eInput.setAttribute('aria-activedescendant', `explore-opt-${eActiveIdx}`);
+  else eInput.removeAttribute('aria-activedescendant');
+}
+function eHideSuggest() {
+  eSuggest.hidden = true;
+  eActiveIdx = -1;
+  eInput.setAttribute('aria-expanded', 'false');
+  eInput.removeAttribute('aria-activedescendant');
+}
+function eSelect(li) {
+  if (!li) return;
+  eInput.value = li.dataset.name; eHideSuggest();
+  showProfile(li.dataset.name, li.dataset.pos);
+}
 eInput.addEventListener('input', () => {
   const q = eInput.value.toLowerCase().trim();
-  if (!q) { eSuggest.hidden = true; return; }
+  eActiveIdx = -1;
+  if (!q) { eHideSuggest(); return; }
   const hits = STATE.names.filter(n => n.name.toLowerCase().includes(q)).slice(0, 8);
-  eSuggest.innerHTML = hits.map(h =>
-    `<li role="option" data-name="${escapeAttr(h.name)}" data-pos="${h.pos}">
+  eSuggest.innerHTML = hits.map((h, i) =>
+    `<li role="option" id="explore-opt-${i}" data-name="${escapeAttr(h.name)}" data-pos="${h.pos}">
       <span class="vg-pos ${h.pos}">${h.pos}</span> ${escapeHtml(h.name)}
       <span class="vg-slot" style="margin-left:auto">${escapeHtml(h.team || '')}</span></li>`).join('');
   eSuggest.hidden = !hits.length;
+  eInput.setAttribute('aria-expanded', hits.length ? 'true' : 'false');
+});
+eInput.addEventListener('keydown', e => {
+  if (eSuggest.hidden) return;
+  const opts = $$('li', eSuggest);
+  if (!opts.length) return;
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    eActiveIdx = (eActiveIdx + 1) % opts.length;
+    eRenderActive();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    eActiveIdx = (eActiveIdx - 1 + opts.length) % opts.length;
+    eRenderActive();
+  } else if (e.key === 'Enter') {
+    if (eActiveIdx >= 0) { e.preventDefault(); eSelect(opts[eActiveIdx]); }
+  } else if (e.key === 'Escape') {
+    eHideSuggest();
+  }
 });
 eSuggest.addEventListener('click', e => {
   const li = e.target.closest('li'); if (!li) return;
-  eInput.value = li.dataset.name; eSuggest.hidden = true;
-  showProfile(li.dataset.name, li.dataset.pos);
+  eSelect(li);
 });
-document.addEventListener('click', e => { if (!e.target.closest('.vg-search')) eSuggest.hidden = true; });
+document.addEventListener('click', e => { if (!e.target.closest('.vg-search')) eHideSuggest(); });
 
 function statLine(line) {
   if (!line) return '';
@@ -1883,6 +2468,22 @@ function statLine(line) {
   parts.push(`${line.td.toFixed(1)} TD`);
   return parts.join(' · ');
 }
+function towerContribHtml(src) {
+  const rows = src?.tower_contrib;
+  if (!rows?.length) return '';
+  const max = Math.max(...rows.map(r => r.w), 0.01);
+  const bars = rows.map(r => {
+    const pct = Math.round(100 * r.w / max);
+    return `<div class="vg-tcontrib"><span class="vg-tcontrib__l">${escapeHtml(r.family)}</span>
+      <span class="vg-tcontrib__track"><span class="vg-tcontrib__fill" style="width:${pct}%"></span></span>
+      <span class="vg-tcontrib__v">${(r.w * 100).toFixed(0)}%</span></div>`;
+  }).join('');
+  return `<div class="vg-card__title" style="margin-top:12px">What the model weighed
+      <span class="vg-slot">tower mix</span></div>
+    <div class="vg-tcontribs">${bars}</div>
+    <p class="vg-note">Gated fusion attention × gate, renormalized — top families for this projection.</p>`;
+}
+
 function nextGameBlock(name, pos) {
   const n = nextFor(name, pos);
   if (!n) return '';
@@ -1900,7 +2501,8 @@ function nextGameBlock(name, pos) {
       <div class="vg-metric"><div class="vg-metric__n">${n.floor.toFixed(0)}–${n.ceil.toFixed(0)}</div><div class="vg-metric__l">floor–ceiling</div></div>
     </div>
     <p class="vg-note">${cond.join(' · ')}</p>
-    <p class="vg-note"><b>Projected line:</b> ${statLine(n.line)}</p>`;
+    <p class="vg-note"><b>Projected line:</b> ${statLine(n.line)}</p>
+    ${towerContribHtml(n)}`;
 }
 
 function showProfile(name, pos) {
@@ -1922,7 +2524,8 @@ function showProfile(name, pos) {
          <div class="vg-metric"><div class="vg-metric__n">${lastPpg(name, pos)?.toFixed(1) ?? '—'}</div><div class="vg-metric__l">${STATE.scoring} /g '${String(STATE.latestSeason).slice(2)}</div></div>
        </div>
        ${p.line ? `<p class="vg-note"><b>Projected ${STATE.proj.proj_season} line/g:</b> ${statLine(p.line)}${p.tier ? ` · tier ${p.tier} ${p.pos}${p.rank_pos}` : ''}</p>` : ''}
-       ${adpFor(name, pos) ? `<p class="vg-note"><b>ADP:</b> ${adpFor(name, pos).adp.toFixed(1)} overall (${adpFor(name, pos).pos}${adpFor(name, pos).pos_rank}, ${adpFor(name, pos).n}-source consensus) · ${valueBadge(p)}</p>` : ''}` : '';
+       ${adpFor(name, pos) ? `<p class="vg-note"><b>ADP:</b> ${adpFor(name, pos).adp.toFixed(1)} overall (${adpFor(name, pos).pos}${adpFor(name, pos).pos_rank}, ${adpFor(name, pos).n}-source consensus) · ${valueBadge(p)}</p>` : ''}
+       ${towerContribHtml(p)}` : '';
 
   // σ-profile + career arc only when we have a season vector
   const feats = STATE.vectors.features, labels = STATE.vectors.featureLabels;

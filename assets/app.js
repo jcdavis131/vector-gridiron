@@ -1,7 +1,8 @@
 /* Vector Gridiron — fantasy cockpit client.
-   Static, zero-backend for reads except the ESPN cookie proxy (api/espn.js).
-   Sleeper is CORS-open and called directly. All league creds stay in
-   localStorage and go straight to the platform (or our thin proxy). */
+   Static, zero-backend for reads except the ESPN proxy (/api/espn).
+   Sleeper is CORS-open and called directly. No credentials are collected:
+   ESPN connects by League ID (public view) only — the session-cookie
+   paste flow was retired in Wave A. */
 'use strict';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -32,7 +33,6 @@ const STATE = {
   league: null,                    // {name, slots, teams:[{id,name,roster,starters}], myId}
   mineKeys: new Set(),             // normKeys on the user's team
   rosterOwner: new Map(),          // normKey -> team name that rosters the player
-  espnCreds: null,                 // {s2, swid} for historic ESPN fetches
 };
 function rebuildOwnership() {
   STATE.mineKeys = new Set();
@@ -159,9 +159,22 @@ function labelSeasons() {
   $('#nextgame-week-label') && (STATE.next
     ? ($('#nextgame-week-label').textContent = `${STATE.next.season} · Week ${STATE.next.week}`)
     : ($('#nextgame-week-label').textContent = ''));
-  const r = STATE.proj.model?.report;
-  if (r) $('#foot-model').textContent =
-    `MTNN next-game MAE ${r.model_fpts_mae} (R² ${r.model_fpts_r2}) · ${last} data`;
+  $('#foot-model').textContent =
+    `${STATE.next?.model?.type || 'MTNN v2 multi-tower'} · ${last} data`;
+  // Vintage on the door, rendered from the served file's own metadata so it
+  // can never drift from the data: season/week/built all live in nextgame.json.
+  const nx = STATE.next, vb = $('#data-vintage');
+  if (nx && vb) {
+    vb.innerHTML = `Projections vintage: <b>${nx.season} season · Week ${nx.week} · built ${fmtBuilt(nx.built)}</b>`
+      + ' — weekly in-season refresh in progress.';
+  }
+}
+
+function fmtBuilt(iso) {
+  if (!iso) return '';
+  const d = new Date(iso + 'T00:00:00Z');
+  return isNaN(d) ? iso : d.toLocaleDateString('en-US',
+    { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
 function showError(msg) {
@@ -207,45 +220,6 @@ function setStatus(msg, kind, html) {
   if (html) s.innerHTML = msg; else s.textContent = msg;
 }
 
-/* Parse espn_s2 + SWID out of anything the user pastes: the bookmarklet output
-   (espn_s2=…; SWID=…), a whole document.cookie string, OR the two raw values
-   copied straight from DevTools (in any order, on separate lines). */
-const isSwid = x => /^\{?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\}?$/i.test(x);
-function parseEspnCookies(text) {
-  const t = String(text || '').trim();
-  let s2 = (t.match(/espn_s2=([^;\s]+)/i) || [])[1] || '';
-  let swid = (t.match(/SWID=(\{[^}]*\}|[^;\s]+)/i) || [])[1] || '';
-  if (!s2 || !swid) {                       // fall back: infer from raw tokens
-    const tokens = t.split(/[\s;,]+/).map(x => x.replace(/^(espn_s2|SWID)=/i, '').trim()).filter(Boolean);
-    for (const tok of tokens) {
-      if (!swid && isSwid(tok)) swid = tok;
-      else if (!s2 && tok.length > 40 && !isSwid(tok)) s2 = tok;
-    }
-  }
-  return { s2: s2.trim(), swid: swid.trim() };
-}
-(function espnCookieHelpers() {
-  const box = $('#espn-cookies');
-  if (!box) return;
-  box.addEventListener('input', () => {
-    const { s2, swid } = parseEspnCookies(box.value);
-    $('#espn-s2').value = s2;
-    $('#espn-swid').value = swid;
-    const st = $('#espn-cookie-status');
-    if (s2 && swid) { st.textContent = '✓ found espn_s2 and SWID — ready'; st.className = 'vg-cookie-status is-ok'; }
-    else if (s2 || swid) { st.textContent = `found ${s2 ? 'espn_s2' : 'SWID'} — still need ${s2 ? 'SWID' : 'espn_s2'}`; st.className = 'vg-cookie-status is-warn'; }
-    else { st.textContent = box.value.trim() ? "couldn't find espn_s2 / SWID in that paste" : ''; st.className = 'vg-cookie-status' + (box.value.trim() ? ' is-warn' : ''); }
-  });
-  // clicking the bookmarklet here would run against OUR page, not ESPN — so copy it instead
-  $('#espn-bookmarklet')?.addEventListener('click', e => {
-    e.preventDefault();
-    navigator.clipboard?.writeText(e.currentTarget.getAttribute('href'));
-    const st = $('#espn-cookie-status');
-    st.textContent = 'Bookmarklet copied — save it as a browser bookmark, then click it while on fantasy.espn.com.';
-    st.className = 'vg-cookie-status is-warn';
-  });
-})();
-
 async function onConnect() {
   try {
     let league;
@@ -254,7 +228,7 @@ async function onConnect() {
       const year = $('#espn-year').value.trim() || '2024';
       if (!leagueId) return setStatus('Enter your ESPN League ID.', 'err');
       setStatus('Loading ESPN league…', 'busy');
-      league = await loadEspn(leagueId, year, $('#espn-s2').value.trim(), $('#espn-swid').value.trim());
+      league = await loadEspn(leagueId, year);
     } else {
       const leagueId = $('#sleeper-league').value.trim();
       if (!leagueId) return setStatus('Enter your Sleeper League ID.', 'err');
@@ -270,12 +244,12 @@ async function onConnect() {
   } catch (e) {
     console.error(e);
     if (PLATFORM === 'espn' && e.status === 401) {
-      $('#espn-cookie-adv').open = true;
       setStatus(
-        "This is a <b>private</b> league, so ESPN needs proof you're in it:<br>"
-        + "• <b>Easiest (works on your phone):</b> if you're the league manager, make the "
-        + "league public — see the tip above. Then no cookies needed.<br>"
-        + "• <b>Otherwise:</b> paste your espn_s2 + SWID cookies below, then Load again.",
+        "This is a <b>private</b> league, and this site reads ESPN's public view only — "
+        + "cookie pasting was retired, so private leagues can't be loaded.<br>"
+        + "• <b>If you're the league manager:</b> make the league viewable to the public "
+        + "(see the tip above), then Load again.<br>"
+        + "• <b>Otherwise:</b> ask your manager to flip that setting, or connect a Sleeper league instead.",
         'err', true);
     } else if (PLATFORM === 'espn' && e.status === 404) {
       setStatus("No league found for that ID + year. Check the League ID, and try season year 2025.", 'err');
@@ -562,7 +536,7 @@ async function attachSleeperStartSit(leagueId, teams, rosterPositions) {
  * ESPN weekly start/sit via mMatchup + scoringPeriodId.
  * Returns week narrative objects for Lookback.
  */
-async function attachEspnStartSit(leagueId, year, teams, slots, s2, swid) {
+async function attachEspnStartSit(leagueId, year, teams, slots) {
   if (!teams?.length) return [];
   const byId = Object.fromEntries(teams.map(t => [String(t.id), t]));
   initStartSitAcc(teams);
@@ -575,7 +549,6 @@ async function attachEspnStartSit(leagueId, year, teams, slots, s2, swid) {
         leagueId, year: String(year),
         views: 'mMatchup',
         scoringPeriodId: String(w),
-        ...espnCredParams(s2, swid),
       });
     } catch (_) { data = null; }
     const schedule = data?.schedule || [];
@@ -648,13 +621,7 @@ const ESPN_POS = { 1: 'QB', 2: 'RB', 3: 'WR', 4: 'TE', 5: 'K', 16: 'DST' };
 const ESPN_PLAYER_POOL = new Map(); // year → Map(playerId → {name,pos,team})
 
 async function espnProxy(params) {
-  // Cookies go in headers (preferred) — espn_s2 is long; query strings double-encode.
-  const { espn_s2, swid, ...rest } = params;
-  const qs = new URLSearchParams(rest);
-  const headers = {};
-  if (espn_s2) headers['X-Espn-S2'] = espn_s2;
-  if (swid) headers['X-Espn-Swid'] = swid;
-  const res = await fetch('/api/espn?' + qs.toString(), { headers });
+  const res = await fetch('/api/espn?' + new URLSearchParams(params).toString());
   if (!res.ok) {
     let msg = `ESPN returned ${res.status}`;
     try { msg = (JSON.parse(await res.text()).error) || msg; } catch (_) {}
@@ -663,25 +630,16 @@ async function espnProxy(params) {
   let data = await res.json();
   // leagueHistory (≤2017) returns [{league}]; players / playerPool return [player,…].
   // Only unwrap the leagueHistory shape — never collapse a player list to data[0].
-  if (Array.isArray(data) && rest.mode !== 'players' && rest.mode !== 'playerPool') {
+  if (Array.isArray(data) && params.mode !== 'players' && params.mode !== 'playerPool') {
     data = data[0];
   }
   return data;
 }
 
-function espnCredParams(s2, swid) {
-  return {
-    ...(s2 ? { espn_s2: s2 } : {}),
-    ...(swid ? { swid } : {}),
-  };
-}
-
-async function loadEspn(leagueId, year, s2, swid) {
-  STATE.espnCreds = { s2: s2 || '', swid: swid || '' };
+async function loadEspn(leagueId, year) {
   const data = await espnProxy({
     leagueId, year,
     views: 'mTeam,mRoster,mSettings',
-    ...espnCredParams(s2, swid),
   });
   const settings = data.settings || {};
   const scoring = detectEspnScoring(settings);
@@ -723,12 +681,12 @@ function espnPlayerRec(p) {
 }
 
 /** Full-season player directory (cached) — fallback when filterIds resolve is thin. */
-async function espnPlayerPool(year, s2, swid) {
+async function espnPlayerPool(year) {
   const y = String(year);
   if (ESPN_PLAYER_POOL.has(y)) return ESPN_PLAYER_POOL.get(y);
   const out = new Map();
   try {
-    const rows = await espnProxy({ mode: 'playerPool', year: y, ...espnCredParams(s2, swid) });
+    const rows = await espnProxy({ mode: 'playerPool', year: y });
     for (const p of (Array.isArray(rows) ? rows : [])) {
       if (p?.id == null) continue;
       out.set(p.id, espnPlayerRec(p));
@@ -739,7 +697,7 @@ async function espnPlayerPool(year, s2, swid) {
 }
 
 /** Resolve ESPN playerIds → {id, name, pos} via players mode, then playerPool fill. */
-async function espnResolvePlayers(year, playerIds, s2, swid) {
+async function espnResolvePlayers(year, playerIds) {
   const uniq = [...new Set(playerIds.filter(id => id != null))];
   const out = new Map();
   const chunk = 80;
@@ -748,7 +706,6 @@ async function espnResolvePlayers(year, playerIds, s2, swid) {
     try {
       const rows = await espnProxy({
         mode: 'players', year, ids: ids.join(','),
-        ...espnCredParams(s2, swid),
       });
       for (const p of (Array.isArray(rows) ? rows : [])) {
         if (p?.id == null) continue;
@@ -758,7 +715,7 @@ async function espnResolvePlayers(year, playerIds, s2, swid) {
   }
   const missing = uniq.filter(id => !out.has(id));
   if (missing.length) {
-    const pool = await espnPlayerPool(year, s2, swid);
+    const pool = await espnPlayerPool(year);
     for (const id of missing) {
       const rec = pool.get(id);
       if (rec) out.set(id, rec);
@@ -768,16 +725,15 @@ async function espnResolvePlayers(year, playerIds, s2, swid) {
 }
 
 /** One completed ESPN season: draft picks + standings, names resolved. */
-async function loadEspnSeasonHistory(leagueId, year, s2, swid, withStartSit = false) {
+async function loadEspnSeasonHistory(leagueId, year, withStartSit = false) {
   const data = await espnProxy({
     leagueId, year,
     views: 'mDraftDetail,mTeam,mSettings',
-    ...espnCredParams(s2, swid),
   });
   const picks = data.draftDetail?.picks || [];
   // Prefer drafted=true, but accept any season that still has pick rows (offseason quirks).
   if (!picks.length) return null;
-  const resolved = await espnResolvePlayers(year, picks.map(p => p.playerId), s2, swid);
+  const resolved = await espnResolvePlayers(year, picks.map(p => p.playerId));
   const membersById = espnMembersById(data);
   const teamsById = {};
   for (const t of (data.teams || [])) {
@@ -821,7 +777,7 @@ async function loadEspnSeasonHistory(leagueId, year, s2, swid, withStartSit = fa
   if (withStartSit) {
     try {
       const slots = espnSlots(data.settings) || { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 1, K: 1, DST: 1 };
-      const weekNarratives = await attachEspnStartSit(leagueId, year, teams, slots, s2, swid);
+      const weekNarratives = await attachEspnStartSit(leagueId, year, teams, slots);
       return {
         season: +year, leagueName: data.settings?.name || '', teams,
         weekNarratives: weekNarratives || [],
@@ -2220,7 +2176,6 @@ async function refreshLookbackFromLeague(lg) {
     let authFailed = false;
     let resolveThin = false;
     if (lg.platform === 'espn') {
-      const creds = STATE.espnCreds || {};
       const start = Math.min(+lg.year || new Date().getFullYear(), (STATE.vectors?.seasons || []).at(-1) || 2025);
       // Walk back through completed seasons that have vector actuals (newest first).
       // Sequential to stay under ESPN rate limits; stop after a few consecutive misses.
@@ -2229,7 +2184,7 @@ async function refreshLookbackFromLeague(lg) {
       for (const y of years) {
         if (token !== _lbRefreshToken) return;
         try {
-          const rec = await loadEspnSeasonHistory(lg.leagueId, String(y), creds.s2, creds.swid, raw.length < 2);
+          const rec = await loadEspnSeasonHistory(lg.leagueId, String(y), raw.length < 2);
           if (rec) { raw.push(rec); misses = 0; }
           else if (++misses >= 3 && raw.length) break;
         } catch (e) {
@@ -2245,11 +2200,9 @@ async function refreshLookbackFromLeague(lg) {
     }
     if (token !== _lbRefreshToken) return;   // a newer connect superseded us
     if (authFailed && !raw.length) {
-      const hasCreds = !!(STATE.espnCreds?.s2 && STATE.espnCreds?.swid);
       lookbackFallbackSeed(lg, 'auth',
-        hasCreds
-          ? `ESPN auth failed for ${lg.name} — cookies expired or invalid. Reconnect and re-paste espn_s2 + SWID.`
-          : `Private league: paste espn_s2 + SWID via Reconnect to load draft history for ${lg.name}.`);
+        `ESPN returned 401 for ${lg.name} — this site reads ESPN's public view only `
+        + `(cookie pasting retired), so private-league history can't be loaded.`);
       return;
     }
     const graded = raw.map(gradeLeagueSeason).filter(Boolean);
@@ -2672,8 +2625,6 @@ function persistSession() {
   if (!lg || lg.platform === 'demo') return;
   const creds = {
     platform: lg.platform, leagueId: lg.leagueId, year: lg.year, myId: lg.myId,
-    espn_s2: $('#espn-s2')?.value.trim() || STATE.espnCreds?.s2 || '',
-    swid: $('#espn-swid')?.value.trim() || STATE.espnCreds?.swid || '',
   };
   try { localStorage.setItem('vg_session', JSON.stringify(creds)); } catch (_) {}
 }
@@ -2681,14 +2632,19 @@ async function restoreSession() {
   let c; try { c = JSON.parse(localStorage.getItem('vg_session') || 'null'); } catch (_) { c = null; }
   if (!c) return;
   try {
+    // Older builds stored ESPN cookie values in this blob. They are never
+    // read again — drop every field we don't recognise and write it back.
+    const clean = { platform: c.platform, leagueId: c.leagueId, year: c.year, myId: c.myId };
+    if (Object.keys(c).some(k => !(k in clean))) {
+      try { localStorage.setItem('vg_session', JSON.stringify(clean)); } catch (_) {}
+    }
+    c = clean;
     if (c.platform === 'espn') {
-      if (c.espn_s2) $('#espn-s2').value = c.espn_s2;
-      if (c.swid) $('#espn-swid').value = c.swid;
       if (c.leagueId) $('#espn-league').value = c.leagueId;
       if (c.year) $('#espn-year').value = c.year;
     }
     const lg = c.platform === 'espn'
-      ? await loadEspn(c.leagueId, c.year, c.espn_s2, c.swid)
+      ? await loadEspn(c.leagueId, c.year)
       : await loadSleeper(c.leagueId);
     lg.myId = c.myId || null;
     STATE.league = lg; STATE.scoring = lg.scoring;

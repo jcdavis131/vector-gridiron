@@ -44,7 +44,7 @@ import json
 import math
 import sys
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -61,9 +61,9 @@ TRAIL_W = (0.4, 0.3, 0.2, 0.1)  # most-recent-first
 ECR_BLEND = 0.30
 MIN_GROUP = 8
 
-TODAY = datetime.now(timezone.utc).date()
+TODAY = datetime.now(UTC).date()
 BUILT = TODAY.isoformat()
-BUILT_AT = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+BUILT_AT = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
 
 
 def fail(msg: str) -> None:
@@ -87,6 +87,7 @@ def norm_key(name: str, pos: str) -> str:
 # --------------------------------------------------------------------------
 # loading (nflreadpy — the dfs-nfl code path)
 # --------------------------------------------------------------------------
+
 
 def load_all():
     import nflreadpy as nfl
@@ -113,10 +114,17 @@ def load_all():
             scheds[yr] = nfl.load_schedules([yr]).to_pandas()
     print("loaded.")
     return {
-        "sched26": sched26, "stats26": stats26, "stats25": stats25,
-        "rosters26": rosters26, "rosters25": rosters25, "injuries26": injuries26,
-        "ecr_now": ecr_now, "ecr_all": ecr_all,
-        "hist_stats": hist_stats, "team_stats": team_stats, "scheds": scheds,
+        "sched26": sched26,
+        "stats26": stats26,
+        "stats25": stats25,
+        "rosters26": rosters26,
+        "rosters25": rosters25,
+        "injuries26": injuries26,
+        "ecr_now": ecr_now,
+        "ecr_all": ecr_all,
+        "hist_stats": hist_stats,
+        "team_stats": team_stats,
+        "scheds": scheds,
     }
 
 
@@ -127,6 +135,7 @@ def reg(df):
 # --------------------------------------------------------------------------
 # schedule-derived truth: current week, byes, games
 # --------------------------------------------------------------------------
+
 
 def current_week(sched) -> tuple[int, int]:
     """(last fully-scored week, target week) from the schedule itself."""
@@ -162,19 +171,24 @@ def week_games(sched, week: int) -> dict[str, dict]:
         home, away = r["home_team"], r["away_team"]
         total, spread = r["total_line"], r["spread_line"]
         if total is None or (isinstance(total, float) and math.isnan(total)):
-            fail(f"week {week} game {away}@{home} has no total_line yet — lines not posted, refusing to emit null conditions")
+            fail(
+                f"week {week} game {away}@{home} has no total_line yet — lines not posted, refusing to emit null conditions"
+            )
         # nflverse spread_line is the HOME spread (negative = home favored)
         home_impl = (total - spread) / 2.0
         away_impl = (total + spread) / 2.0
         roof = r["roof"] if isinstance(r["roof"], str) and r["roof"] else "outdoors"
-        temp = None if r["temp"] is None or (isinstance(r["temp"], float) and math.isnan(r["temp"])) else float(r["temp"])
-        wind = None if r["wind"] is None or (isinstance(r["wind"], float) and math.isnan(r["wind"])) else float(r["wind"])
+        temp = (
+            None if r["temp"] is None or (isinstance(r["temp"], float) and math.isnan(r["temp"])) else float(r["temp"])
+        )
+        wind = (
+            None if r["wind"] is None or (isinstance(r["wind"], float) and math.isnan(r["wind"])) else float(r["wind"])
+        )
         try:
             primetime = 1 if int(str(r["gametime"])[:2]) >= 19 else 0
         except Exception:
             primetime = 0
-        base = {"roof": roof, "temp": temp, "wind": wind,
-                "primetime": primetime, "gameday": str(r["gameday"])}
+        base = {"roof": roof, "temp": temp, "wind": wind, "primetime": primetime, "gameday": str(r["gameday"])}
         out[home] = {**base, "opp": away, "is_home": 1, "team_implied": round(home_impl * 2) / 2}
         out[away] = {**base, "opp": home, "is_home": 0, "team_implied": round(away_impl * 2) / 2}
     return out
@@ -183,6 +197,7 @@ def week_games(sched, week: int) -> dict[str, dict]:
 # --------------------------------------------------------------------------
 # player identity / pool
 # --------------------------------------------------------------------------
+
 
 def build_identity(data) -> dict:
     """gsis_id -> identity from rosters (latest week wins), stats as fallback."""
@@ -195,14 +210,16 @@ def build_identity(data) -> dict:
                 continue
             cur = ident.setdefault(gid, {})
             if src == "rosters26":
-                cur.update({
-                    "name": r.get("full_name") or cur.get("name"),
-                    "team": r.get("team") or cur.get("team"),
-                    "pos_roster": r.get("position"),
-                    "status": r.get("status") or "",
-                    "headshot": r.get("headshot_url") or "",
-                    "years_exp": r.get("years_exp"),
-                })
+                cur.update(
+                    {
+                        "name": r.get("full_name") or cur.get("name"),
+                        "team": r.get("team") or cur.get("team"),
+                        "pos_roster": r.get("position"),
+                        "status": r.get("status") or "",
+                        "headshot": r.get("headshot_url") or "",
+                        "years_exp": r.get("years_exp"),
+                    }
+                )
             else:
                 cur.setdefault("team25", r.get("team"))
     return ident
@@ -227,8 +244,8 @@ def game_logs(stats) -> dict[str, list[dict]]:
         if pos == "K":
             pts = kicking_points(r)
         logs.setdefault(r["player_id"], []).append(
-            {"week": int(r["week"]), "team": r["team"], "opp": r["opponent_team"],
-             "pos": pos, "pts": pts, "comp": comp})
+            {"week": int(r["week"]), "team": r["team"], "opp": r["opponent_team"], "pos": pos, "pts": pts, "comp": comp}
+        )
     for v in logs.values():
         v.sort(key=lambda g: g["week"])
     return logs
@@ -238,14 +255,22 @@ def kicking_points(r) -> float:
     def g(c):
         v = r.get(c)
         return float(v) if v is not None and not (isinstance(v, float) and math.isnan(v)) else 0.0
-    return (g("fg_made_0_19") * 3 + g("fg_made_20_29") * 3 + g("fg_made_30_39") * 3
-            + g("fg_made_40_49") * 4 + g("fg_made_50_59") * 5 + g("fg_made_60_") * 5
-            + g("pat_made") * 1)
+
+    return (
+        g("fg_made_0_19") * 3
+        + g("fg_made_20_29") * 3
+        + g("fg_made_30_39") * 3
+        + g("fg_made_40_49") * 4
+        + g("fg_made_50_59") * 5
+        + g("fg_made_60_") * 5
+        + g("pat_made") * 1
+    )
 
 
 # --------------------------------------------------------------------------
 # ECR (expert consensus) — dfs-nfl patterns
 # --------------------------------------------------------------------------
+
 
 def ecr_from_week_load(df) -> dict[tuple[str, str], dict]:
     """Current-week ECR from load_ff_rankings('week'): (canon, pos) -> {ecr, pos_rank}."""
@@ -281,8 +306,11 @@ def ecr_snapshot_for_week(ecr_all, sched, season: int, week: int) -> dict[tuple[
     for _, r in d.iterrows():
         pos = pages[str(r["page_type"])]
         key = (canon_name(str(r.get("player", ""))), pos)
-        out[key] = {"ecr": float(r["ecr"]), "team": TEAM_FIX.get(str(r.get("team", "")), str(r.get("team", ""))),
-                    "scrape_date": snap}
+        out[key] = {
+            "ecr": float(r["ecr"]),
+            "team": TEAM_FIX.get(str(r.get("team", "")), str(r.get("team", ""))),
+            "scrape_date": snap,
+        }
     for pos in SKILL:
         rows = sorted([k for k in out if k[1] == pos], key=lambda k: out[k]["ecr"])
         for i, k in enumerate(rows, 1):
@@ -297,7 +325,7 @@ def ecr_curve(ppg_by_pos: dict[str, list[float]]) -> dict[str, list[float]]:
         vals = sorted(ppgs, reverse=True)
         sm = []
         for i in range(len(vals)):
-            w = vals[max(0, i - 2): i + 3]
+            w = vals[max(0, i - 2) : i + 3]
             sm.append(sum(w) / len(w))
         out[pos] = sm
     return out
@@ -322,15 +350,16 @@ def curve_pts(curve: dict[str, list[float]], pos: str, rank: int) -> float | Non
 # the projection engine (one function — live and backtest run the same code)
 # --------------------------------------------------------------------------
 
+
 def form_base(games: list[dict], prior_ppg: float | None) -> float | None:
     """Trailing-form base rate from a player's game log (all games < target)."""
     if not games:
         return prior_ppg * 0.92 if prior_ppg else None
     pts = [g["pts"] for g in games]
     season_ppg = sum(pts) / len(pts)
-    last = pts[-len(TRAIL_W):]
-    w = TRAIL_W[-len(last):]
-    trailing = sum(p * wi for p, wi in zip(reversed(last), w)) / sum(w)
+    last = pts[-len(TRAIL_W) :]
+    w = TRAIL_W[-len(last) :]
+    trailing = sum(p * wi for p, wi in zip(reversed(last), w, strict=False)) / sum(w)
     if len(pts) >= 3:
         return 0.65 * trailing + 0.35 * season_ppg
     if prior_ppg:
@@ -343,7 +372,6 @@ def opp_factors(logs: dict[str, list[dict]], upto_week: int) -> dict[tuple[str, 
     allowed: dict[tuple[str, str], list[float]] = {}
     team_games: dict[str, set] = {}
     pos_totals: dict[str, float] = {}
-    pos_teamgames = 0
     seen_games: set[tuple[str, int]] = set()
     for games in logs.values():
         for g in games:
@@ -352,7 +380,7 @@ def opp_factors(logs: dict[str, list[dict]], upto_week: int) -> dict[tuple[str, 
             allowed.setdefault((g["opp"], g["pos"]), []).append(g["pts"])
             team_games.setdefault(g["opp"], set()).add(g["week"])
             seen_games.add((g["opp"], g["week"]))
-    for (d, pos), vals in allowed.items():
+    for (_d, pos), vals in allowed.items():
         pos_totals[pos] = pos_totals.get(pos, 0) + sum(vals)
     n_tg = len(seen_games)
     league = {p: (pos_totals[p] / n_tg if n_tg else 0) for p in SKILL}
@@ -365,8 +393,9 @@ def opp_factors(logs: dict[str, list[dict]], upto_week: int) -> dict[tuple[str, 
     return out
 
 
-def project(base: float | None, pos: str, opp: str | None,
-            factors: dict, ecr_rank: int | None, curve: dict) -> float | None:
+def project(
+    base: float | None, pos: str, opp: str | None, factors: dict, ecr_rank: int | None, curve: dict
+) -> float | None:
     if base is None and ecr_rank is None:
         return None
     epts = curve_pts(curve, pos, ecr_rank) if ecr_rank else None
@@ -379,9 +408,11 @@ def project(base: float | None, pos: str, opp: str | None,
         return None
     return max(0.0, p)  # expected fantasy points are never negative
 
+
 # --------------------------------------------------------------------------
 # statistics helpers (stdlib only)
 # --------------------------------------------------------------------------
+
 
 def rankdata(xs: list[float]) -> list[float]:
     """Average-tie ranks (1-based), stdlib Spearman support."""
@@ -405,7 +436,7 @@ def spearman(xs: list[float], ys: list[float]) -> float | None:
         return None
     rx, ry = rankdata(xs), rankdata(ys)
     mx, my = sum(rx) / n, sum(ry) / n
-    num = sum((a - mx) * (b - my) for a, b in zip(rx, ry))
+    num = sum((a - mx) * (b - my) for a, b in zip(rx, ry, strict=False))
     dx = sum((a - mx) ** 2 for a in rx)
     dy = sum((b - my) ** 2 for b in ry)
     if not dx or not dy:
@@ -416,19 +447,20 @@ def spearman(xs: list[float], ys: list[float]) -> float | None:
 def mae(xs: list[float], ys: list[float]) -> float | None:
     if not xs:
         return None
-    return sum(abs(a - b) for a, b in zip(xs, ys)) / len(xs)
+    return sum(abs(a - b) for a, b in zip(xs, ys, strict=False)) / len(xs)
 
 
 def q80(xs: list[float]) -> float:
     if not xs:
         return 0.0
     s = sorted(xs)
-    return s[min(len(s) - 1, int(math.ceil(0.80 * len(s))) - 1)]
+    return s[min(len(s) - 1, math.ceil(0.80 * len(s)) - 1)]
 
 
 # --------------------------------------------------------------------------
 # backtest: walk-forward, weeks 2..last_completed (2026)
 # --------------------------------------------------------------------------
+
 
 def run_backtest(data, logs26, ident, last_done, sched26) -> dict:
     """Run the identical projection engine as-of each completed week,
@@ -438,7 +470,7 @@ def run_backtest(data, logs26, ident, last_done, sched26) -> dict:
     weeks = list(range(2, last_done + 1))
     residuals: dict[str, list[float]] = {p: [] for p in SKILL}
     per_week = []
-    pooled = {p: [[], []] for p in SKILL}   # pos -> [projs, actuals]
+    pooled = {p: [[], []] for p in SKILL}  # pos -> [projs, actuals]
     pooled_base = {p: [[], []] for p in SKILL}
     n_rows = 0
 
@@ -460,8 +492,7 @@ def run_backtest(data, logs26, ident, last_done, sched26) -> dict:
             game = gm.get(g[0]["team"], {})  # week-N team: exact for trades
             base = form_base(asof.get(pid, []), prior_ppg.get(pid))
             ecr_info = ecr.get((pl["canon"], pos))
-            proj = project(base, pos, game.get("opp"), factors,
-                           ecr_info.get("pos_rank") if ecr_info else None, curve)
+            proj = project(base, pos, game.get("opp"), factors, ecr_info.get("pos_rank") if ecr_info else None, curve)
             if proj is None:
                 continue
             week_rows[pos][0].append(proj)
@@ -499,7 +530,6 @@ def run_backtest(data, logs26, ident, last_done, sched26) -> dict:
         p, a = pooled[pos]
         bp, ba = pooled_base[pos]
         sp = [w[pos.lower()]["spearman"] for w in per_week if pos.lower() in w]
-        sm = [w[pos.lower()]["mae"] for w in per_week if pos.lower() in w]
         positions[pos] = {
             "n": len(p),
             "spearman": sum(sp) / len(sp) if sp else None,
@@ -513,10 +543,11 @@ def run_backtest(data, logs26, ident, last_done, sched26) -> dict:
     all_bp = [x for pos in SKILL for x in pooled_base[pos][0]]
     all_ba = [x for pos in SKILL for x in pooled_base[pos][1]]
     ov_sp = [w["pooled"]["spearman"] for w in per_week]
-    ov_mae = [w["pooled"]["mae"] for w in per_week]
     overall = {
         "spearman": sum(ov_sp) / len(ov_sp),
-        "spearman_sd": math.sqrt(sum((x - sum(ov_sp) / len(ov_sp)) ** 2 for x in ov_sp) / len(ov_sp)) if len(ov_sp) > 1 else 0.0,
+        "spearman_sd": math.sqrt(sum((x - sum(ov_sp) / len(ov_sp)) ** 2 for x in ov_sp) / len(ov_sp))
+        if len(ov_sp) > 1
+        else 0.0,
         "mae": mae(all_p, all_a),
         "baseline_last4": spearman(all_bp, all_ba),
         "mae_baseline": mae(all_bp, all_ba),
@@ -525,8 +556,10 @@ def run_backtest(data, logs26, ident, last_done, sched26) -> dict:
     q = {pos: q80(residuals[pos]) for pos in SKILL}
     eval_payload = {
         "computed_at": BUILT_AT,
-        "metric": {"name": "walk_forward_weekly_mae",
-                   "definition": "For each completed 2026 week N (2..{}): project every player-week using only data through week N-1 (stats) plus the ECR snapshot strictly before week N's first game, then compare to actual week-N PPR points. MAE = mean |projected - actual|. Spearman = pooled rank correlation of projections vs actuals, averaged across weeks.".format(last_done)},
+        "metric": {
+            "name": "walk_forward_weekly_mae",
+            "definition": f"For each completed 2026 week N (2..{last_done}): project every player-week using only data through week N-1 (stats) plus the ECR snapshot strictly before week N's first game, then compare to actual week-N PPR points. MAE = mean |projected - actual|. Spearman = pooled rank correlation of projections vs actuals, averaged across weeks.",
+        },
         "season": 2026,
         "weeks": weeks,
         "min_group": MIN_GROUP,
@@ -558,8 +591,7 @@ def season_ppg(logs: dict[str, list[dict]]) -> dict[str, float]:
     return out
 
 
-def build_pool(logs_asof: dict[str, list[dict]], ident: dict,
-               prior_ppg: dict[str, float]) -> dict:
+def build_pool(logs_asof: dict[str, list[dict]], ident: dict, prior_ppg: dict[str, float]) -> dict:
     """Players eligible for projection: >=1 prior game (ECR-only players
     are added separately via add_ecr_only_players). keyed by player_id."""
     pool = {}
@@ -571,18 +603,24 @@ def build_pool(logs_asof: dict[str, list[dict]], ident: dict,
             continue
         idn = ident.get(pid, {})
         pool[pid] = {
-            "pid": pid, "pos": g["pos"], "team": idn.get("team") or g["team"],
-            "name": idn.get("name") or pid, "canon": canon_name(idn.get("name") or ""),
-            "headshot": idn.get("headshot") or "", "status": idn.get("status") or "",
+            "pid": pid,
+            "pos": g["pos"],
+            "team": idn.get("team") or g["team"],
+            "name": idn.get("name") or pid,
+            "canon": canon_name(idn.get("name") or ""),
+            "headshot": idn.get("headshot") or "",
+            "status": idn.get("status") or "",
             "years_exp": idn.get("years_exp"),
-            "team25": idn.get("team25"), "prior_ppg": prior_ppg.get(pid),
+            "team25": idn.get("team25"),
+            "prior_ppg": prior_ppg.get(pid),
             "games": games,
         }
     return pool
 
 
-def add_ecr_only_players(pool: dict, ecr_map: dict[tuple[str, str], dict],
-                         ident: dict, prior_ppg: dict[str, float]) -> int:
+def add_ecr_only_players(
+    pool: dict, ecr_map: dict[tuple[str, str], dict], ident: dict, prior_ppg: dict[str, float]
+) -> int:
     """Add ECR-listed players with no games yet (rookies, injured returners)
     if they resolve to a roster identity. Returns the number added."""
     have = {(pl["canon"], pl["pos"]) for pl in pool.values()}
@@ -592,24 +630,38 @@ def add_ecr_only_players(pool: dict, ecr_map: dict[tuple[str, str], dict],
             continue
         match = None
         for pid, idn in ident.items():
-            if canon_name(idn.get("name") or "") == cn and idn.get("pos_roster") == pos \
-                    and idn.get("team") and pid not in pool:
+            if (
+                canon_name(idn.get("name") or "") == cn
+                and idn.get("pos_roster") == pos
+                and idn.get("team")
+                and pid not in pool
+            ):
                 match = pid
                 break
         if match is None:
             continue
         idn = ident[match]
-        pool[match] = {"pid": match, "pos": pos, "team": idn["team"], "name": idn["name"],
-                       "canon": cn, "headshot": idn.get("headshot") or "",
-                       "status": idn.get("status") or "", "years_exp": idn.get("years_exp"),
-                       "team25": idn.get("team25"), "prior_ppg": prior_ppg.get(match),
-                       "games": []}
+        pool[match] = {
+            "pid": match,
+            "pos": pos,
+            "team": idn["team"],
+            "name": idn["name"],
+            "canon": cn,
+            "headshot": idn.get("headshot") or "",
+            "status": idn.get("status") or "",
+            "years_exp": idn.get("years_exp"),
+            "team25": idn.get("team25"),
+            "prior_ppg": prior_ppg.get(match),
+            "games": [],
+        }
         added += 1
     return added
+
 
 # --------------------------------------------------------------------------
 # live assembly — the current-week boards
 # --------------------------------------------------------------------------
+
 
 def prov(filename: str, rows: int, season: int, week: int, extra: dict | None = None) -> dict:
     p = {
@@ -626,8 +678,7 @@ def prov(filename: str, rows: int, season: int, week: int, extra: dict | None = 
     return p
 
 
-def assemble_live(data, logs26, ident, pool, factors, curve, ecr,
-                  gm, byes, qres, target_week) -> tuple[list, list]:
+def assemble_live(data, logs26, ident, pool, factors, curve, ecr, gm, byes, qres, target_week) -> tuple[list, list]:
     """(projections_players, nextgame_players)"""
     comps_tbl = load_vector_comps()
     pid_rows: list[tuple[str, dict]] = []
@@ -644,8 +695,11 @@ def assemble_live(data, logs26, ident, pool, factors, curve, ecr,
         unc = qres.get(pl["pos"], 0.0)
         row = {
             "key": norm_key(pl["name"], pl["pos"]),
-            "name": pl["name"], "pos": pl["pos"], "team": pl["team"],
-            "headshot": pl["headshot"], "proj": round(proj, 2),
+            "name": pl["name"],
+            "pos": pl["pos"],
+            "team": pl["team"],
+            "headshot": pl["headshot"],
+            "proj": round(proj, 2),
             "floor": round(max(0.0, proj - unc), 2),
             "ceil": round(proj + unc, 2),
             "uncertainty": round(unc, 2),
@@ -661,13 +715,13 @@ def assemble_live(data, logs26, ident, pool, factors, curve, ecr,
     pid_rows.sort(key=lambda t: t[1]["proj"], reverse=True)
     rank_pos_ctr: dict[str, int] = {}
     proj_rows = []
-    for i, (pid, r) in enumerate(pid_rows, 1):
+    for i, (_pid, r) in enumerate(pid_rows, 1):
         r["rank_overall"] = i
         rank_pos_ctr[r["pos"]] = rank_pos_ctr.get(r["pos"], 0) + 1
         r["rank_pos"] = rank_pos_ctr[r["pos"]]
         r["tier"] = min(10, math.ceil(r["rank_pos"] / 3))
         proj_rows.append(r)
-    pid_of = {pid: r for pid, r in pid_rows}
+    pid_of = dict(pid_rows)
 
     # nextgame: same players + matchup, opponent-adjusted, bye/ex-roster excluded
     next_rows = []
@@ -681,24 +735,30 @@ def assemble_live(data, logs26, ident, pool, factors, curve, ecr,
             fail(f"{pool[pid]['name']} ({pool[pid]['team']}) has no week-{target_week} game in schedule")
         base = form_base(pool[pid]["games"], pool[pid]["prior_ppg"])
         ecr_info = ecr.get((pool[pid]["canon"], pool[pid]["pos"]))
-        proj = project(base, pool[pid]["pos"], game["opp"], factors,
-                       ecr_info.get("pos_rank") if ecr_info else None, curve)
+        proj = project(
+            base, pool[pid]["pos"], game["opp"], factors, ecr_info.get("pos_rank") if ecr_info else None, curve
+        )
         if proj is None or not math.isfinite(proj):
             continue
         unc = qres.get(pool[pid]["pos"], 0.0)
         nr = dict(pl)
-        nr.update({
-            "proj": round(proj, 2),
-            "floor": round(max(0.0, proj - unc), 2),
-            "ceil": round(proj + unc, 2),
-            "opp": game["opp"],
-            "conditions": {
-                "is_home": game["is_home"], "roof": game["roof"],
-                "temp": game["temp"], "wind": game["wind"],
-                "team_implied": game["team_implied"],
-                "primetime": game["primetime"], "gameday": game["gameday"],
-            },
-        })
+        nr.update(
+            {
+                "proj": round(proj, 2),
+                "floor": round(max(0.0, proj - unc), 2),
+                "ceil": round(proj + unc, 2),
+                "opp": game["opp"],
+                "conditions": {
+                    "is_home": game["is_home"],
+                    "roof": game["roof"],
+                    "temp": game["temp"],
+                    "wind": game["wind"],
+                    "team_implied": game["team_implied"],
+                    "primetime": game["primetime"],
+                    "gameday": game["gameday"],
+                },
+            }
+        )
         next_rows.append(nr)
     next_rows.sort(key=lambda r: r["proj"], reverse=True)
     return proj_rows, next_rows
@@ -728,7 +788,7 @@ def load_vector_comps() -> dict[tuple[str, str], list[dict]]:
     comps were likewise from the then-latest season). Not a projection;
     a style-similarity list for the Explorer."""
     path = ASSETS / "vectors.json"
-    rows = json.load(open(path))["players"]
+    rows = json.load(path.open())["players"]
     latest = max(r.get("season") for r in rows if r.get("season"))
     # vectors.json's data runs through `latest`; no same-season rows exist.
     rows26 = [r for r in rows if r.get("season") == latest and r.get("pos") in SKILL]
@@ -738,16 +798,18 @@ def load_vector_comps() -> dict[tuple[str, str], list[dict]]:
         prev = by_key.get(key)
         if prev is None:
             by_key[key] = r
+
     def cos(a, b):
-        dot = sum(x * y for x, y in zip(a, b))
+        dot = sum(x * y for x, y in zip(a, b, strict=False))
         na = math.sqrt(sum(x * x for x in a))
         nb = math.sqrt(sum(y * y for y in b))
         return dot / (na * nb) if na and nb else 0.0
+
     pos_groups: dict[str, list] = {}
     for key, r in by_key.items():
         pos_groups.setdefault(key[1], []).append((key, r))
     out: dict[tuple[str, str], list[dict]] = {}
-    for pos, grp in pos_groups.items():
+    for _pos, grp in pos_groups.items():
         for key, r in grp:
             cands = []
             for key2, r2 in grp:
@@ -755,8 +817,9 @@ def load_vector_comps() -> dict[tuple[str, str], list[dict]]:
                     continue
                 cands.append((cos(r["v"], r2["v"]), r2))
             cands.sort(key=lambda t: (-t[0], t[1]["name"]))
-            out[key] = [{"name": r2["name"], "pos": r2["pos"], "team": r2["team"],
-                         "sim": round(c, 3)} for c, r2 in cands[:5]]
+            out[key] = [
+                {"name": r2["name"], "pos": r2["pos"], "team": r2["team"], "sim": round(c, 3)} for c, r2 in cands[:5]
+            ]
     return out
 
 
@@ -766,10 +829,11 @@ def load_vector_comps() -> dict[tuple[str, str], list[dict]]:
 
 FFC_POS = {"PK": "K", "DEF": "DST"}
 
+
 def fetch_ffc(typ: str) -> dict:
     url = f"https://fantasyfootballcalculator.com/api/v1/adp/{typ}?teams=12&year=2026"
-    req = urllib.request.Request(url, headers={"User-Agent": "vector-gridiron-wave-b/1.0"})
-    with urllib.request.urlopen(req, timeout=30) as resp:
+    req = urllib.request.Request(url, headers={"User-Agent": "vector-gridiron-wave-b/1.0"})  # noqa: S310
+    with urllib.request.urlopen(req, timeout=30) as resp:  # noqa: S310
         return json.load(resp)
 
 
@@ -789,11 +853,18 @@ def build_adp() -> dict:
             e["per"][src] = float(p["adp"])
             e["n"] += 1
     players = []
-    for key, e in agg.items():
+    for _key, e in agg.items():
         adp = sum(e["per"].values()) / len(e["per"])
-        players.append({"name": e["name"], "pos": e["pos"], "adp": round(adp, 1),
-                        "per": {k: round(v, 1) for k, v in e["per"].items()},
-                        "n": e["n"], "key": norm_key(e["name"], e["pos"])})
+        players.append(
+            {
+                "name": e["name"],
+                "pos": e["pos"],
+                "adp": round(adp, 1),
+                "per": {k: round(v, 1) for k, v in e["per"].items()},
+                "n": e["n"],
+                "key": norm_key(e["name"], e["pos"]),
+            }
+        )
     players.sort(key=lambda p: p["adp"])
     pos_ctr: dict[str, int] = {}
     for i, p in enumerate(players, 1):
@@ -806,25 +877,36 @@ def build_adp() -> dict:
         "sources": ["ffc_ppr", "ffc_half"],
         "count": len(players),
         "players": players,
-        "provenance": prov("adp.json", len(players), 2026, 0, {
-            "source": "FantasyFootballCalculator ADP (ppr + half-ppr, 12-team, 2026)",
-            "drafts_per_source": {s: d["meta"]["total_drafts"] for s, d in srcs.items()},
-            "note": "ADP is a draft-season artifact; FFC's October pull reflects the last mock-draft window (late Sept 2026), not weekly refreshes."}),
+        "provenance": prov(
+            "adp.json",
+            len(players),
+            2026,
+            0,
+            {
+                "source": "FantasyFootballCalculator ADP (ppr + half-ppr, 12-team, 2026)",
+                "drafts_per_source": {s: d["meta"]["total_drafts"] for s, d in srcs.items()},
+                "note": "ADP is a draft-season artifact; FFC's October pull reflects the last mock-draft window (late Sept 2026), not weekly refreshes.",
+            },
+        ),
     }
+
 
 # --------------------------------------------------------------------------
 # K/DST — season-rate projections (v1), walk-forward holdout
 # --------------------------------------------------------------------------
 
+
 def dst_weekly_points(team_stats: dict, scheds: dict) -> dict[tuple[int, str], list[float]]:
     """(season, defense) -> weekly fantasy points, 2016-2026.
     sacks=1, INT=2, fum-rec=2, safeties=2, def TD=6, blocks=2, PA buckets."""
+
     def g(r, c):
         v = r.get(c)
         return float(v) if v is not None and not (isinstance(v, float) and math.isnan(v)) else 0.0
+
     def pa_pts(pa):
-        return {0: 10, 1: 7, 7: 4, 14: 1, 21: 0, 28: -1, 35: -4}[
-            next(b for b in (0, 1, 7, 14, 21, 28, 35) if pa >= b)]
+        return {0: 10, 1: 7, 7: 4, 14: 1, 21: 0, 28: -1, 35: -4}[next(b for b in (0, 1, 7, 14, 21, 28, 35) if pa >= b)]
+
     # points allowed per game from schedules
     pa_map: dict[tuple[int, int, str], float] = {}
     for season, sc in scheds.items():
@@ -839,10 +921,15 @@ def dst_weekly_points(team_stats: dict, scheds: dict) -> dict[tuple[int, str], l
         d = ts[ts["season_type"] == "REG"] if "season_type" in ts else ts
         for _, r in d.iterrows():
             team = r["team"]
-            pts = (g(r, "def_sacks") * 1 + g(r, "def_interceptions") * 2
-                   + g(r, "fumble_recovery_opp") * 2 + g(r, "def_safeties") * 2
-                   + g(r, "def_tds") * 6 + g(r, "def_punt_blocks") * 2
-                   + g(r, "def_pat_blocks") * 2)
+            pts = (
+                g(r, "def_sacks") * 1
+                + g(r, "def_interceptions") * 2
+                + g(r, "fumble_recovery_opp") * 2
+                + g(r, "def_safeties") * 2
+                + g(r, "def_tds") * 6
+                + g(r, "def_punt_blocks") * 2
+                + g(r, "def_pat_blocks") * 2
+            )
             pa = pa_map.get((season, int(r["week"]), team))
             if pa is not None:
                 pts += pa_pts(pa)
@@ -869,13 +956,12 @@ def build_kdst(data, ident, last_done) -> dict:
             k_teams[pid] = idn.get("team") or r["team"]
     # keep kickers with >=1 game in 2025-2026 (recent relevance)
     kickers = []
-    for pid, seq in k_logs.items():
+    for _pid, seq in k_logs.items():
         seq.sort()
         recent = [p for s, p in seq if s >= 2025]
         if not recent:
             continue
         y26 = [p for s, p in seq if s == 2026]
-        season_ppg = sum(recent) / len(recent)
         if y26:
             last3 = y26[-3:]
             proj = 0.65 * (sum(last3) / len(last3)) + 0.35 * (sum(y26) / len(y26))
@@ -886,9 +972,16 @@ def build_kdst(data, ident, last_done) -> dict:
             vals = [p for s, p in seq if s == season]
             if vals:
                 history[str(season)] = round(sum(vals) / len(vals), 1)
-        kickers.append({"key": norm_key(k_names[pid], "K"), "name": k_names[pid],
-                        "pos": "K", "team": k_teams[pid], "proj": round(proj, 2),
-                        "history": history})
+        kickers.append(
+            {
+                "key": norm_key(k_names[pid], "K"),
+                "name": k_names[pid],
+                "pos": "K",
+                "team": k_teams[pid],
+                "proj": round(proj, 2),
+                "history": history,
+            }
+        )
     kickers.sort(key=lambda k: k["proj"], reverse=True)
     for i, k in enumerate(kickers, 1):
         k["rank_pos"] = i
@@ -907,22 +1000,24 @@ def build_kdst(data, ident, last_done) -> dict:
             vals = dst_w.get((season, t))
             if vals:
                 history[str(season)] = round(sum(vals) / len(vals), 1)
-        dst_rows.append({"key": norm_key(t, "DST"), "name": t, "pos": "DST",
-                         "team": t, "proj": round(proj, 2), "history": history})
+        dst_rows.append(
+            {"key": norm_key(t, "DST"), "name": t, "pos": "DST", "team": t, "proj": round(proj, 2), "history": history}
+        )
     dst_rows.sort(key=lambda d: d["proj"], reverse=True)
     for i, d in enumerate(dst_rows, 1):
         d["rank_pos"] = i
     # holdout: walk-forward season-rate prediction, seasons 2018-2025
     k_err, k_n, d_err, d_n = [], 0, [], 0
-    for pid, seq in k_logs.items():
+    for _pid, seq in k_logs.items():
         seas = {}
         for s, p in seq:
             seas.setdefault(s, []).append(p)
         for season in range(2018, 2026):
             if season in seas and (season - 1) in seas and (season - 2) in seas:
                 if len(seas[season]) >= 4:
-                    pred = 0.65 * (sum(seas[season - 1]) / len(seas[season - 1])) \
-                           + 0.35 * (sum(seas[season - 2]) / len(seas[season - 2]))
+                    pred = 0.65 * (sum(seas[season - 1]) / len(seas[season - 1])) + 0.35 * (
+                        sum(seas[season - 2]) / len(seas[season - 2])
+                    )
                     act = sum(seas[season]) / len(seas[season])
                     k_err.append(abs(pred - act))
                     k_n += 1
@@ -930,8 +1025,9 @@ def build_kdst(data, ident, last_done) -> dict:
         seas = {s: dst_w.get((s, t)) for s in range(2016, 2026)}
         for season in range(2018, 2026):
             if seas[season] and seas[season - 1] and seas[season - 2] and len(seas[season]) >= 4:
-                pred = 0.65 * (sum(seas[season - 1]) / len(seas[season - 1])) \
-                       + 0.35 * (sum(seas[season - 2]) / len(seas[season - 2]))
+                pred = 0.65 * (sum(seas[season - 1]) / len(seas[season - 1])) + 0.35 * (
+                    sum(seas[season - 2]) / len(seas[season - 2])
+                )
                 act = sum(seas[season]) / len(seas[season])
                 d_err.append(abs(pred - act))
                 d_n += 1
@@ -957,9 +1053,10 @@ def build_kdst(data, ident, last_done) -> dict:
 # lookback_seasons.json: schema-validate ONLY (static historical artifact)
 # --------------------------------------------------------------------------
 
+
 def validate_lookback():
     p = ASSETS / "lookback_seasons.json"
-    d = json.load(open(p))
+    d = json.load(p.open())
     if not {"built", "n_teams", "format", "note", "seasons"} <= set(d):
         fail("lookback_seasons.json schema changed — manual review required")
     if len(d["seasons"]) < 20 or any("teams" not in s for s in d["seasons"]):
@@ -971,18 +1068,37 @@ def validate_lookback():
 # QA gates
 # --------------------------------------------------------------------------
 
+
 def qa_schema(proj_rows, next_rows, eval_payload, adp, kdst, target_week):
     # projections records: every field app.js reads
-    need = {"key", "name", "pos", "team", "headshot", "proj", "floor", "ceil",
-            "uncertainty", "line", "comps", "bye", "avail", "rookie", "moved",
-            "prev_team", "rank_overall", "rank_pos", "tier"}
+    need = {
+        "key",
+        "name",
+        "pos",
+        "team",
+        "headshot",
+        "proj",
+        "floor",
+        "ceil",
+        "uncertainty",
+        "line",
+        "comps",
+        "bye",
+        "avail",
+        "rookie",
+        "moved",
+        "prev_team",
+        "rank_overall",
+        "rank_pos",
+        "tier",
+    }
     for r in proj_rows:
         if not need <= set(r):
             fail(f"projections record missing keys: {need - set(r)}")
         if r["pos"] not in SKILL:
             fail(f"projections non-skill pos: {r['key']}")
         for k in ("proj", "floor", "ceil", "uncertainty"):
-            if not isinstance(r[k], (int, float)) or not math.isfinite(r[k]):
+            if not isinstance(r[k], int | float) or not math.isfinite(r[k]):
                 fail(f"non-finite {k} for {r['key']}")
         if r["floor"] > r["proj"] or r["ceil"] < r["proj"]:
             fail(f"floor/ceil ordering for {r['key']}")
@@ -992,12 +1108,11 @@ def qa_schema(proj_rows, next_rows, eval_payload, adp, kdst, target_week):
     for r in next_rows:
         if not need <= set(r):
             fail(f"nextgame record missing keys: {need - set(r)}")
-        if set(r["conditions"]) != {"is_home", "roof", "temp", "wind", "team_implied",
-                                    "primetime", "gameday"}:
+        if set(r["conditions"]) != {"is_home", "roof", "temp", "wind", "team_implied", "primetime", "gameday"}:
             fail(f"bad conditions keys for {r['key']}")
         for k in ("temp", "wind", "team_implied"):
             v = r["conditions"][k]
-            if v is not None and (not isinstance(v, (int, float)) or not math.isfinite(v)):
+            if v is not None and (not isinstance(v, int | float) or not math.isfinite(v)):
                 fail(f"non-finite {k} for {r['key']}")
     # nextgame subset-of-pool check + no nulls in the renderer-critical path
     proj_keys = {r["key"] for r in proj_rows}
@@ -1048,6 +1163,7 @@ def write_atomic(payloads: dict[str, dict]):
 # main
 # --------------------------------------------------------------------------
 
+
 def main():
     data = load_all()
     sched26 = data["sched26"]
@@ -1073,11 +1189,13 @@ def main():
 
     # backtest FIRST (its q80 residuals feed floor/ceiling of the live board)
     eval_payload, qres = run_backtest(data, logs26, ident, last_done, sched26)
-    print(f"backtest: weeks {eval_payload['weeks']}, n={eval_payload['overall']['n']}, "
-          f"MAE={eval_payload['overall']['mae']:.2f}, Spearman={eval_payload['overall']['spearman']:.3f}")
+    print(
+        f"backtest: weeks {eval_payload['weeks']}, n={eval_payload['overall']['n']}, "
+        f"MAE={eval_payload['overall']['mae']:.2f}, Spearman={eval_payload['overall']['spearman']:.3f}"
+    )
 
     # live boards as-of last_done, targeting target_week
-    asof = {pid: gs for pid, gs in logs26.items()}
+    asof = dict(logs26)
     factors = opp_factors(asof, target_week + 1)
     pool = build_pool(asof, ident, prior_ppg)
     ecr = ecr_from_week_load(data["ecr_now"])
@@ -1087,20 +1205,23 @@ def main():
     curve = ecr_curve(asof_ppg_by_pos(asof))
     gm = week_games(sched26, target_week)
     byes = bye_weeks(sched26)
-    proj_rows, next_rows = assemble_live(data, logs26, ident, pool, factors,
-                                         curve, ecr, gm, byes, qres, target_week)
+    proj_rows, next_rows = assemble_live(data, logs26, ident, pool, factors, curve, ecr, gm, byes, qres, target_week)
 
     projections = {
         "built": BUILT,
         "proj_season": 2026,
-        "basis": ("2026 form blended with expert consensus (v1): trailing-4-weighted ppg + "
-                  "season ppg (small samples get a prior-season prior; no 2026 games get "
-                  "consensus-implied points), 70/30 blend with ECR-implied points, "
-                  "floor/ceiling = +/- per-position q80 |residual| from the 2026 walk-forward backtest"),
+        "basis": (
+            "2026 form blended with expert consensus (v1): trailing-4-weighted ppg + "
+            "season ppg (small samples get a prior-season prior; no 2026 games get "
+            "consensus-implied points), 70/30 blend with ECR-implied points, "
+            "floor/ceiling = +/- per-position q80 |residual| from the 2026 walk-forward backtest"
+        ),
         "scoring_feature": "fantasy_points_ppr",
-        "model": {"type": "trailing form x ECR consensus blend v1",
-                  "version": MODEL_VERSION,
-                  "backtest_ref": "assets/eval_backtest.json"},
+        "model": {
+            "type": "trailing form x ECR consensus blend v1",
+            "version": MODEL_VERSION,
+            "backtest_ref": "assets/eval_backtest.json",
+        },
         "rookie_count": sum(1 for r in proj_rows if r["rookie"]),
         "count": len(proj_rows),
         "players": proj_rows,
@@ -1110,9 +1231,11 @@ def main():
         "built": BUILT,
         "season": 2026,
         "week": target_week,
-        "model": {"type": "trailing form x matchup adjustment x ECR consensus blend v1",
-                  "version": MODEL_VERSION,
-                  "backtest_ref": "assets/eval_backtest.json"},
+        "model": {
+            "type": "trailing form x matchup adjustment x ECR consensus blend v1",
+            "version": MODEL_VERSION,
+            "backtest_ref": "assets/eval_backtest.json",
+        },
         "count": len(next_rows),
         "players": next_rows,
         "provenance": prov("nextgame.json", len(next_rows), 2026, target_week),
@@ -1125,19 +1248,25 @@ def main():
     validate_lookback()
 
     qa_schema(proj_rows, next_rows, eval_payload, adp, kdst, target_week)
-    write_atomic({
-        "projections.json": projections,
-        "nextgame.json": nextgame,
-        "adp.json": adp,
-        "kdst.json": kdst,
-        "eval_backtest.json": eval_payload,
-    })
+    write_atomic(
+        {
+            "projections.json": projections,
+            "nextgame.json": nextgame,
+            "adp.json": adp,
+            "kdst.json": kdst,
+            "eval_backtest.json": eval_payload,
+        }
+    )
     print(f"wrote 5 files to {ASSETS}/ and mirrored to {PUBLIC_ASSETS}/ (byte-identical)")
-    print(f"projections: {len(proj_rows)} | nextgame: {len(next_rows)} | "
-          f"adp: {len(adp['players'])} | kickers: {len(kdst['kickers'])} | dst: 32")
-    print(f"overall MAE: {eval_payload['overall']['mae']:.2f} | "
-          f"Spearman: {eval_payload['overall']['spearman']:.3f} | "
-          f"baseline Spearman: {eval_payload['overall']['baseline_last4']:.3f}")
+    print(
+        f"projections: {len(proj_rows)} | nextgame: {len(next_rows)} | "
+        f"adp: {len(adp['players'])} | kickers: {len(kdst['kickers'])} | dst: 32"
+    )
+    print(
+        f"overall MAE: {eval_payload['overall']['mae']:.2f} | "
+        f"Spearman: {eval_payload['overall']['spearman']:.3f} | "
+        f"baseline Spearman: {eval_payload['overall']['baseline_last4']:.3f}"
+    )
 
 
 if __name__ == "__main__":

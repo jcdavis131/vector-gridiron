@@ -44,7 +44,7 @@ import json
 import math
 import sys
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -61,9 +61,9 @@ TRAIL_W = (0.4, 0.3, 0.2, 0.1)  # most-recent-first
 ECR_BLEND = 0.30
 MIN_GROUP = 8
 
-TODAY = datetime.now(timezone.utc).date()
+TODAY = datetime.now(UTC).date()
 BUILT = TODAY.isoformat()
-BUILT_AT = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+BUILT_AT = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
 
 
 def fail(msg: str) -> None:
@@ -330,7 +330,7 @@ def form_base(games: list[dict], prior_ppg: float | None) -> float | None:
     season_ppg = sum(pts) / len(pts)
     last = pts[-len(TRAIL_W):]
     w = TRAIL_W[-len(last):]
-    trailing = sum(p * wi for p, wi in zip(reversed(last), w)) / sum(w)
+    trailing = sum(p * wi for p, wi in zip(reversed(last), w, strict=False)) / sum(w)
     if len(pts) >= 3:
         return 0.65 * trailing + 0.35 * season_ppg
     if prior_ppg:
@@ -343,7 +343,6 @@ def opp_factors(logs: dict[str, list[dict]], upto_week: int) -> dict[tuple[str, 
     allowed: dict[tuple[str, str], list[float]] = {}
     team_games: dict[str, set] = {}
     pos_totals: dict[str, float] = {}
-    pos_teamgames = 0
     seen_games: set[tuple[str, int]] = set()
     for games in logs.values():
         for g in games:
@@ -352,7 +351,7 @@ def opp_factors(logs: dict[str, list[dict]], upto_week: int) -> dict[tuple[str, 
             allowed.setdefault((g["opp"], g["pos"]), []).append(g["pts"])
             team_games.setdefault(g["opp"], set()).add(g["week"])
             seen_games.add((g["opp"], g["week"]))
-    for (d, pos), vals in allowed.items():
+    for (_d, pos), vals in allowed.items():
         pos_totals[pos] = pos_totals.get(pos, 0) + sum(vals)
     n_tg = len(seen_games)
     league = {p: (pos_totals[p] / n_tg if n_tg else 0) for p in SKILL}
@@ -405,7 +404,7 @@ def spearman(xs: list[float], ys: list[float]) -> float | None:
         return None
     rx, ry = rankdata(xs), rankdata(ys)
     mx, my = sum(rx) / n, sum(ry) / n
-    num = sum((a - mx) * (b - my) for a, b in zip(rx, ry))
+    num = sum((a - mx) * (b - my) for a, b in zip(rx, ry, strict=False))
     dx = sum((a - mx) ** 2 for a in rx)
     dy = sum((b - my) ** 2 for b in ry)
     if not dx or not dy:
@@ -416,14 +415,14 @@ def spearman(xs: list[float], ys: list[float]) -> float | None:
 def mae(xs: list[float], ys: list[float]) -> float | None:
     if not xs:
         return None
-    return sum(abs(a - b) for a, b in zip(xs, ys)) / len(xs)
+    return sum(abs(a - b) for a, b in zip(xs, ys, strict=False)) / len(xs)
 
 
 def q80(xs: list[float]) -> float:
     if not xs:
         return 0.0
     s = sorted(xs)
-    return s[min(len(s) - 1, int(math.ceil(0.80 * len(s))) - 1)]
+    return s[min(len(s) - 1, math.ceil(0.80 * len(s)) - 1)]
 
 
 # --------------------------------------------------------------------------
@@ -499,7 +498,6 @@ def run_backtest(data, logs26, ident, last_done, sched26) -> dict:
         p, a = pooled[pos]
         bp, ba = pooled_base[pos]
         sp = [w[pos.lower()]["spearman"] for w in per_week if pos.lower() in w]
-        sm = [w[pos.lower()]["mae"] for w in per_week if pos.lower() in w]
         positions[pos] = {
             "n": len(p),
             "spearman": sum(sp) / len(sp) if sp else None,
@@ -513,7 +511,6 @@ def run_backtest(data, logs26, ident, last_done, sched26) -> dict:
     all_bp = [x for pos in SKILL for x in pooled_base[pos][0]]
     all_ba = [x for pos in SKILL for x in pooled_base[pos][1]]
     ov_sp = [w["pooled"]["spearman"] for w in per_week]
-    ov_mae = [w["pooled"]["mae"] for w in per_week]
     overall = {
         "spearman": sum(ov_sp) / len(ov_sp),
         "spearman_sd": math.sqrt(sum((x - sum(ov_sp) / len(ov_sp)) ** 2 for x in ov_sp) / len(ov_sp)) if len(ov_sp) > 1 else 0.0,
@@ -526,7 +523,7 @@ def run_backtest(data, logs26, ident, last_done, sched26) -> dict:
     eval_payload = {
         "computed_at": BUILT_AT,
         "metric": {"name": "walk_forward_weekly_mae",
-                   "definition": "For each completed 2026 week N (2..{}): project every player-week using only data through week N-1 (stats) plus the ECR snapshot strictly before week N's first game, then compare to actual week-N PPR points. MAE = mean |projected - actual|. Spearman = pooled rank correlation of projections vs actuals, averaged across weeks.".format(last_done)},
+                   "definition": f"For each completed 2026 week N (2..{last_done}): project every player-week using only data through week N-1 (stats) plus the ECR snapshot strictly before week N's first game, then compare to actual week-N PPR points. MAE = mean |projected - actual|. Spearman = pooled rank correlation of projections vs actuals, averaged across weeks."},
         "season": 2026,
         "weeks": weeks,
         "min_group": MIN_GROUP,
@@ -661,13 +658,13 @@ def assemble_live(data, logs26, ident, pool, factors, curve, ecr,
     pid_rows.sort(key=lambda t: t[1]["proj"], reverse=True)
     rank_pos_ctr: dict[str, int] = {}
     proj_rows = []
-    for i, (pid, r) in enumerate(pid_rows, 1):
+    for i, (_pid, r) in enumerate(pid_rows, 1):
         r["rank_overall"] = i
         rank_pos_ctr[r["pos"]] = rank_pos_ctr.get(r["pos"], 0) + 1
         r["rank_pos"] = rank_pos_ctr[r["pos"]]
         r["tier"] = min(10, math.ceil(r["rank_pos"] / 3))
         proj_rows.append(r)
-    pid_of = {pid: r for pid, r in pid_rows}
+    pid_of = dict(pid_rows)
 
     # nextgame: same players + matchup, opponent-adjusted, bye/ex-roster excluded
     next_rows = []
@@ -739,7 +736,7 @@ def load_vector_comps() -> dict[tuple[str, str], list[dict]]:
         if prev is None:
             by_key[key] = r
     def cos(a, b):
-        dot = sum(x * y for x, y in zip(a, b))
+        dot = sum(x * y for x, y in zip(a, b, strict=False))
         na = math.sqrt(sum(x * x for x in a))
         nb = math.sqrt(sum(y * y for y in b))
         return dot / (na * nb) if na and nb else 0.0
@@ -747,7 +744,7 @@ def load_vector_comps() -> dict[tuple[str, str], list[dict]]:
     for key, r in by_key.items():
         pos_groups.setdefault(key[1], []).append((key, r))
     out: dict[tuple[str, str], list[dict]] = {}
-    for pos, grp in pos_groups.items():
+    for _pos, grp in pos_groups.items():
         for key, r in grp:
             cands = []
             for key2, r2 in grp:
@@ -769,7 +766,7 @@ FFC_POS = {"PK": "K", "DEF": "DST"}
 def fetch_ffc(typ: str) -> dict:
     url = f"https://fantasyfootballcalculator.com/api/v1/adp/{typ}?teams=12&year=2026"
     req = urllib.request.Request(url, headers={"User-Agent": "vector-gridiron-wave-b/1.0"})
-    with urllib.request.urlopen(req, timeout=30) as resp:
+    with urllib.request.urlopen(req, timeout=30) as resp:  # noqa: S310
         return json.load(resp)
 
 
@@ -789,7 +786,7 @@ def build_adp() -> dict:
             e["per"][src] = float(p["adp"])
             e["n"] += 1
     players = []
-    for key, e in agg.items():
+    for _key, e in agg.items():
         adp = sum(e["per"].values()) / len(e["per"])
         players.append({"name": e["name"], "pos": e["pos"], "adp": round(adp, 1),
                         "per": {k: round(v, 1) for k, v in e["per"].items()},
@@ -869,13 +866,12 @@ def build_kdst(data, ident, last_done) -> dict:
             k_teams[pid] = idn.get("team") or r["team"]
     # keep kickers with >=1 game in 2025-2026 (recent relevance)
     kickers = []
-    for pid, seq in k_logs.items():
+    for _pid, seq in k_logs.items():
         seq.sort()
         recent = [p for s, p in seq if s >= 2025]
         if not recent:
             continue
         y26 = [p for s, p in seq if s == 2026]
-        season_ppg = sum(recent) / len(recent)
         if y26:
             last3 = y26[-3:]
             proj = 0.65 * (sum(last3) / len(last3)) + 0.35 * (sum(y26) / len(y26))
@@ -914,7 +910,7 @@ def build_kdst(data, ident, last_done) -> dict:
         d["rank_pos"] = i
     # holdout: walk-forward season-rate prediction, seasons 2018-2025
     k_err, k_n, d_err, d_n = [], 0, [], 0
-    for pid, seq in k_logs.items():
+    for _pid, seq in k_logs.items():
         seas = {}
         for s, p in seq:
             seas.setdefault(s, []).append(p)
@@ -1077,7 +1073,7 @@ def main():
           f"MAE={eval_payload['overall']['mae']:.2f}, Spearman={eval_payload['overall']['spearman']:.3f}")
 
     # live boards as-of last_done, targeting target_week
-    asof = {pid: gs for pid, gs in logs26.items()}
+    asof = dict(logs26)
     factors = opp_factors(asof, target_week + 1)
     pool = build_pool(asof, ident, prior_ppg)
     ecr = ecr_from_week_load(data["ecr_now"])

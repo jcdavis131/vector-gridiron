@@ -151,7 +151,7 @@ def train_smoke():
 
 
 def train_full(args):
-    has_t, cuda = torch_available()
+    has_t, _cuda = torch_available()
     if not has_t:
         print("[gridiron v4] no torch honest 503 -> stdlib smoke only Hatch VM alienware auto")
         return train_smoke()
